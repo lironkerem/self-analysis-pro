@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Self-Analysis Generator Pro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="sr-only" id="status-announcer" role="status" aria-live="polite"></div>
+  <div class="page" id="app-page">
+    <h1>Self-Analysis Generator Pro</h1>
+    <div class="top-row">
+      <div class="card form-card">
+        <h2>Enter your details</h2>
+        <div class="form-group">
+          <label for="first-name">First Name * <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">Your given name.</span></span></label>
+          <div class="input-wrapper" style="position: relative;">
+            <input id="first-name" type="text" class="form-input" placeholder="First name" autocomplete="given-name" maxlength="40">
+            <span class="validation-icon" id="first-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
+          </div>
+          <div class="error-message" id="first-error"></div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label for="middle-name">Middle Name (optional) <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">Include only if you use it regularly.</span></span></label>
+          <div class="input-wrapper" style="position: relative;">
+            <input id="middle-name" type="text" class="form-input" placeholder="Middle name (if used)" autocomplete="additional-name" maxlength="120">
+            <span class="validation-icon" id="middle-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
+          </div>
+          <div class="error-message" id="middle-error"></div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label for="last-name">Last Name * <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">Your family or surname.</span></span></label>
+          <div class="input-wrapper" style="position: relative;">
+            <input id="last-name" type="text" class="form-input" placeholder="Last name" autocomplete="family-name" maxlength="40">
+            <span class="validation-icon" id="last-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
+          </div>
+          <div class="error-message" id="last-error"></div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label for="date-of-birth">Date of Birth * <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">Used for Numerology and Astrology analysis.</span></span></label>
+          <div class="input-wrapper" style="position: relative;">
+            <input id="date-of-birth" type="date" class="form-input" min="1940-01-01">
+            <span class="validation-icon" id="dob-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
+          </div>
+          <div class="error-message" id="dob-error"></div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label for="time-of-birth">Time of Birth (optional) <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">As exact as possible. Required for Full Natal-Chart calculation.</span></span></label>
+          <div class="input-wrapper" style="position: relative;">
+            <input id="time-of-birth" type="time" class="form-input">
+            <span class="validation-icon" id="tob-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
+          </div>
+          <div class="error-message" id="tob-error"></div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label for="location-birth">Location of Birth (optional) <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">City and Country. Required for Full Natal-Chart calculation.</span></span></label>
+          <div class="input-wrapper" style="position: relative;">
+            <input id="location-birth" type="text" class="form-input" placeholder="Your Birth-city name" maxlength="200">
+            <span class="validation-icon" id="location-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
+            <div class="location-dropdown" id="location-dropdown"></div>
+          </div>
+          <div class="error-message" id="location-error"></div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label><input id="include-y" type="checkbox"> Include <strong>Y</strong> as vowel <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">When checked, the letter Y will be treated as a vowel in name-based numerology calculations.</span></span></label>
+        </div>
+        <div class="controls">
+          <button id="btn-analyze" type="button" class="btn">Analyze</button>
+          <button id="btn-pdf" type="button" class="btn" disabled>Generate My PDF</button>
+          <button id="btn-clear" type="button" class="btn">Clear</button>
+        </div>
+        <div class="progress-wrapper" id="progress-wrapper">
+          <div class="progress-bar"><div class="progress-inner" id="progress-inner">0%</div></div>
+          <div class="progress-text" id="progress-text">0%</div>
+        </div>
+      </div>
+      <aside class="card summary-card">
+        <h2>Quick Summary <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">A snapshot of your core numerology, astrology, and Tree of Life data.</span></span></h2>
+        
+        <!-- Numerology Summary Card -->
+        <section class="expandable-card expanded" data-section="summary-numerology">
+          <div class="expandable-header" tabindex="0" role="button">
+            <span class="chevron">&#9654;</span><h3>Numerology</h3>
+          </div>
+          <div class="expandable-content">
+            <div id="summary-numerology-content" class="explanation-text" style="white-space: pre-line;">
+              Run analysis to see your numerology summary.
+            </div>
+          </div>
+        </section>
+        
+        <!-- Astrology Summary Card -->
+        <section class="expandable-card expanded" data-section="summary-astrology">
+          <div class="expandable-header" tabindex="0" role="button">
+            <span class="chevron">&#9654;</span><h3>Astrology</h3>
+          </div>
+          <div class="expandable-content">
+            <div id="summary-astrology-content" class="explanation-text" style="white-space: pre-line;">
+              Run analysis to see your astrology summary.
+            </div>
+          </div>
+        </section>
+        
+        <!-- Tree of Life Summary Card -->
+        <section class="expandable-card expanded" data-section="summary-tree">
+          <div class="expandable-header" tabindex="0" role="button">
+            <span class="chevron">&#9654;</span><h3>Tree of Life</h3>
+          </div>
+          <div class="expandable-content">
+            <div id="summary-tree-content" class="explanation-text" style="white-space: pre-line;">
+              Run analysis to see your Tree of Life summary.
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+    <section class="card details-card">
+      <h2>Deeper Analysis <span class="tooltip" tabindex="0">&#9432;<span class="tooltip-text">Expand each card for calculation breakdowns and deeper explanations.</span></span></h2>
+      <div id="analysis-container">
+        <article class="expandable-card" data-section="astrology">
+          <div class="expandable-header" tabindex="0" role="button">
+            <span class="chevron">&#9654;</span><h3>Astrology</h3>
+          </div>
+          <div class="expandable-content">
+            <p><span class="data-label">Zodiac Sign:</span> <span class="data-value" id="deep-zodiac">—</span></p>
+            <div class="explanation-heading" id="zodiac-meaning-header"></div>
+            <div id="zodiac-meaning" class="explanation-text"></div>
+            <p><span class="data-label">Ruling Planet:</span> <span class="data-value" id="deep-planet">—</span></p>
+            <div class="explanation-heading" id="planet-meaning-header"></div>
+            <div id="planet-meaning" class="explanation-text"></div>
+            <p><span class="data-label">Alchemical Element:</span> <span class="data-value" id="deep-element">—</span></p>
+            <div class="explanation-heading" id="element-meaning-header"></div>
+            <div id="element-meaning" class="explanation-text"></div>
+            <section class="expandable-card" data-section="natal-chart">
+              <div class="expandable-header" tabindex="0" role="button">
+                <span class="chevron">&#9654;</span><span>Full Natal Chart</span>
+              </div>
+              <div class="expandable-content">
+                <div id="natal-chart-output" class="explanation-text">Enter time of birth and location of birth to generate your complete natal chart.</div>
+              </div>
+            </section>
+          </div>
+        </article>
+        <article class="expandable-card" data-section="tree-of-life">
+          <div class="expandable-header" tabindex="0" role="button">
+            <span class="chevron">&#9654;</span><h3>Tree of Life</h3>
+          </div>
+          <div class="expandable-content">
+            <p><span class="data-label">Prominent Sefira:</span> <span class="data-value" id="deep-sefira">—</span></p>
+            <div class="explanation-heading" id="sefira-meaning-header"></div>
+            <div id="sefira-meaning" class="explanation-text"></div>
+          </div>
+        </article>
+        <article class="expandable-card" data-section="numerology">
+          <div class="expandable-header" tabindex="0" role="button">
+            <span class="chevron">&#9654;</span><h3>Numerology</h3>
+          </div>
+          <div class="expandable-content">
+            <div id="numerology-cards-container"></div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="card details-card">
+      <article class="expandable-card" data-section="personal-narrative">
+        <div class="expandable-header" tabindex="0" role="button">
+          <span class="chevron">&#9654;</span><h3>Your Personal Analysis Story</h3>
+        </div>
+        <div class="expandable-content">
+          <div id="personal-narrative-content" class="explanation-text" style="white-space: pre-line;">
+            Run analysis to see your personalized narrative.
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+  <div id="toast-container" aria-live="polite" style="position: fixed; top: 20px; right: 20px; z-index: 10001;"></div>
+  <div id="dev-panel" aria-hidden="true" role="region" aria-label="Developer panel">
+    <h4>Dev Tools</h4>
+    <div id="dev-log"></div>
+    <div id="dev-controls">
+      <button id="dev-run" class="btn">Run Self-Test</button>
+      <button id="dev-close" class="btn">Close</button>
+    </div>
+  </div>
+
+  <!-- Load JavaScript modules in correct order -->
+  <script src="js/utils.js"></script>
+  <script src="js/meanings.js"></script>
+  <script src="js/numerology.js"></script>
+  <script src="js/astrology.js"></script>
+  <script src="narrativeEngine.js"></script>
+  <script src="PDFAssembler.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+<script>
+// Location Autocomplete via Vercel Backend
+(function() {
+  const locationInput = document.getElementById('location-birth');
+  const dropdown = document.getElementById('location-dropdown');
+  
+  if (!locationInput || !dropdown) return;
+  
+  // UPDATE THIS to your Vercel deployment URL
+  const VERCEL_API = 'https://geocode-sigma.vercel.app';
+  
+  let debounceTimer;
+  
+  dropdown.style.cssText = `
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  `;
+  
+  locationInput.addEventListener('input', function() {
+    const query = this.value.trim();
+    
+    clearTimeout(debounceTimer);
+    
+    if (query.length < 3) {
+      dropdown.style.display = 'none';
+      dropdown.innerHTML = '';
+      return;
+    }
+    
+    debounceTimer = setTimeout(() => {
+      fetchLocations(query);
+    }, 300);
+  });
+  
+  async function fetchLocations(query) {
+    try {
+      const response = await fetch(`${VERCEL_API}?q=${encodeURIComponent(query)}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      displayResults(data);
+    } catch (error) {
+      console.error('Location fetch error:', error);
+      dropdown.innerHTML = '<div style="padding: 10px; color: #888;">Unable to load suggestions. Please type your city name.</div>';
+      dropdown.style.display = 'block';
+      setTimeout(() => {
+        dropdown.style.display = 'none';
+      }, 2000);
+    }
+  }
+  
+  function displayResults(results) {
+    if (!results || results.length === 0) {
+      dropdown.style.display = 'none';
+      return;
+    }
+    
+    dropdown.innerHTML = results.map(result => {
+      const displayName = result.display_name;
+      return `<div class="location-option" 
+                   data-lat="${result.lat}" 
+                   data-lon="${result.lon}"
+                   data-name="${displayName}"
+                   style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;"
+                   onmouseover="this.style.backgroundColor='#f0f0f0'"
+                   onmouseout="this.style.backgroundColor='white'">
+                ${displayName}
+              </div>`;
+    }).join('');
+    
+    dropdown.style.display = 'block';
+    
+    dropdown.querySelectorAll('.location-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const name = this.getAttribute('data-name');
+        const lat = this.getAttribute('data-lat');
+        const lon = this.getAttribute('data-lon');
+        
+        locationInput.value = name;
+        locationInput.dataset.lat = lat;
+        locationInput.dataset.lon = lon;
+        
+        dropdown.style.display = 'none';
+        dropdown.innerHTML = '';
+        
+        console.log('Location selected:', { name, lat, lon });
+      });
+    });
+  }
+  
+  document.addEventListener('click', function(e) {
+    if (e.target !== locationInput && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+})();
+</script>
+</body>
+</html>
