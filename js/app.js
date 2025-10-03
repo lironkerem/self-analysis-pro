@@ -4,7 +4,7 @@
 import { AstrologyEngine } from './astrology.js';
 import { renderNatalChartBlock } from './ui.natal.js';
 import { numerologyEngine } from './numerology.js';
-import { tarotEngine } from './tarotEngine.js';
+import { TarotEngine } from './TarotEngine.js';
 import { narrativeEngine } from './narrativeEngine.js';
 import { PDFAssembler } from './PDFAssembler.js';
 
