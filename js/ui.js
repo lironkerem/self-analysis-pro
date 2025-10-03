@@ -1,18 +1,17 @@
-// UI Management and Form Handling
+// UI Management and Form Handling with Tarot Integration
 class UIManager {
   constructor() {
+    this.tarot = new TarotEngine();
     this.initializeExpandableCards();
   }
   
   initializeExpandableCards() { 
-    // Use setTimeout to ensure DOM is ready
     setTimeout(() => {
       document.querySelectorAll('.expandable-card').forEach(card => { 
         const header = card.querySelector('.expandable-header'); 
         const content = card.querySelector('.expandable-content'); 
         if (!header || !content) return;
         
-        // Remove any existing event listeners to prevent duplicates
         const newHeader = header.cloneNode(true);
         header.parentNode.replaceChild(newHeader, header);
         
@@ -42,7 +41,6 @@ class UIManager {
     this.updateDeepAnalysis(results); 
     this.generateNumerologyCards(results);
     
-    // Update Personal Narrative card
     if (narrativeResults && narrativeResults.fullNarrative) {
       const narrativeContent = document.getElementById('personal-narrative-content');
       if (narrativeContent) {
@@ -52,27 +50,22 @@ class UIManager {
   }
   
   updateQuickSummary(results, narrativeResults) { 
-    // Update the three collapsible summary cards with narrative content
     if (narrativeResults) {
-      // Numerology Summary Card
       const numContent = document.getElementById('summary-numerology-content');
       if (numContent && narrativeResults.numerologySummary && narrativeResults.numerologySummary.length) {
         numContent.innerHTML = narrativeResults.numerologySummary.join('<br><br>');
       }
       
-      // Astrology Summary Card - FIX 6: Add zodiac data before summary
       const astroContent = document.getElementById('summary-astrology-content');
       if (astroContent) {
         let astroHTML = '';
         
-        // Add basic astrology data
         if (results.zodiac) {
           astroHTML += `<strong>Zodiac Sign:</strong> ${results.zodiac.name || '—'}<br>`;
           astroHTML += `<strong>Ruling Planet:</strong> ${results.zodiac.planet || '—'}<br>`;
           astroHTML += `<strong>Alchemical Element:</strong> ${results.zodiac.element || '—'}<br><br>`;
         }
         
-        // Add narrative summary
         if (narrativeResults.astrologySummary && narrativeResults.astrologySummary.length) {
           astroHTML += narrativeResults.astrologySummary.join('<br><br>');
         }
@@ -80,17 +73,14 @@ class UIManager {
         astroContent.innerHTML = astroHTML;
       }
       
-      // Tree of Life Summary Card - FIX 6: Add sefira before summary
       const treeContent = document.getElementById('summary-tree-content');
       if (treeContent) {
         let treeHTML = '';
         
-        // Add sefira data
         if (results.sefira) {
           treeHTML += `<strong>Prominent Sefira:</strong> ${results.sefira}<br><br>`;
         }
         
-        // Add narrative summary
         if (narrativeResults.treeSummary) {
           treeHTML += narrativeResults.treeSummary;
         } else {
@@ -115,33 +105,79 @@ class UIManager {
       if (element) element.textContent = value; 
     }); 
     
-    // Update meanings
+    // Update meanings with Tarot cards
     if (results.zodiac?.name) { 
       const headerEl = document.getElementById('zodiac-meaning-header'); 
       const meaningEl = document.getElementById('zodiac-meaning'); 
       if (headerEl) headerEl.textContent = `The meaning of ${results.zodiac.name}`; 
-      if (meaningEl) meaningEl.innerHTML = DataMeanings.getZodiacMeaning(results.zodiac.name); 
+      if (meaningEl) {
+        let html = DataMeanings.getZodiacMeaning(results.zodiac.name);
+        
+        // Add Tarot cards for zodiac
+        const zodiacCards = this.tarot.getCardsForZodiac(results.zodiac.name);
+        if (zodiacCards.length > 0) {
+          html += '<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>';
+          html += this.tarot.renderCards(zodiacCards);
+        }
+        
+        meaningEl.innerHTML = html;
+      }
     } 
     
     if (results.zodiac?.planet) { 
       const headerEl = document.getElementById('planet-meaning-header'); 
       const meaningEl = document.getElementById('planet-meaning'); 
       if (headerEl) headerEl.textContent = `The meaning of ${results.zodiac.planet}`; 
-      if (meaningEl) meaningEl.innerHTML = DataMeanings.getPlanetMeaning(results.zodiac.planet); 
+      if (meaningEl) {
+        let html = DataMeanings.getPlanetMeaning(results.zodiac.planet);
+        
+        // Add Tarot card for planet (Major Arcana only)
+        const planetCards = this.tarot.getCardsForPlanet(results.zodiac.planet);
+        if (planetCards.length > 0) {
+          html += '<div style="margin-top: 20px;"><strong>Tarot Correspondence:</strong></div>';
+          html += this.tarot.renderCards(planetCards);
+        }
+        
+        meaningEl.innerHTML = html;
+      }
     } 
     
     if (results.zodiac?.element) { 
       const headerEl = document.getElementById('element-meaning-header'); 
       const meaningEl = document.getElementById('element-meaning'); 
       if (headerEl) headerEl.textContent = `The meaning of ${results.zodiac.element}`; 
-      if (meaningEl) meaningEl.innerHTML = DataMeanings.getElementMeaning(results.zodiac.element); 
+      if (meaningEl) {
+        let html = DataMeanings.getElementMeaning(results.zodiac.element);
+        
+        // Add Tarot cards for element (10 numbered + 4 court)
+        const elementCards = this.tarot.getCardsForElement(results.zodiac.element);
+        if (elementCards.length > 0) {
+          html += '<div style="margin-top: 20px;"><strong>Tarot Suit Correspondence:</strong></div>';
+          html += this.tarot.renderCards(elementCards);
+        }
+        
+        meaningEl.innerHTML = html;
+      }
     } 
     
     if (results.sefira) { 
       const headerEl = document.getElementById('sefira-meaning-header'); 
       const meaningEl = document.getElementById('sefira-meaning'); 
       if (headerEl) headerEl.textContent = `The meaning of ${results.sefira}`; 
-      if (meaningEl) meaningEl.innerHTML = DataMeanings.getSefiraMeaning(results.sefira); 
+      if (meaningEl) {
+        let html = DataMeanings.getSefiraMeaning(results.sefira);
+        
+        // Add Tarot cards for sefira (4 minors matching the element)
+        const sefiraName = results.sefira.split('(')[0].trim();
+        const element = results.zodiac?.element;
+        const sefiraCards = this.tarot.getCardsForSefira(sefiraName, element);
+        if (sefiraCards.length > 0) {
+          html += '<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>';
+          html += this.tarot.renderCards(sefiraCards);
+        }
+        
+        meaningEl.innerHTML = html;
+      }
     } 
   }
   
@@ -166,6 +202,11 @@ class UIManager {
       const data = results[config.key]; 
       if (!data) return ''; 
       
+      // Get Tarot cards for this number
+      const tarotCards = this.tarot.getCardsForNumber(data.value);
+      const tarotHTML = tarotCards.length > 0 ? 
+        `<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>${this.tarot.renderCards(tarotCards)}` : '';
+      
       return `<section class="expandable-card" data-section="${config.key}">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">&#9654;</span><span>${config.title}</span>
@@ -179,6 +220,7 @@ class UIManager {
           <div class="explanation-text">${config.explanation}</div>
           <div class="explanation-heading">Meaning of the number ${data.value}:</div>
           <div class="explanation-text">${DataMeanings.getNumberMeaning(data.value)}</div>
+          ${tarotHTML}
         </div>
       </section>`; 
     }).join(''); 
@@ -212,6 +254,16 @@ class UIManager {
       const p = results.pinnacles; 
       const pinnacleTrace = `P1=${p.p1.value}(${p.p1.raw}), P2=${p.p2.value}(${p.p2.raw}), P3=${p.p3.value}(${p.p3.raw}), P4=${p.p4.value}(${p.p4.raw})`; 
       
+      // Get tarot for all pinnacles
+      let pinnaclesTarot = '';
+      [p.p1.value, p.p2.value, p.p3.value, p.p4.value].forEach((val, idx) => {
+        const cards = this.tarot.getCardsForNumber(val);
+        if (cards.length > 0) {
+          pinnaclesTarot += `<div style="margin-top: 15px;"><strong>Pinnacle ${idx + 1} (${val}) Tarot:</strong></div>`;
+          pinnaclesTarot += this.tarot.renderCards(cards);
+        }
+      });
+      
       container.innerHTML += `<section class="expandable-card" data-section="pinnacles">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">&#9654;</span><span>4 Cycles of Pinnacles</span>
@@ -223,6 +275,7 @@ class UIManager {
           <hr>
           <div class="explanation-heading">Explanation for 4 Pinnacle Cycles:</div>
           <div class="explanation-text">The Pinnacle Cycles are four major phases in life, derived from the birth date, that outline opportunities, challenges, and growth patterns in each stage.</div>
+          ${pinnaclesTarot}
         </div>
       </section>`; 
     } 
@@ -230,6 +283,16 @@ class UIManager {
     if (results.challenges) { 
       const c = results.challenges; 
       const challengeTrace = `C1=${c.ch1.value}(${c.ch1.raw}), C2=${c.ch2.value}(${c.ch2.raw}), C3=${c.ch3.value}(${c.ch3.raw}), C4=${c.ch4.value}(${c.ch4.raw})`; 
+      
+      // Get tarot for all challenges
+      let challengesTarot = '';
+      [c.ch1.value, c.ch2.value, c.ch3.value, c.ch4.value].forEach((val, idx) => {
+        const cards = this.tarot.getCardsForNumber(val);
+        if (cards.length > 0) {
+          challengesTarot += `<div style="margin-top: 15px;"><strong>Challenge ${idx + 1} (${val}) Tarot:</strong></div>`;
+          challengesTarot += this.tarot.renderCards(cards);
+        }
+      });
       
       container.innerHTML += `<section class="expandable-card" data-section="challenges">
         <div class="expandable-header" tabindex="0" role="button">
@@ -242,20 +305,19 @@ class UIManager {
           <hr>
           <div class="explanation-heading">Explanation for Challenge Numbers:</div>
           <div class="explanation-text">Challenge Numbers indicate obstacles, recurring difficulties, or tests of character that require conscious effort and resilience.</div>
+          ${challengesTarot}
         </div>
       </section>`; 
     } 
   }
   
   clearResults() { 
-    // Clear summary cards
     const summaryCards = ['summary-numerology-content', 'summary-astrology-content', 'summary-tree-content'];
     summaryCards.forEach(id => {
       const element = document.getElementById(id);
       if (element) element.textContent = 'Run analysis to see your summary.';
     });
     
-    // Clear personal narrative
     const narrativeContent = document.getElementById('personal-narrative-content');
     if (narrativeContent) narrativeContent.textContent = 'Run analysis to see your personalized narrative.';
     
@@ -279,5 +341,4 @@ class UIManager {
   }
 }
 
-// Expose UIManager globally
 window.UIManager = UIManager;

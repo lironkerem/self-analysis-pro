@@ -190,14 +190,17 @@
   </div>
 
   <!-- Load JavaScript modules in correct order -->
-  <script src="js/utils.js"></script>
-  <script src="js/meanings.js"></script>
-  <script src="js/numerology.js"></script>
-  <script src="js/astrology.js"></script>
-  <script src="narrativeEngine.js"></script>
-  <script src="PDFAssembler.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/app.js"></script>
+<script type="module" src="js/utils.js"></script>
+<script type="module" src="js/meanings.js"></script>
+<script type="module" src="js/numerology.js"></script>
+<script type="module" src="js/narrativeEngine.js"></script>
+<script type="module" src="js/PDFAssembler.js"></script>
+<script type="module" src="js/ui.js"></script>
+<script type="module" src="js/Tarotengine.js"></script>
+<script type="module" src="js/app.js"></script>
+<script type="module" src="js/astroApi.js"></script>
+<script type="module" src="js/astrology.js"></script>
+<script type="module" src="js/ui.natal.js"></script>
 <script>
 // Location Autocomplete via Vercel Backend
 (function() {
@@ -207,7 +210,7 @@
   if (!locationInput || !dropdown) return;
   
   // UPDATE THIS to your Vercel deployment URL
-  const VERCEL_API = 'https://geocode-sigma.vercel.app';
+  const VERCEL_API = 'https://your-project.vercel.app/api/geocode';
   
   let debounceTimer;
   

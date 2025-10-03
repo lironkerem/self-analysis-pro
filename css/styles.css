@@ -266,3 +266,63 @@ h3 { font-size: 20px !important; }
   border-color: #3498db;
   outline: none;
 }
+
+/* === Full Natal Chart Styling === */
+
+.natal-chart-section, 
+.natal-planets-section,
+.natal-houses-section,
+.natal-aspects-section {
+  margin-bottom: 2rem;
+}
+
+.natal-chart-svg {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+/* Headings inside the Natal Chart card */
+.natal-chart-section h3,
+.natal-planets-section h4,
+.natal-houses-section h4,
+.natal-aspects-section h4 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-family: inherit; /* use app’s main font */
+  font-weight: 600;
+  color: #333; /* or replace with your app's main text color */
+}
+
+/* Make the main chart title stand out more */
+.natal-chart-section h3 {
+  font-size: 1.4rem;
+  margin-top: 1rem;
+  color: #222; /* slightly darker for emphasis */
+}
+
+/* Subsection titles */
+.natal-planets-section h4,
+.natal-houses-section h4,
+.natal-aspects-section h4 {
+  font-size: 1.2rem;
+  margin-top: 1.2rem;
+  color: #444; /* a softer shade */
+}
+
+.natal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.natal-table th,
+.natal-table td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  text-align: center;
+}
+
+.natal-table th {
+  background-color: #f3f3f3;
+  font-weight: bold;
+}
