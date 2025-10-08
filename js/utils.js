@@ -136,3 +136,4 @@ window.Validation = Validation;
 window.AppState = AppState;
 window.ToastManager = ToastManager;
 window.ProgressManager = ProgressManager;
+export default Utils;

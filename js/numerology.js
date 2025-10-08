@@ -250,3 +250,4 @@ class NumerologyEngine {
   }
 }
 window.NumerologyEngine = NumerologyEngine;
+export default NumerologyEngine;

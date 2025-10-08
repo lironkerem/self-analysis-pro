@@ -1,4 +1,9 @@
 // UI Management and Form Handling with Tarot Integration
+// FIXED: Dual planets display, watermarks, proper planet meanings
+
+import DataMeanings from './meanings.js';
+import TarotEngine from './TarotEngine.js';
+
 class UIManager {
   constructor() {
     this.tarot = new TarotEngine();
@@ -44,6 +49,7 @@ class UIManager {
     if (narrativeResults && narrativeResults.fullNarrative) {
       const narrativeContent = document.getElementById('personal-narrative-content');
       if (narrativeContent) {
+        narrativeContent.classList.remove('placeholder-text');
         narrativeContent.textContent = narrativeResults.fullNarrative;
       }
     }
@@ -53,17 +59,19 @@ class UIManager {
     if (narrativeResults) {
       const numContent = document.getElementById('summary-numerology-content');
       if (numContent && narrativeResults.numerologySummary && narrativeResults.numerologySummary.length) {
+        numContent.classList.remove('placeholder-text');
         numContent.innerHTML = narrativeResults.numerologySummary.join('<br><br>');
       }
       
       const astroContent = document.getElementById('summary-astrology-content');
       if (astroContent) {
+        astroContent.classList.remove('placeholder-text');
         let astroHTML = '';
         
         if (results.zodiac) {
-          astroHTML += `<strong>Zodiac Sign:</strong> ${results.zodiac.name || '—'}<br>`;
-          astroHTML += `<strong>Ruling Planet:</strong> ${results.zodiac.planet || '—'}<br>`;
-          astroHTML += `<strong>Alchemical Element:</strong> ${results.zodiac.element || '—'}<br><br>`;
+          astroHTML += `Zodiac Sign: <strong>${results.zodiac.name || '—'}</strong><br>`;
+          astroHTML += `Ruling Planet(s): <strong>${results.zodiac.planet || '—'}</strong><br>`;
+          astroHTML += `Alchemical Element: <strong>${results.zodiac.element || '—'}</strong><br><br>`;
         }
         
         if (narrativeResults.astrologySummary && narrativeResults.astrologySummary.length) {
@@ -75,10 +83,11 @@ class UIManager {
       
       const treeContent = document.getElementById('summary-tree-content');
       if (treeContent) {
+        treeContent.classList.remove('placeholder-text');
         let treeHTML = '';
         
         if (results.sefira) {
-          treeHTML += `<strong>Prominent Sefira:</strong> ${results.sefira}<br><br>`;
+          treeHTML += `Prominent Sefira: <strong>${results.sefira}</strong><br><br>`;
         }
         
         if (narrativeResults.treeSummary) {
@@ -92,7 +101,30 @@ class UIManager {
     }
   }
   
-  updateDeepAnalysis(results) { 
+  updateDeepAnalysis(results) {
+    // Hide astrology placeholder and show sub-cards
+    const astroPlaceholder = document.getElementById('astrology-content-placeholder');
+    if (astroPlaceholder) astroPlaceholder.style.display = 'none';
+    
+    // Show astrology sub-cards with watermarks
+    ['zodiac-sign', 'ruling-planet', 'alchemical-element', 'natal-chart'].forEach(section => {
+      const card = document.querySelector(`.expandable-card[data-section="${section}"]`);
+      if (card) {
+        card.style.display = 'block';
+        card.classList.add('has-watermark'); // Add watermark
+      }
+    });
+    
+    // Hide tree placeholder and show data with watermark
+    const treePlaceholder = document.getElementById('tree-content-placeholder');
+    const treeData = document.getElementById('tree-content-data');
+    if (treePlaceholder) treePlaceholder.style.display = 'none';
+    if (treeData) {
+      treeData.style.display = 'block';
+      const treeCard = document.querySelector('.expandable-card[data-section="tree-of-life"]');
+      if (treeCard) treeCard.classList.add('has-watermark');
+    }
+    
     const deepElements = { 
       'deep-zodiac': results.zodiac?.name || '—', 
       'deep-planet': results.zodiac?.planet || '—', 
@@ -105,7 +137,7 @@ class UIManager {
       if (element) element.textContent = value; 
     }); 
     
-    // Update meanings with Tarot cards
+    // Update meanings with Tarot cards and handle dual planets
     if (results.zodiac?.name) { 
       const headerEl = document.getElementById('zodiac-meaning-header'); 
       const meaningEl = document.getElementById('zodiac-meaning'); 
@@ -113,7 +145,6 @@ class UIManager {
       if (meaningEl) {
         let html = DataMeanings.getZodiacMeaning(results.zodiac.name);
         
-        // Add Tarot cards for zodiac
         const zodiacCards = this.tarot.getCardsForZodiac(results.zodiac.name);
         if (zodiacCards.length > 0) {
           html += '<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>';
@@ -127,16 +158,32 @@ class UIManager {
     if (results.zodiac?.planet) { 
       const headerEl = document.getElementById('planet-meaning-header'); 
       const meaningEl = document.getElementById('planet-meaning'); 
-      if (headerEl) headerEl.textContent = `The meaning of ${results.zodiac.planet}`; 
+      
+      // Handle dual planets (e.g., "Mars, Pluto")
+      const planets = results.zodiac.planet.split(',').map(p => p.trim());
+      
+      if (headerEl) {
+        headerEl.textContent = planets.length > 1 
+          ? `The meanings of ${planets.join(' and ')}`
+          : `The meaning of ${planets[0]}`;
+      }
+      
       if (meaningEl) {
-        let html = DataMeanings.getPlanetMeaning(results.zodiac.planet);
+        let html = '';
         
-        // Add Tarot card for planet (Major Arcana only)
-        const planetCards = this.tarot.getCardsForPlanet(results.zodiac.planet);
-        if (planetCards.length > 0) {
-          html += '<div style="margin-top: 20px;"><strong>Tarot Correspondence:</strong></div>';
-          html += this.tarot.renderCards(planetCards);
-        }
+        // Display meaning for each planet
+        planets.forEach((planet, index) => {
+          if (index > 0) html += '<hr style="margin: 20px 0; border: 1px solid #ddd;">';
+          html += `<h4 style="color: #3F7652; margin-top: ${index > 0 ? '20px' : '0'};">${planet}</h4>`;
+          html += DataMeanings.getPlanetMeaning(planet);
+          
+          // Add Tarot card for each planet
+          const planetCards = this.tarot.getCardsForPlanet(planet);
+          if (planetCards.length > 0) {
+            html += '<div style="margin-top: 15px;"><strong>Tarot Correspondence:</strong></div>';
+            html += this.tarot.renderCards(planetCards);
+          }
+        });
         
         meaningEl.innerHTML = html;
       }
@@ -149,7 +196,6 @@ class UIManager {
       if (meaningEl) {
         let html = DataMeanings.getElementMeaning(results.zodiac.element);
         
-        // Add Tarot cards for element (10 numbered + 4 court)
         const elementCards = this.tarot.getCardsForElement(results.zodiac.element);
         if (elementCards.length > 0) {
           html += '<div style="margin-top: 20px;"><strong>Tarot Suit Correspondence:</strong></div>';
@@ -167,10 +213,9 @@ class UIManager {
       if (meaningEl) {
         let html = DataMeanings.getSefiraMeaning(results.sefira);
         
-        // Add Tarot cards for sefira (4 minors matching the element)
         const sefiraName = results.sefira.split('(')[0].trim();
         const element = results.zodiac?.element;
-        const sefiraCards = this.tarot.getCardsForSefira(sefiraName, element);
+        const sefiraCards = this.tarot.getCardsForSefira(sefiraName, null);
         if (sefiraCards.length > 0) {
           html += '<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>';
           html += this.tarot.renderCards(sefiraCards);
@@ -178,7 +223,9 @@ class UIManager {
         
         meaningEl.innerHTML = html;
       }
-    } 
+    }
+    
+    this.initializeTarotClickHandlers();
   }
   
   generateNumerologyCards(results) { 
@@ -186,30 +233,33 @@ class UIManager {
     if (!container) return; 
     
     const cardConfigs = [
-      { key: 'firstName', title: 'Life Lessons', explanation: 'Life Lessons are derived from the consonants in your full birth name. They represent the recurring challenges and opportunities for growth that your soul specifically chose for this lifetime.' }, 
-      { key: 'lastName', title: 'Spiritual Support', explanation: 'Derived from the vowels in your full name, Spiritual Support reflects the inner guidance, resources, and strengths your soul possesses.' }, 
-      { key: 'lifePath', title: 'Life Path', explanation: 'The Life Path Number, derived from your birth date, is considered the most fundamental number in the chart. It outlines your primary purpose, life direction, and key lessons.' }, 
-      { key: 'expression', title: 'Destiny (Expression)', explanation: 'The Expression or Destiny Number is calculated from the full name and reveals your core abilities, talents, and life mission.' }, 
-      { key: 'soulsDirection', title: 'Soul\'s Direction', explanation: 'Soul\'s Direction highlights the ultimate trajectory of your soul. It represents the integration of lessons learned, natural talents, and spiritual inclinations.' }, 
-      { key: 'personality', title: 'Personality (Outer)', explanation: 'Derived from the consonants in your name, the Personality Number reveals how others perceive you and the traits you project.' }, 
-      { key: 'soulUrge', title: 'Soul\'s Urge (Desire)', explanation: 'Calculated from the vowels in your name, the Soul\'s Urge reflects your inner motivations, drives, and what truly fulfills you.' }, 
-      { key: 'maturity', title: 'Maturity Number', explanation: 'The Maturity Number represents the full potential of your life journey. It indicates the qualities, talents, and wisdom you are likely to fully develop later in life.' }, 
-      { key: 'balance', title: 'Balance Number', explanation: 'Derived from the initials of your full name, the Balance Number provides insight into how you respond to stress, challenges, or uncertainty.' }, 
-      { key: 'birthday', title: 'Birthday', explanation: 'The Birthday Number comes from the day of the month you were born and represents a specific talent, skill, or attribute you bring to life.' }
+      { key: 'firstName', title: 'Life Lessons', subtitle: '(First Name)', explanation: 'Life Lessons are derived from the consonants in your full birth name. They represent the recurring challenges and opportunities for growth that your soul specifically chose for this lifetime.' }, 
+      { key: 'lastName', title: 'Spiritual Support', subtitle: '(Last Name)', explanation: 'Derived from the vowels in your full name, Spiritual Support reflects the inner guidance, resources, and strengths your soul possesses.' }, 
+      { key: 'lifePath', title: 'Life Path', subtitle: '(Date of Birth)', explanation: 'The Life Path Number, derived from your birth date, is considered the most fundamental number in the chart. It outlines your primary purpose, life direction, and key lessons.' }, 
+      { key: 'expression', title: 'Destiny', subtitle: '(Full Name)', explanation: 'The Expression or Destiny Number is calculated from the full name and reveals your core abilities, talents, and life mission.' }, 
+      { key: 'soulsDirection', title: 'Soul\'s Direction', subtitle: '(Full Name + Date of Birth)', explanation: 'Soul\'s Direction highlights the ultimate trajectory of your soul. It represents the integration of lessons learned, natural talents, and spiritual inclinations.' }, 
+      { key: 'personality', title: 'Personality (Outer)', subtitle: '', explanation: 'Derived from the consonants in your name, the Personality Number reveals how others perceive you and the traits you project.' }, 
+      { key: 'soulUrge', title: 'Soul\'s Urge (Desire)', subtitle: '', explanation: 'Calculated from the vowels in your name, the Soul\'s Urge reflects your inner motivations, drives, and what truly fulfills you.' }, 
+      { key: 'maturity', title: 'Maturity Number', subtitle: '', explanation: 'The Maturity Number represents the full potential of your life journey. It indicates the qualities, talents, and wisdom you are likely to fully develop later in life.' }, 
+      { key: 'balance', title: 'Balance Number', subtitle: '', explanation: 'Derived from the initials of your full name, the Balance Number provides insight into how you respond to stress, challenges, or uncertainty.' }, 
+      { key: 'birthday', title: 'Birthday', subtitle: '', explanation: 'The Birthday Number comes from the day of the month you were born and represents a specific talent, skill, or attribute you bring to life.' }
     ]; 
     
     container.innerHTML = cardConfigs.map(config => { 
       const data = results[config.key]; 
       if (!data) return ''; 
       
-      // Get Tarot cards for this number
       const tarotCards = this.tarot.getCardsForNumber(data.value);
       const tarotHTML = tarotCards.length > 0 ? 
         `<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>${this.tarot.renderCards(tarotCards)}` : '';
       
-      return `<section class="expandable-card" data-section="${config.key}">
+      const titleHTML = config.subtitle 
+        ? `${config.title} <span style="font-size: 25px;">${config.subtitle}</span>`
+        : config.title;
+      
+      return `<section class="expandable-card numerology-card has-watermark" data-section="${config.key}">
         <div class="expandable-header" tabindex="0" role="button">
-          <span class="chevron">&#9654;</span><span>${config.title}</span>
+          <span class="chevron">›</span><span>${titleHTML}</span>
         </div>
         <div class="expandable-content">
           <div class="calculation-trace">${data.trace || '—'}</div>
@@ -226,7 +276,8 @@ class UIManager {
     }).join(''); 
     
     this.addSpecialNumerologyCards(container, results); 
-    this.initializeExpandableCards(); 
+    this.initializeExpandableCards();
+    this.initializeTarotClickHandlers();
   }
   
   addSpecialNumerologyCards(container, results) { 
@@ -236,9 +287,9 @@ class UIManager {
       "Karmic Debt Numbers indicate unresolved lessons or challenges carried from past lifetimes." : 
       "No karmic debt numbers detected."; 
       
-    container.innerHTML += `<section class="expandable-card" data-section="karmic">
+    container.innerHTML += `<section class="expandable-card numerology-card has-watermark" data-section="karmic">
       <div class="expandable-header" tabindex="0" role="button">
-        <span class="chevron">&#9654;</span><span>Karmic Debt</span>
+        <span class="chevron">›</span><span>Karmic Debt</span>
       </div>
       <div class="expandable-content">
         <div class="calculation-trace">${karmicTrace}</div>
@@ -254,7 +305,6 @@ class UIManager {
       const p = results.pinnacles; 
       const pinnacleTrace = `P1=${p.p1.value}(${p.p1.raw}), P2=${p.p2.value}(${p.p2.raw}), P3=${p.p3.value}(${p.p3.raw}), P4=${p.p4.value}(${p.p4.raw})`; 
       
-      // Get tarot for all pinnacles
       let pinnaclesTarot = '';
       [p.p1.value, p.p2.value, p.p3.value, p.p4.value].forEach((val, idx) => {
         const cards = this.tarot.getCardsForNumber(val);
@@ -264,9 +314,9 @@ class UIManager {
         }
       });
       
-      container.innerHTML += `<section class="expandable-card" data-section="pinnacles">
+      container.innerHTML += `<section class="expandable-card numerology-card has-watermark" data-section="pinnacles">
         <div class="expandable-header" tabindex="0" role="button">
-          <span class="chevron">&#9654;</span><span>4 Cycles of Pinnacles</span>
+          <span class="chevron">›</span><span>4 Cycles of Pinnacles</span>
         </div>
         <div class="expandable-content">
           <div class="calculation-trace">${pinnacleTrace}</div>
@@ -284,7 +334,6 @@ class UIManager {
       const c = results.challenges; 
       const challengeTrace = `C1=${c.ch1.value}(${c.ch1.raw}), C2=${c.ch2.value}(${c.ch2.raw}), C3=${c.ch3.value}(${c.ch3.raw}), C4=${c.ch4.value}(${c.ch4.raw})`; 
       
-      // Get tarot for all challenges
       let challengesTarot = '';
       [c.ch1.value, c.ch2.value, c.ch3.value, c.ch4.value].forEach((val, idx) => {
         const cards = this.tarot.getCardsForNumber(val);
@@ -294,9 +343,9 @@ class UIManager {
         }
       });
       
-      container.innerHTML += `<section class="expandable-card" data-section="challenges">
+      container.innerHTML += `<section class="expandable-card numerology-card has-watermark" data-section="challenges">
         <div class="expandable-header" tabindex="0" role="button">
-          <span class="chevron">&#9654;</span><span>Challenge Numbers</span>
+          <span class="chevron">›</span><span>Challenge Numbers</span>
         </div>
         <div class="expandable-content">
           <div class="calculation-trace">${challengeTrace}</div>
@@ -311,15 +360,82 @@ class UIManager {
     } 
   }
   
+  initializeTarotClickHandlers() {
+    setTimeout(() => {
+      document.querySelectorAll('.tarot-card').forEach(card => {
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
+        
+        newCard.addEventListener('click', () => {
+          const cardNumber = newCard.getAttribute('data-card-number');
+          const cardType = newCard.getAttribute('data-card-type');
+          const cardSuit = newCard.getAttribute('data-card-suit');
+          
+          this.showTarotModal(cardType, cardSuit, cardNumber);
+        });
+      });
+    }, 100);
+  }
+
+  showTarotModal(cardType, cardSuit, cardNumber) {
+    let meaning = '';
+    let cardName = '';
+    
+    if (cardType === 'major') {
+      meaning = DataMeanings.getTarotMeaning('major', Number(cardNumber));
+      cardName = this.tarot.getMajorArcanaName(Number(cardNumber));
+    } else {
+      meaning = DataMeanings.getTarotMeaning(cardSuit, Number(cardNumber));
+      if (cardType === 'court') {
+        const courtNames = { 11: 'Page', 12: 'Knight', 13: 'Queen', 14: 'King' };
+        cardName = `${courtNames[cardNumber]} of ${cardSuit.charAt(0).toUpperCase() + cardSuit.slice(1)}`;
+      } else {
+        cardName = `${cardNumber} of ${cardSuit.charAt(0).toUpperCase() + cardSuit.slice(1)}`;
+      }
+    }
+    
+    let modal = document.getElementById('tarot-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'tarot-modal';
+      modal.className = 'tarot-modal';
+      modal.innerHTML = `
+        <div class="tarot-modal-content">
+          <span class="tarot-modal-close">&times;</span>
+          <h3 class="tarot-modal-title"></h3>
+          <div class="tarot-modal-body"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      modal.querySelector('.tarot-modal-close').addEventListener('click', () => {
+        modal.classList.remove('show');
+      });
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('show');
+      });
+    }
+    
+    modal.querySelector('.tarot-modal-title').textContent = cardName;
+    modal.querySelector('.tarot-modal-body').textContent = meaning;
+    modal.classList.add('show');
+  }
+  
   clearResults() { 
     const summaryCards = ['summary-numerology-content', 'summary-astrology-content', 'summary-tree-content'];
     summaryCards.forEach(id => {
       const element = document.getElementById(id);
-      if (element) element.textContent = 'Run analysis to see your summary.';
+      if (element) {
+        element.classList.add('placeholder-text');
+        element.textContent = 'Run analysis to see your summary.';
+      }
     });
     
     const narrativeContent = document.getElementById('personal-narrative-content');
-    if (narrativeContent) narrativeContent.textContent = 'Run analysis to see your personalized narrative.';
+    if (narrativeContent) {
+      narrativeContent.classList.add('placeholder-text');
+      narrativeContent.textContent = 'Run analysis to see your personalized narrative.';
+    }
     
     ['deep-zodiac', 'deep-planet', 'deep-element', 'deep-sefira'].forEach(id => { 
       const element = document.getElementById(id); 
@@ -333,12 +449,16 @@ class UIManager {
       if (meaningEl) meaningEl.innerHTML = ''; 
     }); 
     
-    const container = document.getElementById('numerology-cards-container'); 
-    if (container) container.innerHTML = ''; 
+    if (container) {
+      container.classList.add('placeholder-text');
+      container.innerHTML = 'Run analysis to see your complete Numerology report.';
+    }
     
     const natalOutput = document.getElementById('natal-chart-output'); 
-    if (natalOutput) natalOutput.textContent = 'Enter time of birth and location of birth to generate your complete natal chart.'; 
+    if (natalOutput) {
+      natalOutput.classList.add('placeholder-text');
+      natalOutput.textContent = 'Enter time of birth and location of birth to generate your complete natal chart.';
+    }
   }
 }
-
-window.UIManager = UIManager;
+export { UIManager };

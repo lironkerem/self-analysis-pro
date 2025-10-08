@@ -1,5 +1,5 @@
 /**
- * TarotEngine.js - Complete Tarot Integration
+ * TarotEngine.js - Complete Tarot Integration with Enhanced Styling
  * Maps numerology, astrology, and Tree of Life to Tarot cards with images
  */
 
@@ -55,6 +55,7 @@ class TarotEngine {
     if (reduced >= 0 && reduced <= 21) {
       cards.push({
         type: 'major',
+        number: reduced,
         name: this.getMajorArcanaName(reduced),
         image: this.getMajorArcanaImage(reduced)
       });
@@ -103,6 +104,7 @@ class TarotEngine {
     // Major Arcana
     cards.push({
       type: 'major',
+      number: mapping.major,
       name: this.getMajorArcanaName(mapping.major),
       image: this.getMajorArcanaImage(mapping.major)
     });
@@ -135,7 +137,8 @@ class TarotEngine {
       saturn: 21,
       uranus: 0,
       neptune: 12,
-      pluto: 20
+      pluto: 20,
+      earth: 21
     };
     
     const planetLower = String(planet).toLowerCase();
@@ -144,6 +147,7 @@ class TarotEngine {
     
     return [{
       type: 'major',
+      number: majorNum,
       name: this.getMajorArcanaName(majorNum),
       image: this.getMajorArcanaImage(majorNum)
     }];
@@ -189,7 +193,7 @@ class TarotEngine {
     return cards;
   }
 
-  // Get cards for Tree of Life sefira (4 minor cards matching the number, one per suit)
+  // Get cards for Tree of Life sefira
   getCardsForSefira(sefira, element) {
     const sefiraMap = {
       keter: 1, kether: 1,
@@ -208,7 +212,6 @@ class TarotEngine {
     const number = sefiraMap[sefiraLower];
     if (!number) return [];
     
-    // Determine suit from element if provided
     const elementMap = {
       fire: 'wands',
       water: 'cups',
@@ -244,7 +247,7 @@ class TarotEngine {
     return num;
   }
 
-  // Generate HTML for card images
+  // Generate HTML for card images with FIXED loading spinner
   renderCards(cards, layout = 'row') {
     if (!cards || cards.length === 0) return '';
     
@@ -252,35 +255,86 @@ class TarotEngine {
     const minorCards = cards.filter(c => c.type === 'minor');
     const courtCards = cards.filter(c => c.type === 'court');
     
-    let html = '';
+    let html = '<div style="margin: 10px 0; text-align: center;">';
     
-    // Major Arcana (one row)
+    // Helper function to create card HTML with loading spinner - FIX #2
+    const createCardHTML = (card, width = '110px') => {
+      const cardId = `tarot-${card.type}-${card.suit || 'major'}-${card.number}-${Date.now()}`;
+      return `
+        <div class="tarot-card" data-card-number="${card.number}" 
+             data-card-type="${card.type}" 
+             data-card-suit="${card.suit || 'major'}" 
+             style="text-align: center; width: ${width}; cursor: pointer; position: relative;">
+          <div class="tarot-card-inner" style="background: white; border-radius: 8px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: all 0.3s ease; border: 2px solid #3F7652; position: relative; min-height: 200px;">
+            <div class="tarot-card-loading" id="loading-${cardId}" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.9); border-radius: 4px; z-index: 10;">
+              <div class="tarot-spinner"></div>
+            </div>
+            <img id="${cardId}"
+                 src="${card.image}" 
+                 alt="${card.name}" 
+                 title="${card.name}" 
+                 style="width: 100%; height: auto; border-radius: 4px; display: block; opacity: 0; position: relative; z-index: 5; transition: opacity 0.3s ease;"
+                 onload="
+                   this.style.opacity='1';
+                   const loader = document.getElementById('loading-${cardId}');
+                   if (loader) loader.style.display='none';
+                 "
+                 onerror="
+                   const loader = document.getElementById('loading-${cardId}');
+                   if (loader) {
+                     loader.innerHTML='<span style=\\'color:#999;font-size:12px;\\'>Image unavailable</span>';
+                   }
+                 ">
+            <p style="margin: 6px 0 0 0; font-size: 20px; color: white; background: #3F7652; padding: 4px; border-radius: 4px; line-height: 1.2; font-weight: 600; position: relative; z-index: 5;">${card.name}</p>
+          </div>
+        </div>`;
+    };
+    
+    // Major Arcana
     if (majorCards.length > 0) {
-      html += '<div style="display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;">';
+      html += '<div style="margin-bottom: 15px;">';
+      html += '<h5 style="margin: 0 0 8px 0; color: #3F7652; font-size: 30px; font-weight: 600;">Major Arcana</h5>';
+      html += '<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; max-width: 800px; margin: 0 auto;">';
       majorCards.forEach(card => {
-        html += `<img src="${card.image}" alt="${card.name}" title="${card.name}" style="height: 120px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onerror="this.style.display='none'">`;
+        html += createCardHTML(card, '110px');
       });
-      html += '</div>';
+      html += '</div></div>';
     }
     
-    // Minor Arcana (one row)
+    // Minor Arcana
     if (minorCards.length > 0) {
-      html += '<div style="display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;">';
+      html += '<div style="margin-bottom: 15px;">';
+      html += '<h5 style="margin: 0 0 8px 0; color: #3F7652; font-size: 30px; font-weight: 600;">Minor Arcana</h5>';
+      html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, 95px); gap: 12px; justify-content: center; margin: 0 auto; max-width: 600px;">';
       minorCards.forEach(card => {
-        html += `<img src="${card.image}" alt="${card.name}" title="${card.name}" style="height: 120px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onerror="this.style.display='none'">`;
+        html += createCardHTML(card, '95px');
       });
-      html += '</div>';
+      html += '</div></div>';
     }
     
-    // Court Cards (one row)
+    // Court Cards
     if (courtCards.length > 0) {
-      html += '<div style="display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;">';
+      html += '<div style="margin-bottom: 15px;">';
+      html += '<h5 style="margin: 0 0 8px 0; color: #3F7652; font-size: 30px; font-weight: 600;">Court Cards</h5>';
+      html += '<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;">';
       courtCards.forEach(card => {
-        html += `<img src="${card.image}" alt="${card.name}" title="${card.name}" style="height: 120px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onerror="this.style.display='none'">`;
+        html += createCardHTML(card, '95px');
       });
-      html += '</div>';
+      html += '</div></div>';
     }
     
+    html += '</div>';
+    return html;
+  }
+} 4px; display: block;">
+              <p style="margin: 4px 0 0 0; font-size: 18px; color: white; background: #3F7652; padding: 3px; border-radius: 4px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;">${card.name}</p>
+            </div>
+          </div>`;
+      });
+      html += '</div></div>';
+    }
+    
+    html += '</div>';
     return html;
   }
 }
@@ -292,3 +346,23 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = TarotEngine;
 }
+export default TarotEngine; 4px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;">${card.name}</p>
+            </div>
+          </div>`;
+      });
+      html += '</div></div>';
+    }
+    
+    html += '</div>';
+    return html;
+  }
+}
+
+// Export for browser and Node.js
+if (typeof window !== 'undefined') {
+  window.TarotEngine = TarotEngine;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = TarotEngine;
+}
+export default TarotEngine;

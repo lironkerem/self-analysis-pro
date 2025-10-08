@@ -1,3 +1,7 @@
+/* =========================================
+   STANDARDIZED FONT SYSTEM - All sizes in px
+   ========================================= */
+
 :root {
   --primary-color: #3F7652;
   --text-muted: rgba(0, 0, 0, 0.45);
@@ -5,269 +9,872 @@
   --card-bg: rgba(255, 255, 255, 0.4);
   --border-color: #000;
   --font-family: "Amatic SC", cursive;
-  --font-size-base: 24px;
+  
+  /* Font Size System */
+  --font-h1: 70px;
+  --font-h2: 50px;
+  --font-h3: 35px;
+  --font-h4: 25px;
+  --font-body: 25px;
+  --font-input: 25px;
+  --font-button: 25px;
+  --font-small: 18px;
+  --font-tiny: 16px;
+  
   --shadow: 0 4px 18px rgba(63, 118, 82, 0.10), 0 1.5px 4px rgba(60, 60, 60, 0.09);
 }
 
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 18px; background: var(--page-bg); font-family: var(--font-family); color: var(--primary-color); }
-body { display: flex; justify-content: center; }
-.page { width: 980px; max-width: calc(100% - 36px); border: 4px solid var(--border-color); border-radius: 50px; padding: 18px; }
-.top-row { display: flex; gap: 32px; align-items: flex-start; justify-content: center; }
-@media (max-width: 980px) { .top-row { flex-direction: column; gap: 18px; } }
-h1 { font-size: 66px; margin: 6px 0 18px; text-align: center; font-weight: 700; }
-h2 { font-size: 42px; margin: 0 0 18px; font-weight: 900; text-align: center; }
-h3 { font-size: 30px; margin: 0 0 12px; font-weight: 800; }
-.card { background: var(--card-bg); border: 2.8px solid var(--border-color); border-radius: 38px; padding: 32px 30px; display: flex; flex-direction: column; box-shadow: var(--shadow); }
-.form-card, .summary-card { width: 440px; min-width: 320px; max-width: 100%; }
-.details-card { width: 100%; max-width: 920px; margin: 30px auto 0; }
-@media (max-width: 980px) { .form-card, .summary-card, .details-card { width: 100%; min-width: 0; } }
-.form-input { width: 100%; padding: 10px 12px; margin-top: 6px; border-radius: 14px; border: 2.5px solid var(--border-color); background: rgba(255, 255, 255, 0.97); font-size: 20px; font-family: var(--font-family); }
-.form-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(63, 118, 82, 0.3); }
-.form-input.error { border-color: #c53030; }
-.error-message { color: #c53030; font-size: 18px; margin-top: 6px; display: none; }
-.btn { width: 100%; min-height: 56px; font-size: 22px; background: var(--primary-color); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 700; font-family: var(--font-family); }
-.btn:disabled { background: grey; cursor: not-allowed; opacity: 0.85; }
-.controls { margin-top: 28px; display: flex; flex-direction: column; gap: 18px; }
-.content-card { background: rgba(255, 255, 255, 0.6); border: 2px solid var(--border-color); border-radius: 26px; padding: 16px; box-shadow: var(--shadow); }
-.numerology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-@media (max-width: 980px) { .numerology-grid { grid-template-columns: 1fr; } }
-.data-row { display: flex; gap: 8px; align-items: center; }
-.data-label { font-weight: 400; }
-.data-value { font-weight: 700; }
-.expandable-card { background: rgba(255, 255, 255, 0.85); border: 2px solid var(--border-color); border-radius: 20px; padding: 14px; margin-bottom: 12px; }
-.expandable-header { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 26px; font-weight: 800; user-select: none; }
-.chevron { display: inline-block; transition: transform 0.18s ease; }
-.expanded .chevron { transform: rotate(90deg); }
-.expandable-content { display: none; margin-top: 16px; }
-.expanded .expandable-content { display: block; }
-.calculation-trace { white-space: pre-wrap; font-size: calc(var(--font-size-base) + 2px); margin-top: 8px; }
-.sum-line { font-size: calc(var(--font-size-base) + 2px); margin-top: 6px; }
-.final-number { margin-top: 8px; font-weight: 800; font-size: calc(var(--font-size-base) + 2px); }
-.explanation-heading { font-weight: 800; font-size: var(--font-size-base); margin-top: 10px; }
-.explanation-text { font-size: var(--font-size-base); margin-top: 6px; white-space: pre-wrap; }
-.progress-wrapper { margin-top: 12px; width: 100%; display: none; }
-.progress-bar { width: 100%; height: 18px; background: #eee; border-radius: 8px; overflow: hidden; }
-.progress-inner { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary-color), #6ea57d); transition: width 0.12s linear; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; }
-.progress-text { margin-top: 6px; font-size: 16px; color: var(--text-muted); }
-.toast { position: fixed; top: 20px; right: 20px; padding: 12px 16px; border-radius: 8px; color: white; font-size: 16px; z-index: 10001; transform: translateX(120%); transition: transform 0.25s; max-width: 320px; }
-.toast.show { transform: translateX(0); }
-.toast.success { background: #22c55e; }
-.toast.error { background: #ef4444; }
-.toast.warning { background: #f59e0b; color: #000; }
-.tooltip { position: relative; cursor: pointer; display: inline-block; margin-left: 5px; color: var(--primary-color); font-size: 20px; vertical-align: middle; }
-.tooltip-text { visibility: hidden; width: max-content; max-width: 280px; background-color: #29563b; color: #fff; text-align: left; border-radius: 8px; padding: 7px 12px; position: absolute; z-index: 99; bottom: 120%; left: 50%; transform: translateX(-50%); opacity: 0; font-size: 18px; font-family: var(--font-family); transition: opacity 0.2s; pointer-events: none; }
-.tooltip:hover .tooltip-text, .tooltip:focus .tooltip-text { visibility: visible; opacity: 1; }
-.location-dropdown { position: absolute; left: 0; right: 0; top: 56px; background: #fff; border: 2px solid var(--border-color); border-radius: 12px; display: none; z-index: 200; max-height: 220px; overflow: auto; }
-.location-item { padding: 8px; cursor: pointer; font-size: var(--font-size-base); color: var(--primary-color); border-bottom: 1px solid #eee; }
-.location-item:hover { background-color: rgba(63, 118, 82, 0.1); }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
-#dev-panel { display: none; position: fixed; top: 50px; left: 50px; width: 400px; height: 300px; background: white; border: 2px solid var(--border-color); border-radius: 20px; padding: 16px; z-index: 10000; box-shadow: var(--shadow); }
-#dev-log { height: 200px; overflow-y: auto; background: #f5f5f5; padding: 8px; font-family: monospace; font-size: 12px; white-space: pre-wrap; border: 1px solid #ccc; margin: 10px 0; }
-#dev-controls { display: flex; gap: 8px; }
-#dev-controls button { padding: 8px 16px; font-size: 14px; min-height: auto; }
+/* =========================================
+   RESET & BASE
+   ========================================= */
 
-/* Natal Chart Styling */
-.natal-chart-container {
-  font-family: var(--font-family);
+* { box-sizing: border-box; }
+
+html, body { 
+  margin: 0; 
+  padding: 18px; 
+  background: var(--page-bg); 
+  font-family: var(--font-family); 
+  color: var(--primary-color); 
+  font-size: var(--font-body);
+  line-height: 1.6;
+}
+
+body { 
+  display: flex; 
+  justify-content: center; 
+}
+
+/* =========================================
+   TYPOGRAPHY
+   ========================================= */
+
+h1 { 
+  font-size: var(--font-h1); 
+  margin: 6px 0 18px; 
+  text-align: center; 
+  font-weight: 700;
+}
+
+h2 { 
+  font-size: var(--font-h2); 
+  margin: 0 0 18px; 
+  font-weight: 900; 
+  text-align: center;
+}
+
+h3 { 
+  font-size: var(--font-h3); 
+  margin: 0 0 12px; 
+  font-weight: 800;
+  color: var(--primary-color); /* FIX #1: Ensure h3 is green */
+}
+
+h4 {
+  font-size: var(--font-h4);
+  margin: 0 0 10px;
+  font-weight: 700;
   color: var(--primary-color);
 }
 
-.natal-section {
-  margin: 20px 0;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
+h5 {
+  font-size: var(--font-body);
+  margin: 0 0 8px;
+  font-weight: 600;
+  color: var(--primary-color); /* FIX #1 */
 }
 
-.natal-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 20px;
-}
-
-.natal-table th {
-  background: var(--primary-color);
-  color: white;
-  padding: 12px 8px;
-  font-weight: 700;
-  text-align: left;
-  border: 1px solid var(--primary-color);
-}
-
-.natal-table td {
-  padding: 10px 8px;
-  border: 1px solid #ddd;
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.natal-table tr:nth-child(even) td {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.natal-table tr:hover td {
-  background: rgba(63, 118, 82, 0.1);
-}
-
-.natal-requirement {
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 15px;
-  border: 2px solid var(--primary-color);
-  text-align: center;
-}
-
-.natal-requirement ul {
-  list-style: none;
-  padding: 0;
-  font-size: 22px;
-  margin: 15px 0;
-}
-
-.natal-requirement li {
-  margin: 8px 0;
-  padding: 5px;
-}
-
-.natal-footer {
-  text-align: center;
-  margin-top: 20px;
-  padding: 10px;
-  font-style: italic;
-  color: var(--text-muted);
-}
-/* Add these styles to your existing css/styles.css file */
-
-/* 1. Increase body font size to 24px */
-body, p, .explanation-text, .expandable-content {
-  font-size: 24px;
+p, .explanation-text, .expandable-content {
+  font-size: var(--font-body);
   line-height: 1.6;
+  color: var(--primary-color); /* FIX #1: Force green */
 }
 
-/* Keep form inputs and labels at reasonable size */
-.form-input, .form-group label, .btn {
-  font-size: 16px;
+/* FIX #1: Quick Summary content text color */
+#summary-numerology-content,
+#summary-astrology-content,
+#summary-tree-content {
+  color: var(--primary-color) !important;
 }
 
-/* 3. Make top row cards equal height */
-.top-row {
+#summary-numerology-content *,
+#summary-astrology-content *,
+#summary-tree-content * {
+  color: var(--primary-color) !important;
+}
+
+/* FIX #1: Personal Narrative text */
+#personal-narrative-content {
+  color: var(--primary-color) !important;
+  white-space: pre-line;
+}
+
+/* Placeholder text styling */
+.placeholder-text {
+  color: red !important;
+  font-style: italic;
+}
+
+/* =========================================
+   STEP PROGRESS INDICATOR (NEW)
+   ========================================= */
+
+.step-indicator {
+  position: sticky;
+  top: 18px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--border-color);
+  border-radius: 25px;
+  padding: 15px 30px;
+  margin-bottom: 20px;
   display: flex;
-  align-items: stretch;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
 }
 
-.form-card, .summary-card {
+.step-item {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+  cursor: not-allowed;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
 }
 
-/* 4. Fix validation icon positioning for date/time inputs */
-input[type="date"] + .validation-icon,
-input[type="time"] + .validation-icon {
-  right: 40px !important; /* Move left to avoid covering calendar/clock icon */
+.step-item.completed {
+  cursor: pointer;
+  opacity: 1;
 }
 
-/* Alternative: hide validation icon for date/time inputs */
-input[type="date"] ~ .validation-icon,
-input[type="time"] ~ .validation-icon {
+.step-item.active {
+  opacity: 1;
+}
+
+.step-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ddd;
+  border: 2px solid #999;
+  transition: all 0.3s ease;
+}
+
+.step-item.completed .step-dot {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(63, 118, 82, 0.3);
+}
+
+.step-item.active .step-dot {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: scale(1.3);
+  box-shadow: 0 0 15px rgba(63, 118, 82, 0.5);
+}
+
+.step-label {
+  font-size: var(--font-small);
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--primary-color);
+}
+
+.step-connector {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #ddd;
+  z-index: -1;
+}
+
+.step-item:last-child .step-connector {
   display: none;
 }
 
-/* Show validation differently for date/time - use border color instead */
-input[type="date"].error,
-input[type="time"].error {
-  border: 2px solid #e74c3c;
+.step-item.completed .step-connector {
+  background: var(--primary-color);
 }
 
-input[type="date"]:not(.error):valid,
-input[type="time"]:not(.error):valid {
-  border: 2px solid #27ae60;
+@media (max-width: 768px) {
+  .step-indicator {
+    padding: 10px 15px;
+  }
+  
+  .step-label {
+    font-size: 14px;
+  }
+  
+  .step-dot {
+    width: 12px;
+    height: 12px;
+  }
 }
 
-/* ===========================================
-   FIXES - All Updates
-   Add this to the END of your styles.css
-   =========================================== */
+/* =========================================
+   LAYOUT
+   ========================================= */
 
-/* FIX 1: Body font size 24px (high specificity) */
-body p,
-.explanation-text,
-.expandable-content p,
-.expandable-content div,
-.data-row,
-.calculation-trace,
-.sum-line,
-.final-number,
-#summary-numerology-content,
-#summary-astrology-content,
-#summary-tree-content,
-#personal-narrative-content {
-  font-size: 24px !important;
+.page { 
+  width: 980px; 
+  max-width: calc(100% - 36px); 
+  border: 4px solid var(--border-color); 
+  border-radius: 50px; 
+  padding: 18px; 
+}
+
+.top-row { 
+  display: flex; 
+  gap: 32px; 
+  align-items: stretch; 
+  justify-content: center; 
+}
+
+@media (max-width: 980px) { 
+  .top-row { 
+    flex-direction: column; 
+    gap: 18px; 
+  } 
+}
+
+/* =========================================
+   CARDS
+   ========================================= */
+
+.card { 
+  background: var(--card-bg); 
+  border: 2.8px solid var(--border-color); 
+  border-radius: 38px; 
+  padding: 32px 30px; 
+  display: flex; 
+  flex-direction: column; 
+  box-shadow: var(--shadow); 
+  position: relative; /* For watermark positioning */
+}
+
+/* Watermark backgrounds (placeholders) */
+.card.has-watermark::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%233F7652" stroke-width="2" opacity="0.1"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.form-card, .summary-card { 
+  width: 440px; 
+  min-width: 320px; 
+  max-width: 100%; 
+  flex: 1;
+}
+
+.details-card { 
+  width: 100%; 
+  max-width: 920px; 
+  margin: 30px auto 0; 
+}
+
+@media (max-width: 980px) { 
+  .form-card, .summary-card, .details-card { 
+    width: 100%; 
+    min-width: 0; 
+  } 
+}
+
+/* =========================================
+   FORMS
+   ========================================= */
+
+.form-input { 
+  width: 100%; 
+  padding: 10px 12px; 
+  margin-top: 6px; 
+  border-radius: 14px; 
+  border: 2.5px solid var(--border-color); 
+  background: rgba(255, 255, 255, 0.97); 
+  font-size: var(--font-input); 
+  font-family: var(--font-family);
+  color: var(--primary-color); /* FIX #1 */
+  transition: all 0.3s ease; /* Animation #12 */
+}
+
+.form-input:focus { 
+  outline: none; 
+  box-shadow: 0 0 0 2px rgba(63, 118, 82, 0.3); 
+  border-color: #3498db;
+  transform: translateY(-1px); /* Subtle animation */
+}
+
+.form-input.error { 
+  border-color: #c53030; 
+}
+
+.form-input:not(.error):valid,
+.form-input:not(.error)[value]:not([value=""]) {
+  border-color: #27ae60;
+}
+
+.form-group label {
+  font-size: var(--font-body);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.validation-icon {
+  display: none;
+}
+
+.error-message { 
+  color: #c53030; 
+  font-size: var(--font-small); 
+  margin-top: 6px; 
+  display: none; 
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+
+.btn { 
+  width: 100%; 
+  min-height: 56px; 
+  font-size: var(--font-button); 
+  background: var(--primary-color); 
+  color: white; 
+  border: none; 
+  border-radius: 18px; 
+  cursor: pointer; 
+  font-weight: 700; 
+  font-family: var(--font-family);
+  transition: all 0.3s ease; /* Animation #12 */
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(63, 118, 82, 0.3);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(63, 118, 82, 0.2);
+}
+
+.btn:disabled { 
+  background: grey; 
+  cursor: not-allowed; 
+  opacity: 0.85; 
+}
+
+.controls { 
+  margin-top: 28px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 18px; 
+}
+
+/* =========================================
+   EXPANDABLE CARDS
+   ========================================= */
+
+.expandable-card { 
+  background: rgba(255, 255, 255, 0.85); 
+  border: 2px solid var(--border-color); 
+  border-radius: 20px; 
+  padding: 14px; 
+  margin-bottom: 12px;
+  position: relative; /* For watermark */
+  transition: all 0.3s ease; /* Animation #12 */
+}
+
+.expandable-card:hover {
+  box-shadow: 0 4px 12px rgba(63, 118, 82, 0.15);
+}
+
+/* Watermark for numerology cards */
+.numerology-card.has-watermark::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 60px;
+  height: 60px;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="60" font-size="50" text-anchor="middle" fill="%233F7652" opacity="0.1">∞</text></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.expandable-header { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  cursor: pointer; 
+  font-size: var(--font-h3); 
+  font-weight: 800; 
+  user-select: none;
+  color: var(--primary-color); /* FIX #1: Force green for numerology headers */
+}
+
+/* Sub-cards within Astrology and Numerology use H4 size */
+.expandable-card .expandable-card .expandable-header {
+  font-size: var(--font-h4);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.chevron { 
+  display: inline-block; 
+  transition: transform 0.3s ease; /* Animation #12 */
+  vertical-align: middle;
+  line-height: 1;
+  font-size: var(--font-h3);
+  color: var(--primary-color); /* FIX #1: Force green chevrons */
+}
+
+/* Chevron size for sub-cards */
+.expandable-card .expandable-card .chevron {
+  font-size: var(--font-h4);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.expanded .chevron { 
+  transform: rotate(90deg); 
+}
+
+.expandable-content { 
+  display: none; 
+  margin-top: 16px; 
+  font-size: var(--font-body);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.expanded .expandable-content { 
+  display: block;
+  animation: fadeIn 0.3s ease; /* Animation #12 */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   NUMEROLOGY DATA
+   ========================================= */
+
+.calculation-trace { 
+  white-space: pre-wrap; 
+  font-size: var(--font-body); 
+  margin-top: 8px;
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.sum-line { 
+  font-size: var(--font-body); 
+  margin-top: 6px;
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.final-number { 
+  margin-top: 8px; 
+  font-weight: 800; 
+  font-size: var(--font-body);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.explanation-heading { 
+  font-weight: 800; 
+  font-size: var(--font-body); 
+  margin-top: 10px;
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.explanation-text { 
+  font-size: var(--font-body); 
+  margin-top: 6px; 
+  white-space: pre-wrap;
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.data-row { 
+  display: flex; 
+  gap: 8px; 
+  align-items: center; 
+  font-size: var(--font-body);
+}
+
+.data-label { 
+  font-weight: 400; 
+  font-size: var(--font-body);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.data-value { 
+  font-weight: 700; 
+  font-size: var(--font-body);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+/* =========================================
+   TAROT CARDS - ENHANCED STYLING (FIX #2)
+   ========================================= */
+
+.tarot-card {
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.tarot-card:hover {
+  transform: translateY(-5px);
+}
+
+.tarot-card-inner {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tarot-card:hover .tarot-card-inner {
+  box-shadow: 0 8px 16px rgba(63, 118, 82, 0.3), 0 0 20px rgba(63, 118, 82, 0.2) !important;
+  border-color: #5a9c6e !important;
+  transform: scale(1.02);
+}
+
+/* FIX #2: Tarot loading spinner - proper layering */
+.tarot-card-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.tarot-spinner {
+  border: 3px solid rgba(63, 118, 82, 0.2);
+  border-top: 3px solid #3F7652;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tarot-card img {
+  display: block;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+  position: relative;
+  z-index: 5;
+}
+
+.tarot-card img.loaded {
+  opacity: 1;
+}
+
+/* Tarot Modal */
+.tarot-modal {
+  display: none;
+  position: fixed;
+  z-index: 10002;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.3s ease;
+}
+
+.tarot-modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tarot-modal-content {
+  background: white;
+  border: 3px solid var(--primary-color);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  position: relative;
+}
+
+.tarot-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 35px;
+  font-weight: bold;
+  color: var(--primary-color);
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.tarot-modal-close:hover {
+  color: #2a5037;
+}
+
+.tarot-modal h3 {
+  color: var(--primary-color);
+  margin-top: 0;
+  font-size: var(--font-h3);
+  text-align: center;
+}
+
+.tarot-modal-body {
+  font-size: var(--font-body);
+  color: var(--primary-color);
   line-height: 1.6;
 }
 
-/* Keep specific elements at appropriate sizes */
-.form-input,
-.form-group label,
-.btn {
-  font-size: 16px !important;
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-h1 { font-size: 32px !important; }
-h2 { font-size: 24px !important; }
-h3 { font-size: 20px !important; }
+/* =========================================
+   PROGRESS BAR
+   ========================================= */
 
-/* FIX 3: Equal height for top row cards */
-.top-row {
-  display: flex !important;
-  gap: 20px;
-  align-items: stretch !important;
-  width: 100%;
+.progress-wrapper { 
+  margin-top: 12px; 
+  width: 100%; 
+  display: block;
 }
 
-.form-card,
-.summary-card {
-  flex: 1;
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: 0;
+.progress-bar { 
+  width: 100%; 
+  height: 18px; 
+  background: #eee; 
+  border-radius: 8px; 
+  overflow: hidden; 
 }
 
-.form-card > *:last-child,
-.summary-card > *:last-child {
-  flex-grow: 1;
+.progress-inner { 
+  height: 100%; 
+  width: 0%; 
+  background: linear-gradient(90deg, var(--primary-color), #6ea57d); 
+  transition: width 0.12s linear; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  color: white; 
+  font-weight: 700; 
+  font-size: 14px; 
 }
 
-/* FIX 4: Remove tick icons, use border colors */
-.validation-icon {
-  display: none !important;
+.progress-text { 
+  margin-top: 6px; 
+  font-size: var(--font-tiny); 
+  color: var(--text-muted); 
 }
 
-/* Green border for valid inputs */
-.form-input:not(.error):valid,
-.form-input:not(.error)[value]:not([value=""]) {
-  border: 2px solid #27ae60 !important;
+/* =========================================
+   TOOLTIPS (FIX #3)
+   ========================================= */
+
+.tooltip { 
+  position: relative; 
+  cursor: pointer; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px; 
+  color: white;
+  background: var(--primary-color);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  font-style: italic;
+  vertical-align: middle;
+  line-height: 1;
 }
 
-/* Red border for error inputs */
-.form-input.error {
-  border: 2px solid #e74c3c !important;
+.tooltip::before {
+  content: 'i';
 }
 
-/* Default border */
-.form-input {
-  border: 2px solid #ddd;
-  transition: border-color 0.3s ease;
+.tooltip-text { 
+  visibility: hidden; 
+  width: max-content; 
+  max-width: 280px; 
+  background-color: #29563b; 
+  color: #fff; 
+  text-align: left; 
+  border-radius: 8px; 
+  padding: 7px 12px; 
+  position: absolute; 
+  z-index: 99; 
+  bottom: 120%; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  opacity: 0; 
+  font-size: var(--font-small); 
+  font-family: var(--font-family); 
+  transition: opacity 0.2s; 
+  pointer-events: none; 
 }
 
-.form-input:focus {
-  border-color: #3498db;
-  outline: none;
+.tooltip:hover .tooltip-text, 
+.tooltip:focus .tooltip-text { 
+  visibility: visible; 
+  opacity: 1; 
 }
 
-/* === Full Natal Chart Styling === */
+/* =========================================
+   LOCATION DROPDOWN
+   ========================================= */
+
+.location-dropdown { 
+  position: absolute; 
+  left: 0; 
+  right: 0; 
+  top: 56px; 
+  background: #fff; 
+  border: 2px solid var(--border-color); 
+  border-radius: 12px; 
+  display: none; 
+  z-index: 200; 
+  max-height: 220px; 
+  overflow: auto; 
+}
+
+.location-item { 
+  padding: 8px; 
+  cursor: pointer; 
+  font-size: var(--font-body); 
+  color: var(--primary-color); 
+  border-bottom: 1px solid #eee; 
+}
+
+.location-item:hover { 
+  background-color: rgba(63, 118, 82, 0.1); 
+}
+
+/* =========================================
+   ERROR MODAL (FIX #9)
+   ========================================= */
+
+.error-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.error-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 500px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  border: 3px solid #d32f2f;
+}
+
+.error-modal-content h3 {
+  color: #d32f2f;
+  margin: 0 0 15px 0;
+  font-size: var(--font-h3);
+}
+
+.error-modal-content p {
+  margin: 0 0 20px 0;
+  color: #555;
+  font-size: var(--font-body);
+}
+
+.error-modal-content .btn {
+  background: #1976d2;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* =========================================
+   TOAST NOTIFICATIONS
+   ========================================= */
+
+.toast { 
+  position: fixed; 
+  top: 20px; 
+  right: 20px; 
+  padding: 12px 16px; 
+  border-radius: 8px; 
+  color: white; 
+  font-size: var(--font-tiny); 
+  z-index: 10001; 
+  transform: translateX(120%); 
+  transition: transform 0.25s; 
+  max-width: 320px; 
+}
+
+.toast.show { 
+  transform: translateX(0); 
+}
+
+.toast.success { 
+  background: #22c55e; 
+}
+
+.toast.error { 
+  background: #ef4444; 
+}
+
+.toast.warning { 
+  background: #f59e0b; 
+  color: #000; 
+}
+
+/* =========================================
+   NATAL CHART (FIX #1)
+   ========================================= */
 
 .natal-chart-section, 
 .natal-planets-section,
@@ -281,48 +888,107 @@ h3 { font-size: 20px !important; }
   margin: 1rem 0;
 }
 
-/* Headings inside the Natal Chart card */
-.natal-chart-section h3,
-.natal-planets-section h4,
-.natal-houses-section h4,
-.natal-aspects-section h4 {
-  text-align: center;
-  margin-bottom: 0.5rem;
-  font-family: inherit; /* use app’s main font */
-  font-weight: 600;
-  color: #333; /* or replace with your app's main text color */
-}
-
-/* Make the main chart title stand out more */
 .natal-chart-section h3 {
-  font-size: 1.4rem;
-  margin-top: 1rem;
-  color: #222; /* slightly darker for emphasis */
+  font-size: var(--font-h3);
+  text-align: center;
+  margin: 1rem 0 0.5rem 0;
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
-/* Subsection titles */
-.natal-planets-section h4,
-.natal-houses-section h4,
-.natal-aspects-section h4 {
-  font-size: 1.2rem;
-  margin-top: 1.2rem;
-  color: #444; /* a softer shade */
+.natal-planets-section h3,
+.natal-houses-section h3,
+.natal-aspects-section h3 {
+  font-size: var(--font-h3);
+  text-align: center;
+  margin: 1.2rem 0 0.5rem 0;
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
 .natal-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0.5rem;
+  font-size: var(--font-body);
 }
 
 .natal-table th,
 .natal-table td {
   border: 1px solid #ddd;
-  padding: 6px 10px;
+  padding: 10px 8px;
   text-align: center;
+  color: var(--primary-color); /* FIX #1: Force green in tables */
 }
 
 .natal-table th {
-  background-color: #f3f3f3;
-  font-weight: bold;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 700;
+}
+
+.natal-table td {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary-color); /* FIX #1 */
+}
+
+.natal-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.natal-table tr:hover td {
+  background: rgba(63, 118, 82, 0.1);
+}
+
+/* =========================================
+   UTILITY
+   ========================================= */
+
+.sr-only { 
+  position: absolute; 
+  width: 1px; 
+  height: 1px; 
+  padding: 0; 
+  margin: -1px; 
+  overflow: hidden; 
+  clip: rect(0, 0, 0, 0); 
+  border: 0; 
+}
+
+#dev-panel { 
+  display: none; 
+  position: fixed; 
+  top: 50px; 
+  left: 50px; 
+  width: 400px; 
+  height: 300px; 
+  background: white; 
+  border: 2px solid var(--border-color); 
+  border-radius: 20px; 
+  padding: 16px; 
+  z-index: 10000; 
+  box-shadow: var(--shadow); 
+}
+
+#dev-log { 
+  height: 200px; 
+  overflow-y: auto; 
+  background: #f5f5f5; 
+  padding: 8px; 
+  font-family: monospace; 
+  font-size: 12px; 
+  white-space: pre-wrap; 
+  border: 1px solid #ccc; 
+  margin: 10px 0; 
+}
+
+#dev-controls { 
+  display: flex; 
+  gap: 8px; 
+}
+
+#dev-controls button { 
+  padding: 8px 16px; 
+  font-size: 14px; 
+  min-height: auto; 
 }
