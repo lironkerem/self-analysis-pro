@@ -1,6 +1,7 @@
 /**
  * TarotEngine.js - Complete Tarot Integration with Enhanced Styling
  * Maps numerology, astrology, and Tree of Life to Tarot cards with images
+ * FIXED: No syntax errors, proper loading spinners
  */
 
 const TAROT_BASE_URL = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/Tarot%20Cards/';
@@ -274,17 +275,8 @@ class TarotEngine {
                  alt="${card.name}" 
                  title="${card.name}" 
                  style="width: 100%; height: auto; border-radius: 4px; display: block; opacity: 0; position: relative; z-index: 5; transition: opacity 0.3s ease;"
-                 onload="
-                   this.style.opacity='1';
-                   const loader = document.getElementById('loading-${cardId}');
-                   if (loader) loader.style.display='none';
-                 "
-                 onerror="
-                   const loader = document.getElementById('loading-${cardId}');
-                   if (loader) {
-                     loader.innerHTML='<span style=\\'color:#999;font-size:12px;\\'>Image unavailable</span>';
-                   }
-                 ">
+                 onload="this.style.opacity='1'; var loader = document.getElementById('loading-${cardId}'); if (loader) loader.style.display='none';"
+                 onerror="var loader = document.getElementById('loading-${cardId}'); if (loader) loader.innerHTML='<span style=\\'color:#999;font-size:12px;\\'>Image unavailable</span>';">
             <p style="margin: 6px 0 0 0; font-size: 20px; color: white; background: #3F7652; padding: 4px; border-radius: 4px; line-height: 1.2; font-weight: 600; position: relative; z-index: 5;">${card.name}</p>
           </div>
         </div>`;
@@ -319,36 +311,6 @@ class TarotEngine {
       html += '<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;">';
       courtCards.forEach(card => {
         html += createCardHTML(card, '95px');
-      });
-      html += '</div></div>';
-    }
-    
-    html += '</div>';
-    return html;
-  }
-} 4px; display: block;">
-              <p style="margin: 4px 0 0 0; font-size: 18px; color: white; background: #3F7652; padding: 3px; border-radius: 4px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;">${card.name}</p>
-            </div>
-          </div>`;
-      });
-      html += '</div></div>';
-    }
-    
-    html += '</div>';
-    return html;
-  }
-}
-
-// Export for browser and Node.js
-if (typeof window !== 'undefined') {
-  window.TarotEngine = TarotEngine;
-}
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = TarotEngine;
-}
-export default TarotEngine; 4px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;">${card.name}</p>
-            </div>
-          </div>`;
       });
       html += '</div></div>';
     }
