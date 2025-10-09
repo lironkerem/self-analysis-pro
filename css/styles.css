@@ -49,11 +49,32 @@ body {
    TYPOGRAPHY
    ========================================= */
 
+/* FIX #2: H1 and H2 with white text and green background */
 h1 { 
   font-size: var(--font-h1); 
   margin: 6px 0 18px; 
   text-align: center; 
   font-weight: 700;
+  background: var(--primary-color);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 25px;
+  position: relative;
+}
+
+/* FIX #6: Logo watermark - doubled in size */
+h1::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 120px;
+  height: 120px;
+  background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Logo.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 h2 { 
@@ -61,6 +82,10 @@ h2 {
   margin: 0 0 18px; 
   font-weight: 900; 
   text-align: center;
+  background: var(--primary-color);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 20px;
 }
 
 h3 { 
@@ -260,19 +285,111 @@ p, .explanation-text, .expandable-content {
   position: relative; /* For watermark positioning */
 }
 
-/* Watermark backgrounds (placeholders) */
-.card.has-watermark::before {
+/* FIX #1: Watermark system - dynamic sizing and correct placement */
+
+/* Story watermark */
+.story-watermark::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 120px;
+  height: 120px;
+  background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Story.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  transition: all 0.3s ease;
+}
+
+/* Numerology watermark - only on main card */
+.numerology-watermark::before {
   content: '';
   position: absolute;
   top: 20px;
   right: 20px;
   width: 80px;
   height: 80px;
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%233F7652" stroke-width="2" opacity="0.1"/></svg>');
+  background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Numerology.svg');
   background-size: contain;
   background-repeat: no-repeat;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.15;
+  transition: all 0.3s ease;
+}
+
+.numerology-watermark.expanded::before {
+  width: 120px;
+  height: 120px;
+}
+
+/* Astrology watermark - only on main card */
+.astrology-watermark::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Astrology.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  transition: all 0.3s ease;
+}
+
+.astrology-watermark.expanded::before {
+  width: 120px;
+  height: 120px;
+}
+
+/* Tree of Life watermark - only on main card */
+.tree-watermark::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Tree%20of%20Life.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  transition: all 0.3s ease;
+}
+
+.tree-watermark.expanded::before {
+  width: 120px;
+  height: 120px;
+}
+
+/* Logo watermark for CTA sub-cards */
+.cta-logo-watermark::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 60px;
+  height: 60px;
+  background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Logo.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  transition: all 0.3s ease;
+}
+
+.cta-logo-watermark.expanded::before {
+  width: 80px;
+  height: 80px;
 }
 
 .card > * {
@@ -408,20 +525,8 @@ p, .explanation-text, .expandable-content {
   box-shadow: 0 4px 12px rgba(63, 118, 82, 0.15);
 }
 
-/* Watermark for numerology cards */
-.numerology-card.has-watermark::before {
-  content: '';
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 60px;
-  height: 60px;
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="60" font-size="50" text-anchor="middle" fill="%233F7652" opacity="0.1">∞</text></svg>');
-  background-size: contain;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  z-index: 0;
-}
+/* Watermark for numerology sub-cards - REMOVED */
+/* No longer needed - watermark only on main card */
 
 .expandable-header { 
   display: flex; 
@@ -474,6 +579,33 @@ p, .explanation-text, .expandable-content {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* FIX #3: Space from heading to Tarot in Astrology and Tree */
+.astrology-watermark .explanation-text,
+.tree-watermark .explanation-text {
+  margin-top: 20px;
+}
+
+.astrology-watermark .explanation-heading + div,
+.tree-watermark .explanation-heading + div {
+  margin-top: 20px;
+}
+
+/* FIX #1: Fireworks animation for Step 4 */
+@keyframes fireworks {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(2) translateY(-30px);
+  }
 }
 
 /* =========================================
@@ -534,12 +666,14 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
-   TAROT CARDS - ENHANCED STYLING (FIX #2)
+   TAROT CARDS - ENHANCED STYLING (FIX #3)
    ========================================= */
 
 .tarot-card {
   transition: transform 0.3s ease;
   position: relative;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .tarot-card:hover {
@@ -549,6 +683,17 @@ p, .explanation-text, .expandable-content {
 .tarot-card-inner {
   transition: all 0.3s ease;
   position: relative;
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: 2px solid #3F7652;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 0;
+  height: auto;
 }
 
 .tarot-card:hover .tarot-card-inner {
@@ -708,7 +853,7 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
-   TOOLTIPS (FIX #3)
+   TOOLTIPS (FIX #9)
    ========================================= */
 
 .tooltip { 
@@ -718,11 +863,12 @@ p, .explanation-text, .expandable-content {
   align-items: center;
   justify-content: center;
   margin-left: 5px; 
-  color: white;
-  background: var(--primary-color);
+  color: var(--primary-color);
+  background: white;
+  border: 2px solid var(--primary-color);
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   font-size: 14px;
   font-weight: 700;
   font-style: italic;
@@ -941,8 +1087,100 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
-   UTILITY
+   CTA IMAGES (Sessions & Workshops) - FIX #7
    ========================================= */
+
+.cta-image-grid {
+  display: grid;
+  gap: 15px;
+  margin: 20px 0;
+  justify-content: center;
+}
+
+.cta-image-grid.sessions {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-image-grid.workshops {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-image-card {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+
+.cta-image-card:hover {
+  transform: translateY(-5px);
+}
+
+.cta-image-inner {
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  border: 2px solid #3F7652;
+  position: relative;
+  min-height: 150px;
+}
+
+.cta-image-card:hover .cta-image-inner {
+  box-shadow: 0 8px 16px rgba(63, 118, 82, 0.3), 0 0 20px rgba(63, 118, 82, 0.2);
+  border-color: #5a9c6e;
+  transform: scale(1.02);
+}
+
+.cta-image-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.9);
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.cta-image-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: relative;
+  z-index: 5;
+}
+
+.cta-image-card img.loaded {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .cta-image-grid.sessions,
+  .cta-image-grid.workshops {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .cta-image-grid.sessions,
+  .cta-image-grid.workshops {
+    grid-template-columns: 1fr;
+  }
+}
 
 .sr-only { 
   position: absolute; 

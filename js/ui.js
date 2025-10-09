@@ -1,5 +1,5 @@
 // UI Management and Form Handling with Tarot Integration
-// FIXED: Dual planets display, watermarks, proper planet meanings
+// FIXED: Watermark placement - only on main cards, not sub-cards
 
 import DataMeanings from './meanings.js';
 import TarotEngine from './TarotEngine.js';
@@ -106,23 +106,22 @@ class UIManager {
     const astroPlaceholder = document.getElementById('astrology-content-placeholder');
     if (astroPlaceholder) astroPlaceholder.style.display = 'none';
     
-    // Show astrology sub-cards with watermarks
+    // Show astrology sub-cards WITHOUT watermarks
     ['zodiac-sign', 'ruling-planet', 'alchemical-element', 'natal-chart'].forEach(section => {
       const card = document.querySelector(`.expandable-card[data-section="${section}"]`);
       if (card) {
         card.style.display = 'block';
-        card.classList.add('has-watermark'); // Add watermark
+        // DO NOT add watermark class to sub-cards
       }
     });
     
-    // Hide tree placeholder and show data with watermark
+    // Hide tree placeholder and show data WITHOUT watermark on sub-elements
     const treePlaceholder = document.getElementById('tree-content-placeholder');
     const treeData = document.getElementById('tree-content-data');
     if (treePlaceholder) treePlaceholder.style.display = 'none';
     if (treeData) {
       treeData.style.display = 'block';
-      const treeCard = document.querySelector('.expandable-card[data-section="tree-of-life"]');
-      if (treeCard) treeCard.classList.add('has-watermark');
+      // Watermark is on main tree-of-life card, not sub-elements
     }
     
     const deepElements = { 
@@ -257,7 +256,8 @@ class UIManager {
         ? `${config.title} <span style="font-size: 25px;">${config.subtitle}</span>`
         : config.title;
       
-      return `<section class="expandable-card numerology-card has-watermark" data-section="${config.key}">
+      // FIX #1: NO watermark class on sub-cards
+      return `<section class="expandable-card numerology-card" data-section="${config.key}">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">›</span><span>${titleHTML}</span>
         </div>
@@ -287,7 +287,8 @@ class UIManager {
       "Karmic Debt Numbers indicate unresolved lessons or challenges carried from past lifetimes." : 
       "No karmic debt numbers detected."; 
       
-    container.innerHTML += `<section class="expandable-card numerology-card has-watermark" data-section="karmic">
+    // FIX #1: NO watermark class on sub-cards
+    container.innerHTML += `<section class="expandable-card numerology-card" data-section="karmic">
       <div class="expandable-header" tabindex="0" role="button">
         <span class="chevron">›</span><span>Karmic Debt</span>
       </div>
@@ -314,7 +315,8 @@ class UIManager {
         }
       });
       
-      container.innerHTML += `<section class="expandable-card numerology-card has-watermark" data-section="pinnacles">
+      // FIX #1: NO watermark class on sub-cards
+      container.innerHTML += `<section class="expandable-card numerology-card" data-section="pinnacles">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">›</span><span>4 Cycles of Pinnacles</span>
         </div>
@@ -343,7 +345,8 @@ class UIManager {
         }
       });
       
-      container.innerHTML += `<section class="expandable-card numerology-card has-watermark" data-section="challenges">
+      // FIX #1: NO watermark class on sub-cards
+      container.innerHTML += `<section class="expandable-card numerology-card" data-section="challenges">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">›</span><span>Challenge Numbers</span>
         </div>
@@ -449,6 +452,7 @@ class UIManager {
       if (meaningEl) meaningEl.innerHTML = ''; 
     }); 
     
+    const container = document.getElementById('numerology-cards-container');
     if (container) {
       container.classList.add('placeholder-text');
       container.innerHTML = 'Run analysis to see your complete Numerology report.';

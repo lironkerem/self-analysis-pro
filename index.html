@@ -12,7 +12,7 @@
 <body>
   <div class="sr-only" id="status-announcer" role="status" aria-live="polite"></div>
   <div class="page" id="app-page">
-    <h1>Self-Analysis Generator Pro</h1>
+    <h1>Self-Analysis Pro</h1>
 
     <!-- Step Progress Indicator -->
     <div class="step-indicator" id="step-indicator">
@@ -39,7 +39,7 @@
 
 <div class="top-row">
       <div class="card form-card" id="step-1-section">
-        <h2>Step 1: Enter details of your Self</h2>
+        <h2><strong>Step 1:</strong> Enter your 'Self'</h2>
         <form id="analysis-form">
           <div class="form-group">
             <label for="first-name">First Name * <span class="tooltip" tabindex="0"><span class="tooltip-text">Your given name.</span></span></label>
@@ -101,7 +101,7 @@
           </div>
 
           <div class="controls" style="margin-top: 10px;">
-            <button id="btn-analyze" type="submit" class="btn">Step 2: Analyze your Self</button>
+            <button id="btn-analyze" type="submit" class="btn"><strong>Step 2:</strong> Analyze your 'Self'</button>
             <button id="btn-pdf" type="button" class="btn" disabled>Download the Personalized Self-Guidebook</button>
             <button id="btn-clear" type="button" class="btn">Clear my form</button>
           </div>
@@ -155,11 +155,11 @@
     </div>
     
     <section class="card details-card" id="step-3-section">
-      <h2>Step 3: Explore your Self Deeply<span class="tooltip" tabindex="0"><span class="tooltip-text">Expand each card for calculation breakdowns and deeper explanations.</span></span></h2>
+      <h2><strong>Step 3:</strong> Explore your 'Self' Deeply<span class="tooltip" tabindex="0"><span class="tooltip-text">Expand each card for calculation breakdowns and deeper explanations.</span></span></h2>
       <div id="analysis-container">
         
         <!-- NUMEROLOGY - First, Collapsed -->
-        <article class="expandable-card" data-section="numerology">
+        <article class="expandable-card numerology-watermark" data-section="numerology">
           <div class="expandable-header" tabindex="0" role="button">
             <span class="chevron">›</span><h3>Your Numerology Report</h3>
           </div>
@@ -169,7 +169,7 @@
         </article>
         
         <!-- ASTROLOGY - Second, Collapsed -->
-        <article class="expandable-card" data-section="astrology">
+        <article class="expandable-card astrology-watermark" data-section="astrology">
           <div class="expandable-header" tabindex="0" role="button">
             <span class="chevron">›</span><h3>Your Astrology Report</h3>
           </div>
@@ -226,7 +226,7 @@
         </article>
         
         <!-- TREE OF LIFE - Third, Collapsed -->
-        <article class="expandable-card" data-section="tree-of-life">
+        <article class="expandable-card tree-watermark" data-section="tree-of-life">
           <div class="expandable-header" tabindex="0" role="button">
             <span class="chevron">›</span><h3>Your Tree of Life Report</h3>
           </div>
@@ -244,7 +244,7 @@
     </section>
     
     <!-- Personal Analysis Story - Expanded -->
-    <section class="card details-card has-watermark">
+    <section class="card details-card story-watermark">
       <article class="expandable-card expanded" data-section="personal-narrative">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">›</span><h3>Your Personal Analysis Story</h3>
@@ -257,16 +257,39 @@
       </article>
     </section>
     
-    <!-- Call To Action - New Card -->
-    <section class="card details-card has-watermark" id="step-4-section">
+    <!-- Call To Action -->
+    <section class="card details-card" id="step-4-section">
+      <h2><strong>Step 4:</strong> Empower your 'Self' with us <span class="tooltip" tabindex="0"><span class="tooltip-text">Look at our offerings and contact us</span></span></h2>
       <article class="expandable-card expanded" data-section="call-to-action">
-        <div class="expandable-header" tabindex="0" role="button">
-          <span class="chevron">›</span><h3>Step 4: Empower your Self with us</h3>
-        </div>
         <div class="expandable-content">
-          <div class="explanation-text" style="text-align: center; max-width: 700px; margin: 0 auto;">
+          <div class="explanation-text" style="text-align: center; max-width: 700px; margin: 0 auto 30px;">
             Contact Aanandoham, Lead facilitator of Project Curiosity at our <a href="https://lironkerem.wixsite.com/project-curiosity" target="_blank" rel="noopener noreferrer" style="color: #3F7652; font-weight: bold; text-decoration: underline;">Website</a> for more assistance, information and details on Private Sessions, Masterclasses, Workshops and/or Retreats.
           </div>
+          
+          <!-- Sessions and Classes Sub-card -->
+          <section class="expandable-card cta-logo-watermark" data-section="cta-sessions">
+            <div class="expandable-header" tabindex="0" role="button">
+              <span class="chevron">›</span><h3>Sessions and Classes</h3>
+            </div>
+            <div class="expandable-content">
+              <div class="cta-image-grid sessions" id="sessions-grid">
+                <!-- 9 Session images will be loaded here -->
+              </div>
+            </div>
+          </section>
+          
+          <!-- Workshops Sub-card -->
+          <section class="expandable-card cta-logo-watermark" data-section="cta-workshops">
+            <div class="expandable-header" tabindex="0" role="button">
+              <span class="chevron">›</span><h3>Workshops, Courses, Retreats</h3>
+            </div>
+            <div class="expandable-content">
+              <div class="cta-image-grid workshops" id="workshops-grid">
+                <!-- 6 Workshop images will be loaded here -->
+              </div>
+            </div>
+          </section>
+          
         </div>
       </article>
     </section>
@@ -408,6 +431,7 @@
 
       let completedSteps = new Set();
       let currentStep = 1;
+      let step4Triggered = false;
 
       function updateStepIndicator() {
         const stepItems = stepIndicator.querySelectorAll('.step-item');
@@ -425,6 +449,36 @@
             item.classList.add('active');
           }
         });
+      }
+
+      function triggerStep4Animation() {
+        if (step4Triggered) return;
+        step4Triggered = true;
+        
+        completedSteps.add(3);
+        currentStep = 4;
+        updateStepIndicator();
+        
+        // Create fireworks animation
+        const step4Item = stepIndicator.querySelector('[data-step="4"]');
+        if (step4Item) {
+          const fireworks = document.createElement('div');
+          fireworks.style.cssText = `
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            animation: fireworks 1s ease-out;
+            pointer-events: none;
+            z-index: 1000;
+          `;
+          fireworks.textContent = '🎉';
+          step4Item.style.position = 'relative';
+          step4Item.appendChild(fireworks);
+          
+          setTimeout(() => fireworks.remove(), 1000);
+        }
       }
 
       // Mark step 1 as active on load
@@ -455,6 +509,49 @@
         }, 300);
       });
 
+      // FIX #1: Trigger Step 4 on CTA interactions
+      setTimeout(() => {
+        // Website link click
+        const websiteLink = document.querySelector('a[href*="project-curiosity"]');
+        if (websiteLink) {
+          websiteLink.addEventListener('click', triggerStep4Animation);
+        }
+        
+        // Sessions sub-card expand
+        const sessionsCard = document.querySelector('[data-section="cta-sessions"]');
+        if (sessionsCard) {
+          const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.target.classList.contains('expanded')) {
+                triggerStep4Animation();
+              }
+            });
+          });
+          observer.observe(sessionsCard, { attributes: true, attributeFilter: ['class'] });
+        }
+        
+        // Workshops sub-card expand
+        const workshopsCard = document.querySelector('[data-section="cta-workshops"]');
+        if (workshopsCard) {
+          const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.target.classList.contains('expanded')) {
+                triggerStep4Animation();
+              }
+            });
+          });
+          observer.observe(workshopsCard, { attributes: true, attributeFilter: ['class'] });
+        }
+      }, 500);
+
+      // Expose reset function for clear button
+      window.resetStepIndicator = () => {
+        completedSteps.clear();
+        currentStep = 1;
+        step4Triggered = false;
+        updateStepIndicator();
+      };
+
       // Handle step clicks (only for completed steps)
       stepIndicator.addEventListener('click', (e) => {
         const stepItem = e.target.closest('.step-item');
@@ -484,6 +581,78 @@
         if (currentStep < step + 1) currentStep = step + 1;
         updateStepIndicator();
       };
+    })();
+  </script>
+
+  <!-- CTA Images Loading Script - FIX #2 -->
+  <script>
+    (function() {
+      const sessionsBaseUrl = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Sessions/';
+      const workshopsBaseUrl = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Workshops/';
+      
+      // Session images (9 images - 3x3 grid) - PNG format
+      // Images should be named: Session1.png, Session2.png, etc.
+      const sessions = [
+        { name: 'Session 1', url: 'PLACEHOLDER_URL_1' },
+        { name: 'Session 2', url: 'PLACEHOLDER_URL_2' },
+        { name: 'Session 3', url: 'PLACEHOLDER_URL_3' },
+        { name: 'Session 4', url: 'PLACEHOLDER_URL_4' },
+        { name: 'Session 5', url: 'PLACEHOLDER_URL_5' },
+        { name: 'Session 6', url: 'PLACEHOLDER_URL_6' },
+        { name: 'Session 7', url: 'PLACEHOLDER_URL_7' },
+        { name: 'Session 8', url: 'PLACEHOLDER_URL_8' },
+        { name: 'Session 9', url: 'PLACEHOLDER_URL_9' }
+      ];
+      
+      // Workshop images (6 images - 2x3 grid) - PNG format
+      // Images should be named: Workshop1.png, Workshop2.png, etc.
+      const workshops = [
+        { name: 'Workshop 1', url: 'PLACEHOLDER_URL_1' },
+        { name: 'Workshop 2', url: 'PLACEHOLDER_URL_2' },
+        { name: 'Workshop 3', url: 'PLACEHOLDER_URL_3' },
+        { name: 'Workshop 4', url: 'PLACEHOLDER_URL_4' },
+        { name: 'Workshop 5', url: 'PLACEHOLDER_URL_5' },
+        { name: 'Workshop 6', url: 'PLACEHOLDER_URL_6' }
+      ];
+      
+      function createImageCard(imageUrl, linkUrl, altText, index) {
+        const cardId = `cta-img-${Date.now()}-${index}`;
+        return `
+          <a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="cta-image-card">
+            <div class="cta-image-inner">
+              <div class="cta-image-loading" id="loading-${cardId}">
+                <div class="tarot-spinner"></div>
+              </div>
+              <img id="${cardId}"
+                   src="${imageUrl}"
+                   alt="${altText}"
+                   title="${altText}"
+                   onload="this.classList.add('loaded'); var loader = document.getElementById('loading-${cardId}'); if (loader) loader.style.display='none';"
+                   onerror="var loader = document.getElementById('loading-${cardId}'); if (loader) loader.innerHTML='<span style=\\'color:#999;font-size:12px;\\'>Image unavailable</span>';">
+            </div>
+          </a>
+        `;
+      }
+      
+      // Load sessions (PNG) - Try Session1.png format
+      const sessionsGrid = document.getElementById('sessions-grid');
+      if (sessionsGrid) {
+        sessions.forEach((session, index) => {
+          const imageUrl = `${sessionsBaseUrl}Session${index + 1}.png`;
+          console.log('Loading session image:', imageUrl);
+          sessionsGrid.innerHTML += createImageCard(imageUrl, session.url, session.name, index);
+        });
+      }
+      
+      // Load workshops (PNG) - Try Workshop1.png format
+      const workshopsGrid = document.getElementById('workshops-grid');
+      if (workshopsGrid) {
+        workshops.forEach((workshop, index) => {
+          const imageUrl = `${workshopsBaseUrl}Workshop${index + 1}.png`;
+          console.log('Loading workshop image:', imageUrl);
+          workshopsGrid.innerHTML += createImageCard(imageUrl, workshop.url, workshop.name, index);
+        });
+      }
     })();
   </script>
 </body>

@@ -1,6 +1,7 @@
 // narrativeEngine.js
 // Complete integrated Narrative Engine: Numerology + Astrology + Tree of Life
 // Exports: buildNarrative(user)
+// FIX #2: Fixed duplicate first line issue
 
 // -----------------------------
 // Templates & Static Text Data
@@ -92,11 +93,8 @@ const NumerologySingles = {
   }
 };
 
-// -----------------------------
-// Numerology Pair Rules (25 core + added 33 pairs)
-// -----------------------------
+// Numerology Pair Rules (including 33 pairs)
 const NumerologyPairRules = {
-  // Core pairs
   "7-8": "a seeker of hidden truths whose quiet depth meets the authority of presence. You unite wisdom with leadership, showing true power comes from inner clarity.",
   "5-4": "an explorer drawn to freedom who is asked to master discipline. Your soul learns to dance between adventure and order, building structures that breathe.",
   "9-6": "a compassionate visionary guided by love and care. You are called to serve humanity with a nurturing heart that heals and protects.",
@@ -122,8 +120,6 @@ const NumerologyPairRules = {
   "6-22": "a guardian of love chosen to build on a grand scale. You pour care into structures that uplift humanity.",
   "3-8": "a communicator with the drive for success. You turn creativity into achievement, showing expression can also be power.",
   "2-6": "a mediator who appears as the caretaker. You carry sensitivity and responsibility, proving that peace and love are the same force.",
-
-  // 33-specific pairs
   "7-33": "Together, your numbers weave compassion with wisdom, marking you as a Mystic Teacher who guides with both heart and insight.",
   "11-33": "Together, your numbers unite compassion with vision, making you an Inspired Guide whose love awakens others to their higher path.",
   "22-33": "Together, your numbers blend compassion with the master builder's power, creating a Master Architect who raises people and structures in service of humanity.",
@@ -131,9 +127,7 @@ const NumerologyPairRules = {
   "9-33": "Together, your numbers shine with universal love, shaping you into a Humanitarian Leader whose compassion embraces all."
 };
 
-// -----------------------------
 // Numerology Triplet Rules (including 33 triplets)
-// -----------------------------
 const NumerologyTriplets = {
   "7-11-33": "You are the Prophet-Teacher – a soul of wisdom, vision, and compassion, guiding humanity through light, truth, and love.",
   "7-22-33": "You are the Master Builder of Wisdom – grounding spiritual truth and compassion into structures that uplift many.",
@@ -163,9 +157,7 @@ function numerologySpecialOverride(nums) {
   return null;
 }
 
-// -----------------------------
-// Astrology Templates & Helpers
-// -----------------------------
+// Astrology Templates
 const AstrologyTemplates = {
   sun: {
     meaning: "Your Sun sign is your core self – it shows your life force, identity, and vitality.",
@@ -227,7 +219,6 @@ const SignToElement = {
   cancer: "water", scorpio: "water", pisces: "water"
 };
 
-// Astrology Triplets & Pairs
 const AstrologyTriplets = {
   "leo-gemini-pisces": "Radiant, imaginative, and curious – you bring light through both heart and expression.",
   "scorpio-cancer-capricorn": "Deep, nurturing, and resilient – you guard what you love with strength and vision.",
@@ -303,9 +294,7 @@ function getAstrologyClosing(astrology) {
   }
 }
 
-// -----------------------------
-// Tree of Life Templates & Helpers
-// -----------------------------
+// Tree of Life Templates
 const TreeTemplates = {
   keter: "Keter is the crown, pure spirit before form – your path begins in divine inspiration.",
   chokhmah: "Chokhmah is wisdom, the spark of insight – your path is to see beyond the surface.",
@@ -467,9 +456,7 @@ function capitalizeName(name) {
   return name.split(" ").map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
 }
 
-// -----------------------------
-// MAIN buildNarrative(user) - FIXED VERSION
-// -----------------------------
+// MAIN buildNarrative(user) - FIXED VERSION (Issue #2)
 function buildNarrative(user) {
   if (!user) return "No user data provided.";
   const firstName = capitalizeName(user.firstName || "Seeker");
@@ -513,17 +500,23 @@ function buildNarrative(user) {
   // 2) Start regular narrative
   let narrative = `${firstName}, my Dear Seeker,\n\n`;
 
-  // 2a: Numerology triplets and pairs - FIX: Only add if they exist
+  // 2a: Numerology triplets and pairs - FIX #2: Only add if they exist, avoid duplication
   const numerologyTripPairs = gatherNumerologyInsights(nums);
+  let addedNumerologyInsights = false;
+  
   if (numerologyTripPairs.triplets && numerologyTripPairs.triplets.length > 0) {
     narrative += numerologyTripPairs.triplets.join(" ") + "\n\n";
+    addedNumerologyInsights = true;
   }
   if (numerologyTripPairs.pairs && numerologyTripPairs.pairs.length > 0) {
     narrative += numerologyTripPairs.pairs.join(" ") + "\n\n";
+    addedNumerologyInsights = true;
   }
 
-  // 2b: Numerology singles
-  narrative += "Your numbers speak as the first voices of your soul. ";
+  // 2b: Numerology singles - skip intro if triplets/pairs already covered it
+  if (!addedNumerologyInsights) {
+    narrative += "Your numbers speak as the first voices of your soul. ";
+  }
   narrative += renderNumerologySinglesBlock({ lifePath: lp, destiny: dest, soulUrge: soul, personality: pers });
   narrative += "\n\n";
 
@@ -649,9 +642,7 @@ function buildNarrative(user) {
   return narrative;
 }
 
-// -----------------------------
 // Quick Summary Card Helpers
-// -----------------------------
 function getNumerologySummary(numerology) {
   if (!numerology) return [];
   const { lifePath, destiny, soulUrge, personality } = numerology;
