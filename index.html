@@ -244,27 +244,35 @@
     </section>
     
     <!-- Personal Analysis Story - Expanded -->
-    <section class="card details-card story-watermark">
-      <article class="expandable-card expanded" data-section="personal-narrative">
-        <div class="expandable-header" tabindex="0" role="button">
-          <span class="chevron">›</span><h3>Your Personal Analysis Story</h3>
-        </div>
-        <div class="expandable-content">
-          <div id="personal-narrative-content" class="explanation-text placeholder-text" style="white-space: pre-line;">
-            Run analysis to see your own unique, private analysis narrative, from all the information above.
-          </div>
-        </div>
-      </article>
-    </section>
+<section class="card details-card">
+  <article class="expandable-card story-watermark expanded" data-section="personal-narrative">
+    <div class="expandable-header" tabindex="0" role="button">
+      <span class="chevron">›</span><h3>Your Personal Analysis Story</h3>
+    </div>
+    <div class="expandable-content">
+      <div id="personal-narrative-content" class="explanation-text placeholder-text" style="white-space: pre-line;">
+        Run analysis to see your own unique, private analysis narrative, from all the information above.
+      </div>
+    </div>
+  </article>
+</section>
     
     <!-- Call To Action -->
     <section class="card details-card" id="step-4-section">
       <h2><strong>Step 4:</strong> Empower your 'Self' with us <span class="tooltip" tabindex="0"><span class="tooltip-text">Look at our offerings and contact us</span></span></h2>
       <article class="expandable-card expanded" data-section="call-to-action">
         <div class="expandable-content">
-          <div class="explanation-text" style="text-align: center; max-width: 700px; margin: 0 auto 30px;">
-            Contact Aanandoham, Lead facilitator of Project Curiosity at our <a href="https://lironkerem.wixsite.com/project-curiosity" target="_blank" rel="noopener noreferrer" style="color: #3F7652; font-weight: bold; text-decoration: underline;">Website</a> for more assistance, information and details on Private Sessions, Masterclasses, Workshops and/or Retreats.
-          </div>
+        <div class="explanation-text" style="text-align: center; max-width: 800px; margin: 0 auto 20px; line-height: 1.5;">
+  <strong style="font-size: 32px; color: #3F7652;">Welcome to Aanandoham's Project Curiosity</strong><br>
+  Founded in 2010, Project Curiosity was created as a safe and supportive space for individuals seeking empowerment, education, and deep healing.<br>
+  Every journey is unique, which is why the tools, techniques, and methods used are carefully chosen to meet your personal needs and intentions.<br>
+  With over a decade of experience and hundreds of clients around the world, you can trust that you'll receive exactly what you need to grow, heal, and elevate your life.<br>
+  Below you'll find all current offerings. Take your time to explore, click on any flyer for more details, or visit the official website for the full experience.<br>
+  Wishing you clarity, inspiration, and peace on your journey,<br>
+  Message me and we will connect,
+  Aanandoham.<br>
+ <a href="https://lironkerem.wixsite.com/project-curiosity" target="_blank" rel="noopener noreferrer" style="color: #1976d2; font-weight: bold; text-decoration: underline; font-size: 28px;">Project Curiosity's official website</a>
+</div>
           
           <!-- Sessions and Classes Sub-card -->
           <section class="expandable-card cta-logo-watermark" data-section="cta-sessions">
@@ -423,196 +431,322 @@
     })();
   </script>
 
-  <!-- Step Indicator Logic -->
-  <script>
-    (function() {
-      const stepIndicator = document.getElementById('step-indicator');
-      if (!stepIndicator) return;
+<script>
+  (function() {
+    const stepIndicator = document.getElementById('step-indicator');
+    if (!stepIndicator) return;
 
-      let completedSteps = new Set();
-      let currentStep = 1;
-      let step4Triggered = false;
+    let completedSteps = new Set();
+    let currentStep = 0;
+    let step4Triggered = false;
 
-      function updateStepIndicator() {
-        const stepItems = stepIndicator.querySelectorAll('.step-item');
+    function updateStepIndicator() {
+      const stepItems = stepIndicator.querySelectorAll('.step-item');
+      
+      stepItems.forEach((item, index) => {
+        const stepNum = index + 1;
+        const connector = item.querySelector('.step-connector');
         
-        stepItems.forEach((item, index) => {
-          const stepNum = index + 1;
-          
-          item.classList.remove('active', 'completed');
-          
-          if (completedSteps.has(stepNum)) {
-            item.classList.add('completed');
+        item.classList.remove('active', 'completed');
+        
+        if (completedSteps.has(stepNum)) {
+          item.classList.add('completed');
+        }
+        
+        if (stepNum === currentStep) {
+          item.classList.add('active');
+        }
+        
+        // FIXED: Only show green connector if NEXT step is completed
+        if (connector) {
+          if (completedSteps.has(stepNum + 1)) {
+            connector.style.background = 'var(--primary-color)';
+          } else {
+            connector.style.background = '#ddd';
           }
-          
-          if (stepNum === currentStep) {
-            item.classList.add('active');
-          }
-        });
-      }
+        }
+      });
+    }
 
-      function triggerStep4Animation() {
-        if (step4Triggered) return;
-        step4Triggered = true;
-        
-        completedSteps.add(3);
-        currentStep = 4;
-        updateStepIndicator();
-        
-        // Create fireworks animation
-        const step4Item = stepIndicator.querySelector('[data-step="4"]');
-        if (step4Item) {
-          const fireworks = document.createElement('div');
-          fireworks.style.cssText = `
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 30px;
-            animation: fireworks 1s ease-out;
-            pointer-events: none;
-            z-index: 1000;
-          `;
-          fireworks.textContent = '🎉';
-          step4Item.style.position = 'relative';
-          step4Item.appendChild(fireworks);
-          
-          setTimeout(() => fireworks.remove(), 1000);
+    // Step 1: Watch for ALL required fields
+    function checkStep1() {
+      const firstName = document.getElementById('first-name')?.value?.trim();
+      const lastName = document.getElementById('last-name')?.value?.trim();
+      const dateOfBirth = document.getElementById('date-of-birth')?.value?.trim();
+      
+      if (firstName && lastName && dateOfBirth) {
+        if (!completedSteps.has(1)) {
+          completedSteps.add(1);
+          currentStep = 1;
+          updateStepIndicator();
+          console.log('Step 1 achieved');
+        }
+      } else {
+        if (completedSteps.has(1)) {
+          completedSteps.delete(1);
+          currentStep = 0;
+          updateStepIndicator();
         }
       }
+    }
 
-      // Mark step 1 as active on load
-      updateStepIndicator();
+    ['first-name', 'last-name', 'date-of-birth'].forEach(id => {
+      const field = document.getElementById(id);
+      if (field) {
+        field.addEventListener('input', checkStep1);
+        field.addEventListener('change', checkStep1);
+      }
+    });
 
-      // Listen for analyze button click (Step 2)
-      const analyzeBtn = document.getElementById('btn-analyze');
-      if (analyzeBtn) {
-        analyzeBtn.addEventListener('click', () => {
-          completedSteps.add(1);
+    // Step 2: Analyze clicked
+    const analyzeBtn = document.getElementById('btn-analyze');
+    if (analyzeBtn) {
+      analyzeBtn.addEventListener('click', () => {
+        if (completedSteps.has(1)) {
+          completedSteps.add(2);
           currentStep = 2;
           updateStepIndicator();
-        });
-      }
-
-      // Listen for when analysis completes (Step 3)
-      window.addEventListener('analysisComplete', () => {
-        completedSteps.add(2);
-        currentStep = 3;
-        updateStepIndicator();
-        
-        // Scroll to Step 3
-        setTimeout(() => {
-          document.getElementById('step-3-section')?.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-          });
-        }, 300);
+          console.log('Step 2 achieved');
+        }
       });
+    }
 
-      // FIX #1: Trigger Step 4 on CTA interactions
+    // Step 3: Main cards expanded - FIXED selectors
+    function setupStep3Watchers() {
+      // Wait for cards to be generated
       setTimeout(() => {
-        // Website link click
-        const websiteLink = document.querySelector('a[href*="project-curiosity"]');
-        if (websiteLink) {
-          websiteLink.addEventListener('click', triggerStep4Animation);
-        }
+        const numerologyCard = document.querySelector('.expandable-card.numerology-watermark[data-section="numerology"]');
+        const astrologyCard = document.querySelector('.expandable-card.astrology-watermark[data-section="astrology"]');
+        const treeCard = document.querySelector('.expandable-card.tree-watermark[data-section="tree-of-life"]');
         
-        // Sessions sub-card expand
+        const mainCards = [numerologyCard, astrologyCard, treeCard].filter(c => c !== null);
+        
+        console.log('Found main cards for Step 3:', mainCards.length);
+
+        mainCards.forEach(card => {
+          const header = card.querySelector('.expandable-header');
+          if (header) {
+            header.addEventListener('click', () => {
+              setTimeout(() => {
+                if (card.classList.contains('expanded') && !completedSteps.has(3)) {
+                  completedSteps.add(3);
+                  currentStep = 3;
+                  updateStepIndicator();
+                  console.log('Step 3 achieved: Main card expanded');
+                }
+              }, 100);
+            });
+          }
+        });
+      }, 1000);
+    }
+
+    // Step 4: Sessions/Workshops
+    function triggerStep4Animation() {
+      if (step4Triggered) return;
+      if (!completedSteps.has(3)) return;
+      
+      step4Triggered = true;
+      completedSteps.add(4);
+      currentStep = 4;
+      updateStepIndicator();
+      
+      console.log('Step 4 achieved');
+      
+      const step4Item = stepIndicator.querySelector('[data-step="4"]');
+      if (!step4Item) return;
+      
+      const celebrationContainer = document.createElement('div');
+      celebrationContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 10000;
+        overflow: hidden;
+      `;
+      document.body.appendChild(celebrationContainer);
+      
+      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+      
+      for (let i = 0; i < 80; i++) {
+        const confetti = document.createElement('div');
+        const size = Math.random() * 10 + 5;
+        const startX = Math.random() * 100;
+        const duration = Math.random() * 2 + 2;
+        const delay = Math.random() * 0.5;
+        
+        confetti.style.cssText = `
+          position: absolute;
+          width: ${size}px;
+          height: ${size}px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          top: -20px;
+          left: ${startX}vw;
+          opacity: 1;
+          transform: rotate(${Math.random() * 360}deg);
+          border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+          animation: confettiFall ${duration}s linear ${delay}s forwards;
+        `;
+        celebrationContainer.appendChild(confetti);
+      }
+      
+      if (!document.getElementById('confetti-animation')) {
+        const style = document.createElement('style');
+        style.id = 'confetti-animation';
+        style.textContent = `
+          @keyframes confettiFall {
+            to {
+              transform: translateY(100vh) translateX(${Math.random() * 100 - 50}px) rotate(${Math.random() * 720}deg);
+              opacity: 0;
+            }
+          }
+          @keyframes fireworkBurst {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 300px; height: 300px; opacity: 0; }
+          }
+          @keyframes celebrationPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); box-shadow: 0 0 30px rgba(63, 118, 82, 0.8); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      const step4Rect = step4Item.getBoundingClientRect();
+      const step4CenterX = step4Rect.left + step4Rect.width / 2;
+      const step4CenterY = step4Rect.top + step4Rect.height / 2;
+      
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const firework = document.createElement('div');
+          firework.style.cssText = `
+            position: fixed;
+            left: ${step4CenterX}px;
+            top: ${step4CenterY}px;
+            width: 0;
+            height: 0;
+            border: 3px solid ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: fireworkBurst 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: 10001;
+          `;
+          celebrationContainer.appendChild(firework);
+          setTimeout(() => firework.remove(), 800);
+        }, i * 300);
+      }
+      
+      const step4Dot = step4Item.querySelector('.step-dot');
+      if (step4Dot) {
+        step4Dot.style.animation = 'celebrationPulse 0.5s ease-in-out 3';
+      }
+      
+      setTimeout(() => {
+        celebrationContainer.remove();
+        if (step4Dot) step4Dot.style.animation = '';
+      }, 4000);
+    }
+
+    function setupStep4Watchers() {
+      setTimeout(() => {
         const sessionsCard = document.querySelector('[data-section="cta-sessions"]');
-        if (sessionsCard) {
-          const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.target.classList.contains('expanded')) {
-                triggerStep4Animation();
-              }
-            });
-          });
-          observer.observe(sessionsCard, { attributes: true, attributeFilter: ['class'] });
-        }
-        
-        // Workshops sub-card expand
         const workshopsCard = document.querySelector('[data-section="cta-workshops"]');
-        if (workshopsCard) {
-          const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.target.classList.contains('expanded')) {
-                triggerStep4Animation();
-              }
-            });
-          });
-          observer.observe(workshopsCard, { attributes: true, attributeFilter: ['class'] });
-        }
-      }, 500);
-
-      // Expose reset function for clear button
-      window.resetStepIndicator = () => {
-        completedSteps.clear();
-        currentStep = 1;
-        step4Triggered = false;
-        updateStepIndicator();
-      };
-
-      // Handle step clicks (only for completed steps)
-      stepIndicator.addEventListener('click', (e) => {
-        const stepItem = e.target.closest('.step-item');
-        if (!stepItem) return;
-
-        const stepNum = parseInt(stepItem.dataset.step);
         
-        if (!completedSteps.has(stepNum) && stepNum !== 1) return;
+        [sessionsCard, workshopsCard].forEach(card => {
+          if (!card) return;
+          
+          const header = card.querySelector('.expandable-header');
+          if (header) {
+            header.addEventListener('click', () => {
+              setTimeout(() => {
+                if (card.classList.contains('expanded')) {
+                  triggerStep4Animation();
+                }
+              }, 100);
+            });
+          }
+        });
+      }, 1000);
+    }
 
-        currentStep = stepNum;
-        updateStepIndicator();
+    updateStepIndicator();
+    setupStep3Watchers();
+    setupStep4Watchers();
 
-        // Scroll to appropriate section
-        let targetSection;
-        if (stepNum === 1) targetSection = document.getElementById('step-1-section');
-        else if (stepNum === 3) targetSection = document.getElementById('step-3-section');
-        else if (stepNum === 4) targetSection = document.getElementById('step-4-section');
+    window.resetStepIndicator = () => {
+      completedSteps.clear();
+      currentStep = 0;
+      step4Triggered = false;
+      updateStepIndicator();
+    };
 
-        if (targetSection) {
-          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+    stepIndicator.addEventListener('click', (e) => {
+      const stepItem = e.target.closest('.step-item');
+      if (!stepItem) return;
+      const stepNum = parseInt(stepItem.dataset.step);
+      if (!completedSteps.has(stepNum)) return;
+
+      currentStep = stepNum;
+      updateStepIndicator();
+
+      let targetSection;
+      if (stepNum === 1) targetSection = document.getElementById('step-1-section');
+      else if (stepNum === 3) targetSection = document.getElementById('step-3-section');
+      else if (stepNum === 4) targetSection = document.getElementById('step-4-section');
+
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    const clearBtn = document.getElementById('btn-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        setTimeout(window.resetStepIndicator, 100);
       });
-
-      // Expose function for external use
-      window.markStepComplete = (step) => {
-        completedSteps.add(step);
-        if (currentStep < step + 1) currentStep = step + 1;
-        updateStepIndicator();
-      };
-    })();
-  </script>
-
-  <!-- CTA Images Loading Script - FIX #2 -->
+    }
+  })();
+</script>
+<script>
+  // Set max date of birth to today
+  (function() {
+    const dobInput = document.getElementById('date-of-birth');
+    if (dobInput) {
+      dobInput.max = new Date().toISOString().split('T')[0];
+    }
+  })();
+</script>
+  <!-- CTA Images Loading Script - FIX #8 -->
   <script>
     (function() {
       const sessionsBaseUrl = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Sessions/';
       const workshopsBaseUrl = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Workshops/';
       
-      // Session images (9 images - 3x3 grid) - PNG format
-      // Images should be named: Session1.png, Session2.png, etc.
+      // Session images with URLs
       const sessions = [
-        { name: 'Session 1', url: 'PLACEHOLDER_URL_1' },
-        { name: 'Session 2', url: 'PLACEHOLDER_URL_2' },
-        { name: 'Session 3', url: 'PLACEHOLDER_URL_3' },
-        { name: 'Session 4', url: 'PLACEHOLDER_URL_4' },
-        { name: 'Session 5', url: 'PLACEHOLDER_URL_5' },
-        { name: 'Session 6', url: 'PLACEHOLDER_URL_6' },
-        { name: 'Session 7', url: 'PLACEHOLDER_URL_7' },
-        { name: 'Session 8', url: 'PLACEHOLDER_URL_8' },
-        { name: 'Session 9', url: 'PLACEHOLDER_URL_9' }
+        { name: 'Session 1', url: 'https://lironkerem.wixsite.com/project-curiosity/tarot' },
+        { name: 'Session 2', url: 'https://lironkerem.wixsite.com/project-curiosity/reiki' },
+        { name: 'Session 3', url: 'https://lironkerem.wixsite.com/project-curiosity/meditation' },
+        { name: 'Session 4', url: 'https://lironkerem.wixsite.com/project-curiosity/tarot' },
+        { name: 'Session 5', url: 'https://lironkerem.wixsite.com/project-curiosity/osho' },
+        { name: 'Session 6', url: 'https://lironkerem.wixsite.com/project-curiosity/guided-visualizations' },
+        { name: 'Session 7', url: 'https://lironkerem.wixsite.com/project-curiosity/eft' },
+        { name: 'Session 8', url: 'https://lironkerem.wixsite.com/project-curiosity/yoga' },
+        { name: 'Session 9', url: 'https://lironkerem.wixsite.com/project-curiosity/tantra' }
       ];
       
-      // Workshop images (6 images - 2x3 grid) - PNG format
-      // Images should be named: Workshop1.png, Workshop2.png, etc.
+      // Workshop images with URLs
       const workshops = [
-        { name: 'Workshop 1', url: 'PLACEHOLDER_URL_1' },
-        { name: 'Workshop 2', url: 'PLACEHOLDER_URL_2' },
-        { name: 'Workshop 3', url: 'PLACEHOLDER_URL_3' },
-        { name: 'Workshop 4', url: 'PLACEHOLDER_URL_4' },
-        { name: 'Workshop 5', url: 'PLACEHOLDER_URL_5' },
-        { name: 'Workshop 6', url: 'PLACEHOLDER_URL_6' }
+        { name: 'Workshop 1', url: 'https://lironkerem.wixsite.com/project-curiosity/tarot' },
+        { name: 'Workshop 2', url: 'https://lironkerem.wixsite.com/project-curiosity/reiki' },
+        { name: 'Workshop 3', url: 'https://lironkerem.wixsite.com/project-curiosity/meditation' },
+        { name: 'Workshop 4', url: 'https://lironkerem.wixsite.com/project-curiosity/rainbow-body' },
+        { name: 'Workshop 5', url: 'https://lironkerem.wixsite.com/project-curiosity/osho' },
+        { name: 'Workshop 6', url: 'https://lironkerem.wixsite.com/project-curiosity/osho' }
       ];
       
       function createImageCard(imageUrl, linkUrl, altText, index) {
@@ -634,22 +768,20 @@
         `;
       }
       
-      // Load sessions (PNG) - Try Session1.png format
+      // Load sessions - lowercase 'sessions1.png' format
       const sessionsGrid = document.getElementById('sessions-grid');
       if (sessionsGrid) {
         sessions.forEach((session, index) => {
-          const imageUrl = `${sessionsBaseUrl}Session${index + 1}.png`;
-          console.log('Loading session image:', imageUrl);
+          const imageUrl = `${sessionsBaseUrl}sessions${index + 1}.png`;
           sessionsGrid.innerHTML += createImageCard(imageUrl, session.url, session.name, index);
         });
       }
       
-      // Load workshops (PNG) - Try Workshop1.png format
+      // Load workshops - lowercase 'workshops1.png' format
       const workshopsGrid = document.getElementById('workshops-grid');
       if (workshopsGrid) {
         workshops.forEach((workshop, index) => {
-          const imageUrl = `${workshopsBaseUrl}Workshop${index + 1}.png`;
-          console.log('Loading workshop image:', imageUrl);
+          const imageUrl = `${workshopsBaseUrl}workshops${index + 1}.png`;
           workshopsGrid.innerHTML += createImageCard(imageUrl, workshop.url, workshop.name, index);
         });
       }

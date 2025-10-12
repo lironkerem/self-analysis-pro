@@ -1,5 +1,5 @@
 /* =========================================
-   STANDARDIZED FONT SYSTEM - All sizes in px
+   STANDARDIZED FONT SYSTEM - Fluid Responsive
    ========================================= */
 
 :root {
@@ -10,16 +10,16 @@
   --border-color: #000;
   --font-family: "Amatic SC", cursive;
   
-  /* Font Size System */
-  --font-h1: 70px;
-  --font-h2: 50px;
-  --font-h3: 35px;
-  --font-h4: 25px;
-  --font-body: 25px;
-  --font-input: 25px;
-  --font-button: 25px;
-  --font-small: 18px;
-  --font-tiny: 16px;
+  /* Fluid Font Size System - 320px to 980px viewport */
+  --font-h1: clamp(32px, 5vw + 16px, 70px);
+  --font-h2: clamp(23px, 3.5vw + 11.5px, 50px);
+  --font-h3: clamp(16px, 2.5vw + 8px, 35px);
+  --font-h4: clamp(11.5px, 1.75vw + 5.75px, 25px);
+  --font-body: clamp(11.5px, 1.75vw + 5.75px, 25px);
+  --font-input: clamp(16px, 1.75vw + 8px, 25px);
+  --font-button: clamp(11.5px, 1.75vw + 5.75px, 25px);
+  --font-small: clamp(8.5px, 1.25vw + 4.5px, 18px);
+  --font-tiny: clamp(7.5px, 1.1vw + 4px, 16px);
   
   --shadow: 0 4px 18px rgba(63, 118, 82, 0.10), 0 1.5px 4px rgba(60, 60, 60, 0.09);
 }
@@ -49,7 +49,6 @@ body {
    TYPOGRAPHY
    ========================================= */
 
-/* FIX #2: H1 and H2 with white text and green background */
 h1 { 
   font-size: var(--font-h1); 
   margin: 6px 0 18px; 
@@ -62,19 +61,24 @@ h1 {
   position: relative;
 }
 
-/* FIX #6: Logo watermark - doubled in size */
 h1::before {
   content: '';
   position: absolute;
   left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  width: 120px;
-  height: 120px;
+  width: clamp(55px, 12vw, 120px);
+  height: clamp(55px, 12vw, 120px);
   background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Logo.svg');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+@media (max-width: 480px) {
+  h1::before {
+    left: 10px;
+  }
 }
 
 h2 { 
@@ -92,7 +96,7 @@ h3 {
   font-size: var(--font-h3); 
   margin: 0 0 12px; 
   font-weight: 800;
-  color: var(--primary-color); /* FIX #1: Ensure h3 is green */
+  color: var(--primary-color);
 }
 
 h4 {
@@ -106,16 +110,15 @@ h5 {
   font-size: var(--font-body);
   margin: 0 0 8px;
   font-weight: 600;
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 p, .explanation-text, .expandable-content {
   font-size: var(--font-body);
   line-height: 1.6;
-  color: var(--primary-color); /* FIX #1: Force green */
+  color: var(--primary-color);
 }
 
-/* FIX #1: Quick Summary content text color */
 #summary-numerology-content,
 #summary-astrology-content,
 #summary-tree-content {
@@ -128,20 +131,18 @@ p, .explanation-text, .expandable-content {
   color: var(--primary-color) !important;
 }
 
-/* FIX #1: Personal Narrative text */
 #personal-narrative-content {
   color: var(--primary-color) !important;
   white-space: pre-line;
 }
 
-/* Placeholder text styling */
 .placeholder-text {
   color: red !important;
   font-style: italic;
 }
 
 /* =========================================
-   STEP PROGRESS INDICATOR (NEW)
+   STEP PROGRESS INDICATOR
    ========================================= */
 
 .step-indicator {
@@ -160,6 +161,14 @@ p, .explanation-text, .expandable-content {
   backdrop-filter: blur(10px);
 }
 
+@media (max-width: 768px) {
+  .step-indicator {
+    flex-direction: column;
+    padding: 15px 20px;
+    gap: 15px;
+  }
+}
+
 .step-item {
   display: flex;
   flex-direction: column;
@@ -170,6 +179,15 @@ p, .explanation-text, .expandable-content {
   cursor: not-allowed;
   opacity: 0.5;
   transition: opacity 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .step-item {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+  }
 }
 
 .step-item.completed {
@@ -211,6 +229,13 @@ p, .explanation-text, .expandable-content {
   color: var(--primary-color);
 }
 
+@media (max-width: 768px) {
+  .step-label {
+    white-space: normal;
+    text-align: left;
+  }
+}
+
 .step-connector {
   position: absolute;
   top: 8px;
@@ -219,6 +244,12 @@ p, .explanation-text, .expandable-content {
   height: 2px;
   background: #ddd;
   z-index: -1;
+}
+
+@media (max-width: 768px) {
+  .step-connector {
+    display: none;
+  }
 }
 
 .step-item:last-child .step-connector {
@@ -230,14 +261,6 @@ p, .explanation-text, .expandable-content {
 }
 
 @media (max-width: 768px) {
-  .step-indicator {
-    padding: 10px 15px;
-  }
-  
-  .step-label {
-    font-size: 14px;
-  }
-  
   .step-dot {
     width: 12px;
     height: 12px;
@@ -256,6 +279,14 @@ p, .explanation-text, .expandable-content {
   padding: 18px; 
 }
 
+@media (max-width: 768px) {
+  .page {
+    border-width: 2px;
+    border-radius: 30px;
+    padding: 12px;
+  }
+}
+
 .top-row { 
   display: flex; 
   gap: 32px; 
@@ -270,6 +301,13 @@ p, .explanation-text, .expandable-content {
   } 
 }
 
+/* Hide Quick Summary on mobile */
+@media (max-width: 768px) {
+  .summary-card {
+    display: none;
+  }
+}
+
 /* =========================================
    CARDS
    ========================================= */
@@ -282,19 +320,18 @@ p, .explanation-text, .expandable-content {
   display: flex; 
   flex-direction: column; 
   box-shadow: var(--shadow); 
-  position: relative; /* For watermark positioning */
+  position: relative;
 }
 
-/* FIX #1: Watermark system - dynamic sizing and correct placement */
-
-/* Story watermark */
+/* Story watermark - same behavior as Numerology/Astrology/Tree */
 .story-watermark::before {
   content: '';
   position: absolute;
-  top: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   right: 20px;
-  width: 120px;
-  height: 120px;
+  width: clamp(28px, 7.5vw, 60px);
+  height: clamp(28px, 7.5vw, 60px);
   background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Story.svg');
   background-size: contain;
   background-repeat: no-repeat;
@@ -304,14 +341,31 @@ p, .explanation-text, .expandable-content {
   transition: all 0.3s ease;
 }
 
-/* Numerology watermark - only on main card */
+/* Use :has() for modern browsers */
+.story-watermark:has(.expandable-card.expanded)::before {
+  top: 20px;
+  transform: none;
+  width: clamp(55px, 15vw, 120px);
+  height: clamp(55px, 15vw, 120px);
+}
+
+/* Fallback for browsers without :has() support */
+.story-watermark.story-expanded::before {
+  top: 20px;
+  transform: none;
+  width: clamp(55px, 15vw, 120px);
+  height: clamp(55px, 15vw, 120px);
+}
+
+/* Numerology watermark - centered vertically when collapsed */
 .numerology-watermark::before {
   content: '';
   position: absolute;
-  top: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   right: 20px;
-  width: 80px;
-  height: 80px;
+  width: clamp(28px, 7.5vw, 60px);
+  height: clamp(28px, 7.5vw, 60px);
   background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Numerology.svg');
   background-size: contain;
   background-repeat: no-repeat;
@@ -322,18 +376,21 @@ p, .explanation-text, .expandable-content {
 }
 
 .numerology-watermark.expanded::before {
-  width: 120px;
-  height: 120px;
+  top: 20px;
+  transform: none;
+  width: clamp(55px, 15vw, 120px);
+  height: clamp(55px, 15vw, 120px);
 }
 
-/* Astrology watermark - only on main card */
+/* Astrology watermark - centered vertically when collapsed */
 .astrology-watermark::before {
   content: '';
   position: absolute;
-  top: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   right: 20px;
-  width: 80px;
-  height: 80px;
+  width: clamp(28px, 7.5vw, 60px);
+  height: clamp(28px, 7.5vw, 60px);
   background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Astrology.svg');
   background-size: contain;
   background-repeat: no-repeat;
@@ -344,18 +401,21 @@ p, .explanation-text, .expandable-content {
 }
 
 .astrology-watermark.expanded::before {
-  width: 120px;
-  height: 120px;
+  top: 20px;
+  transform: none;
+  width: clamp(55px, 15vw, 120px);
+  height: clamp(55px, 15vw, 120px);
 }
 
-/* Tree of Life watermark - only on main card */
+/* Tree of Life watermark - centered vertically when collapsed */
 .tree-watermark::before {
   content: '';
   position: absolute;
-  top: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   right: 20px;
-  width: 80px;
-  height: 80px;
+  width: clamp(28px, 7.5vw, 60px);
+  height: clamp(28px, 7.5vw, 60px);
   background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Tree%20of%20Life.svg');
   background-size: contain;
   background-repeat: no-repeat;
@@ -366,18 +426,21 @@ p, .explanation-text, .expandable-content {
 }
 
 .tree-watermark.expanded::before {
-  width: 120px;
-  height: 120px;
+  top: 20px;
+  transform: none;
+  width: clamp(55px, 15vw, 120px);
+  height: clamp(55px, 15vw, 120px);
 }
 
-/* Logo watermark for CTA sub-cards */
+/* Logo watermark for CTA sub-cards - centered vertically when collapsed */
 .cta-logo-watermark::before {
   content: '';
   position: absolute;
-  top: 15px;
+  top: 50%;
+  transform: translateY(-50%);
   right: 15px;
-  width: 60px;
-  height: 60px;
+  width: clamp(23px, 6.25vw, 50px);
+  height: clamp(23px, 6.25vw, 50px);
   background-image: url('https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Watermarks/Logo.svg');
   background-size: contain;
   background-repeat: no-repeat;
@@ -388,8 +451,10 @@ p, .explanation-text, .expandable-content {
 }
 
 .cta-logo-watermark.expanded::before {
-  width: 80px;
-  height: 80px;
+  top: 15px;
+  transform: none;
+  width: clamp(37px, 10vw, 80px);
+  height: clamp(37px, 10vw, 80px);
 }
 
 .card > * {
@@ -430,15 +495,15 @@ p, .explanation-text, .expandable-content {
   background: rgba(255, 255, 255, 0.97); 
   font-size: var(--font-input); 
   font-family: var(--font-family);
-  color: var(--primary-color); /* FIX #1 */
-  transition: all 0.3s ease; /* Animation #12 */
+  color: var(--primary-color);
+  transition: all 0.3s ease;
 }
 
 .form-input:focus { 
   outline: none; 
   box-shadow: 0 0 0 2px rgba(63, 118, 82, 0.3); 
   border-color: #3498db;
-  transform: translateY(-1px); /* Subtle animation */
+  transform: translateY(-1px);
 }
 
 .form-input.error { 
@@ -452,7 +517,7 @@ p, .explanation-text, .expandable-content {
 
 .form-group label {
   font-size: var(--font-body);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .validation-icon {
@@ -481,7 +546,14 @@ p, .explanation-text, .expandable-content {
   cursor: pointer; 
   font-weight: 700; 
   font-family: var(--font-family);
-  transition: all 0.3s ease; /* Animation #12 */
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    min-height: 48px;
+    border-radius: 14px;
+  }
 }
 
 .btn:hover:not(:disabled) {
@@ -517,16 +589,13 @@ p, .explanation-text, .expandable-content {
   border-radius: 20px; 
   padding: 14px; 
   margin-bottom: 12px;
-  position: relative; /* For watermark */
-  transition: all 0.3s ease; /* Animation #12 */
+  position: relative;
+  transition: all 0.3s ease;
 }
 
 .expandable-card:hover {
   box-shadow: 0 4px 12px rgba(63, 118, 82, 0.15);
 }
-
-/* Watermark for numerology sub-cards - REMOVED */
-/* No longer needed - watermark only on main card */
 
 .expandable-header { 
   display: flex; 
@@ -536,28 +605,26 @@ p, .explanation-text, .expandable-content {
   font-size: var(--font-h3); 
   font-weight: 800; 
   user-select: none;
-  color: var(--primary-color); /* FIX #1: Force green for numerology headers */
+  color: var(--primary-color);
 }
 
-/* Sub-cards within Astrology and Numerology use H4 size */
 .expandable-card .expandable-card .expandable-header {
   font-size: var(--font-h4);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .chevron { 
   display: inline-block; 
-  transition: transform 0.3s ease; /* Animation #12 */
+  transition: transform 0.3s ease;
   vertical-align: middle;
   line-height: 1;
   font-size: var(--font-h3);
-  color: var(--primary-color); /* FIX #1: Force green chevrons */
+  color: var(--primary-color);
 }
 
-/* Chevron size for sub-cards */
 .expandable-card .expandable-card .chevron {
   font-size: var(--font-h4);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .expanded .chevron { 
@@ -568,12 +635,12 @@ p, .explanation-text, .expandable-content {
   display: none; 
   margin-top: 16px; 
   font-size: var(--font-body);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .expanded .expandable-content { 
   display: block;
-  animation: fadeIn 0.3s ease; /* Animation #12 */
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -581,18 +648,30 @@ p, .explanation-text, .expandable-content {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* FIX #3: Space from heading to Tarot in Astrology and Tree */
-.astrology-watermark .explanation-text,
-.tree-watermark .explanation-text {
-  margin-top: 20px;
+.explanation-text + div:not(.tarot-section-wrapper) > h5:first-child,
+.explanation-heading + div:not(.tarot-section-wrapper) > h5:first-child {
+  margin-top: 10px !important;
 }
 
-.astrology-watermark .explanation-heading + div,
-.tree-watermark .explanation-heading + div {
-  margin-top: 20px;
+div[style*="margin: 10px 0"] {
+  margin: 10px 0 !important;
 }
 
-/* FIX #1: Fireworks animation for Step 4 */
+.expandable-content div[style*="margin-bottom: 15px"] h5 {
+  margin: 0 0 8px 0 !important;
+}
+
+.expandable-content div[style*="margin-bottom: 15px"] > div {
+  margin-top: 0 !important;
+}
+
+#step-4-section .explanation-text {
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @keyframes fireworks {
   0% {
     opacity: 1;
@@ -616,34 +695,33 @@ p, .explanation-text, .expandable-content {
   white-space: pre-wrap; 
   font-size: var(--font-body); 
   margin-top: 8px;
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .sum-line { 
   font-size: var(--font-body); 
   margin-top: 6px;
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .final-number { 
   margin-top: 8px; 
   font-weight: 800; 
   font-size: var(--font-body);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .explanation-heading { 
   font-weight: 800; 
   font-size: var(--font-body); 
   margin-top: 10px;
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .explanation-text { 
   font-size: var(--font-body); 
-  margin-top: 6px; 
   white-space: pre-wrap;
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .data-row { 
@@ -656,17 +734,17 @@ p, .explanation-text, .expandable-content {
 .data-label { 
   font-weight: 400; 
   font-size: var(--font-body);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .data-value { 
   font-weight: 700; 
   font-size: var(--font-body);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 /* =========================================
-   TAROT CARDS - ENHANCED STYLING (FIX #3)
+   TAROT CARDS - ENHANCED STYLING
    ========================================= */
 
 .tarot-card {
@@ -674,6 +752,14 @@ p, .explanation-text, .expandable-content {
   position: relative;
   display: inline-block;
   vertical-align: top;
+}
+
+@media (max-width: 768px) {
+  /* 2 cards per row on mobile */
+  .tarot-card {
+    width: calc(50% - 8px);
+    margin: 4px;
+  }
 }
 
 .tarot-card:hover {
@@ -702,7 +788,6 @@ p, .explanation-text, .expandable-content {
   transform: scale(1.02);
 }
 
-/* FIX #2: Tarot loading spinner - proper layering */
 .tarot-card-loading {
   position: absolute;
   top: 0;
@@ -816,6 +901,27 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
+   TAROT SECTION SPACING PROTECTION
+   ========================================= */
+
+/* Prevent expandable-content rules from affecting Tarot sections */
+.tarot-section-wrapper {
+  margin-top: 20px !important;
+}
+
+.tarot-section-wrapper h5 {
+  margin: 0 0 8px 0 !important;
+}
+
+.tarot-section-wrapper > div {
+  margin-top: 0 !important;
+}
+
+.tarot-section-wrapper > div[style*="margin-top: 15px"] {
+  margin-top: 15px !important;
+}
+
+/* =========================================
    PROGRESS BAR
    ========================================= */
 
@@ -853,7 +959,7 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
-   TOOLTIPS (FIX #9)
+   TOOLTIPS
    ========================================= */
 
 .tooltip { 
@@ -938,7 +1044,7 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
-   ERROR MODAL (FIX #9)
+   ERROR MODAL
    ========================================= */
 
 .error-modal {
@@ -1019,7 +1125,7 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
-   NATAL CHART (FIX #1)
+   NATAL CHART
    ========================================= */
 
 .natal-chart-section, 
@@ -1064,7 +1170,7 @@ p, .explanation-text, .expandable-content {
   border: 1px solid #ddd;
   padding: 10px 8px;
   text-align: center;
-  color: var(--primary-color); /* FIX #1: Force green in tables */
+  color: var(--primary-color);
 }
 
 .natal-table th {
@@ -1075,7 +1181,7 @@ p, .explanation-text, .expandable-content {
 
 .natal-table td {
   background: rgba(255, 255, 255, 0.9);
-  color: var(--primary-color); /* FIX #1 */
+  color: var(--primary-color);
 }
 
 .natal-table tr:nth-child(even) td {
@@ -1087,7 +1193,7 @@ p, .explanation-text, .expandable-content {
 }
 
 /* =========================================
-   CTA IMAGES (Sessions & Workshops) - FIX #7
+   CTA IMAGES (Sessions & Workshops)
    ========================================= */
 
 .cta-image-grid {
@@ -1182,6 +1288,10 @@ p, .explanation-text, .expandable-content {
   }
 }
 
+/* =========================================
+   UTILITY CLASSES
+   ========================================= */
+
 .sr-only { 
   position: absolute; 
   width: 1px; 
@@ -1192,6 +1302,10 @@ p, .explanation-text, .expandable-content {
   clip: rect(0, 0, 0, 0); 
   border: 0; 
 }
+
+/* =========================================
+   DEV PANEL
+   ========================================= */
 
 #dev-panel { 
   display: none; 
@@ -1230,3 +1344,33 @@ p, .explanation-text, .expandable-content {
   font-size: 14px; 
   min-height: auto; 
 }
+
+/* =========================================
+   WIX IFRAME HEIGHT AUTO-COMMUNICATION
+   ========================================= */
+
+/*
+Add this script to your HTML file before closing </body>:
+
+<script>
+  // Send height updates to Wix parent frame
+  function sendHeightToParent() {
+    const height = document.documentElement.scrollHeight;
+    window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+  }
+
+  // Send initial height
+  sendHeightToParent();
+
+  // Update on window resize
+  window.addEventListener('resize', sendHeightToParent);
+
+  // Use MutationObserver to detect content changes
+  const observer = new MutationObserver(sendHeightToParent);
+  observer.observe(document.body, { 
+    childList: true, 
+    subtree: true, 
+    attributes: true 
+  });
+</script>
+*/

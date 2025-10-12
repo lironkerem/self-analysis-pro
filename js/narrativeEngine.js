@@ -1,7 +1,6 @@
 // narrativeEngine.js
 // Complete integrated Narrative Engine: Numerology + Astrology + Tree of Life
-// Exports: buildNarrative(user)
-// FIX #2: Fixed duplicate first line issue
+// FIXES: Duplicate first line, duplicate pairs when numbers repeat
 
 // -----------------------------
 // Templates & Static Text Data
@@ -93,7 +92,6 @@ const NumerologySingles = {
   }
 };
 
-// Numerology Pair Rules (including 33 pairs)
 const NumerologyPairRules = {
   "7-8": "a seeker of hidden truths whose quiet depth meets the authority of presence. You unite wisdom with leadership, showing true power comes from inner clarity.",
   "5-4": "an explorer drawn to freedom who is asked to master discipline. Your soul learns to dance between adventure and order, building structures that breathe.",
@@ -123,26 +121,24 @@ const NumerologyPairRules = {
   "7-33": "Together, your numbers weave compassion with wisdom, marking you as a Mystic Teacher who guides with both heart and insight.",
   "11-33": "Together, your numbers unite compassion with vision, making you an Inspired Guide whose love awakens others to their higher path.",
   "22-33": "Together, your numbers blend compassion with the master builder's power, creating a Master Architect who raises people and structures in service of humanity.",
-  "6-33": "Together, your numbers echo the voice of the Healer twice over – a double call to serve with love, devotion and care.",
+  "6-33": "Together, your numbers echo the voice of the Healer twice over — a double call to serve with love, devotion and care.",
   "9-33": "Together, your numbers shine with universal love, shaping you into a Humanitarian Leader whose compassion embraces all."
 };
 
-// Numerology Triplet Rules (including 33 triplets)
 const NumerologyTriplets = {
-  "7-11-33": "You are the Prophet-Teacher – a soul of wisdom, vision, and compassion, guiding humanity through light, truth, and love.",
-  "7-22-33": "You are the Master Builder of Wisdom – grounding spiritual truth and compassion into structures that uplift many.",
-  "6-9-33": "You are the Triple Healer – an overflowing current of service and love, devoted to healing hearts and serving humanity.",
-  "9-11-33": "You are the Compassionate Visionary – called to teach and inspire on a universal scale, channeling love and higher vision.",
-  "11-22-33": "You are the Teacher-Architect of Light – uniting vision, structure, and compassion to build legacies that endure."
+  "7-11-33": "You are the Prophet-Teacher — a soul of wisdom, vision, and compassion, guiding humanity through light, truth, and love.",
+  "7-22-33": "You are the Master Builder of Wisdom — grounding spiritual truth and compassion into structures that uplift many.",
+  "6-9-33": "You are the Triple Healer — an overflowing current of service and love, devoted to healing hearts and serving humanity.",
+  "9-11-33": "You are the Compassionate Visionary — called to teach and inspire on a universal scale, channeling love and higher vision.",
+  "11-22-33": "You are the Teacher-Architect of Light — uniting vision, structure, and compassion to build legacies that endure."
 };
 
-// Numerology special override (3 or 4 identical numbers)
 function numerologySpecialOverride(nums) {
   const counts = {};
   nums.forEach(n => counts[n] = (counts[n] || 0) + 1);
   
   if (counts[33] >= 3) {
-    return "Your chart resounds with the rare frequency of Master 33, a soul born to teach, heal, and serve at the highest level. Compassion is not just your path but your essence – you embody love as a living presence, guiding others by example.";
+    return "Your chart resounds with the rare frequency of Master 33, a soul born to teach, heal, and serve at the highest level. Compassion is not just your path but your essence — you embody love as a living presence, guiding others by example.";
   }
   
   for (const numStr in counts) {
@@ -157,10 +153,9 @@ function numerologySpecialOverride(nums) {
   return null;
 }
 
-// Astrology Templates
 const AstrologyTemplates = {
   sun: {
-    meaning: "Your Sun sign is your core self – it shows your life force, identity, and vitality.",
+    meaning: "Your Sun sign is your core self — it shows your life force, identity, and vitality.",
     signs: {
       aries: "In Aries, your Sun burns with courage, drive, and pioneering fire.",
       taurus: "In Taurus, your Sun rests in patience, stability, and earthy strength.",
@@ -177,7 +172,7 @@ const AstrologyTemplates = {
     }
   },
   moon: {
-    meaning: "Your Moon sign is your emotional world – it shows how you feel, respond, and nurture yourself.",
+    meaning: "Your Moon sign is your emotional world — it shows how you feel, respond, and nurture yourself.",
     signs: {
       aries: "With Moon in Aries, your feelings are fiery, quick, and full of passion.",
       taurus: "With Moon in Taurus, your emotions are steady, calm, and rooted in comfort.",
@@ -194,7 +189,7 @@ const AstrologyTemplates = {
     }
   },
   rising: {
-    meaning: "Your Rising sign is your outer mask – it shows how you come across to others and the energy you project.",
+    meaning: "Your Rising sign is your outer mask — it shows how you come across to others and the energy you project.",
     signs: {
       aries: "With Aries Rising, you appear bold, dynamic, and ready for action.",
       taurus: "With Taurus Rising, you appear calm, grounded, and reliable.",
@@ -220,11 +215,11 @@ const SignToElement = {
 };
 
 const AstrologyTriplets = {
-  "leo-gemini-pisces": "Radiant, imaginative, and curious – you bring light through both heart and expression.",
-  "scorpio-cancer-capricorn": "Deep, nurturing, and resilient – you guard what you love with strength and vision.",
-  "virgo-taurus-capricorn": "Practical, steady, and grounded – you create stability and shape the world with patience.",
-  "sagittarius-aries-leo": "Bold, passionate, and dynamic – you inspire through courage and zest for life.",
-  "aquarius-libra-gemini": "Ideas flow with brilliance – you shine as a thinker, connector, and innovator."
+  "leo-gemini-pisces": "Radiant, imaginative, and curious — you bring light through both heart and expression.",
+  "scorpio-cancer-capricorn": "Deep, nurturing, and resilient — you guard what you love with strength and vision.",
+  "virgo-taurus-capricorn": "Practical, steady, and grounded — you create stability and shape the world with patience.",
+  "sagittarius-aries-leo": "Bold, passionate, and dynamic — you inspire through courage and zest for life.",
+  "aquarius-libra-gemini": "Ideas flow with brilliance — you shine as a thinker, connector, and innovator."
 };
 
 function checkAstrologyOverride(astrology) {
@@ -233,7 +228,7 @@ function checkAstrologyOverride(astrology) {
   if (sun === moon && moon === rising) {
     const sign = sun;
     const capSign = sign.charAt(0).toUpperCase() + sign.slice(1);
-    return `Your chart burns with pure ${capSign} energy – your identity, emotions, and presence all aligned as one expression.`;
+    return `Your chart burns with pure ${capSign} energy — your identity, emotions, and presence all aligned as one expression.`;
   }
   return null;
 }
@@ -258,10 +253,10 @@ function checkAstrologyPairs(astrology) {
     results.push(`Your Sun and Moon share the ${sunElem} element, giving unity between your core self and your feelings.`);
   } else {
     if (sunElem === "fire" && moonElem === "water") {
-      results.push("You burn with passion yet feel with depth – a dynamic of action and sensitivity.");
+      results.push("You burn with passion yet feel with depth — a dynamic of action and sensitivity.");
     }
     if (sunElem === "earth" && moonElem === "air") {
-      results.push("Your grounded self meets a restless mind – steady yet curious.");
+      results.push("Your grounded self meets a restless mind — steady yet curious.");
     }
   }
 
@@ -294,35 +289,34 @@ function getAstrologyClosing(astrology) {
   }
 }
 
-// Tree of Life Templates
 const TreeTemplates = {
-  keter: "Keter is the crown, pure spirit before form – your path begins in divine inspiration.",
-  chokhmah: "Chokhmah is wisdom, the spark of insight – your path is to see beyond the surface.",
-  binah: "Binah is understanding, the womb of form – your path is to give structure to vision.",
-  chesed: "Chesed is mercy, overflowing love – your path is to give generously and expand with kindness.",
-  gevurah: "Gevurah is discipline, strength, and limits – your path is to learn balance through boundaries.",
-  tiferet: "Tiferet is harmony, beauty, and balance – your path is to unite heart, mind, and spirit.",
-  netzach: "Netzach is victory, persistence, and endurance – your path is to move forward with courage and resilience.",
-  hod: "Hod is glory, intellect, and communication – your path is to honor truth through expression and clarity.",
-  yesod: "Yesod is foundation, connection, and energy flow – your path is to bridge the inner and the outer, spirit and matter.",
-  malkhut: "Malkhut is kingdom, embodiment – your path is to bring spirit fully into the world, living as the vessel of creation."
+  keter: "Keter is the crown, pure spirit before form — your path begins in divine inspiration.",
+  chokhmah: "Chokhmah is wisdom, the spark of insight — your path is to see beyond the surface.",
+  binah: "Binah is understanding, the womb of form — your path is to give structure to vision.",
+  chesed: "Chesed is mercy, overflowing love — your path is to give generously and expand with kindness.",
+  gevurah: "Gevurah is discipline, strength, and limits — your path is to learn balance through boundaries.",
+  tiferet: "Tiferet is harmony, beauty, and balance — your path is to unite heart, mind, and spirit.",
+  netzach: "Netzach is victory, persistence, and endurance — your path is to move forward with courage and resilience.",
+  hod: "Hod is glory, intellect, and communication — your path is to honor truth through expression and clarity.",
+  yesod: "Yesod is foundation, connection, and energy flow — your path is to bridge the inner and the outer, spirit and matter.",
+  malkhut: "Malkhut is kingdom, embodiment — your path is to bring spirit fully into the world, living as the vessel of creation."
 };
 
 function checkTreeOverride(tree) {
   if (!tree) return null;
   if (tree === "keter") {
-    return "You stand in Keter, the crown of pure spirit – a soul close to the source of creation.";
+    return "You stand in Keter, the crown of pure spirit — a soul close to the source of creation.";
   }
   if (tree === "malkhut") {
-    return "You stand in Malkhut, the vessel of embodiment – your calling is to live spirit fully in the world.";
+    return "You stand in Malkhut, the vessel of embodiment — your calling is to live spirit fully in the world.";
   }
   return null;
 }
 
 const TreeBridges = {
-  "chesed-gevurah": "You walk the bridge between Chesed and Gevurah – balancing love with discipline.",
-  "tiferet-yesod": "You walk the bridge between Tiferet and Yesod – harmony rooted in foundation.",
-  "netzach-hod": "You walk the bridge between Netzach and Hod – persistence guided by clarity."
+  "chesed-gevurah": "You walk the bridge between Chesed and Gevurah — balancing love with discipline.",
+  "tiferet-yesod": "You walk the bridge between Tiferet and Yesod — harmony rooted in foundation.",
+  "netzach-hod": "You walk the bridge between Netzach and Hod — persistence guided by clarity."
 };
 
 function checkTreeBridge(tree) {
@@ -345,7 +339,6 @@ function getTreeClosing(tree) {
   }
 }
 
-// Helper utilities
 function sortedNumericKeyFromPair(a, b) {
   const pair = [Number(a), Number(b)].sort((x, y) => x - y);
   return pair.join("-");
@@ -356,24 +349,36 @@ function sortedNumericKeyFromTriplet(a, b, c) {
   return arr.join("-");
 }
 
+// FIXED: Deduplicate pairs when same numbers appear multiple times
 function checkNumerologyPairs(nums) {
   const insights = [];
+  const seen = new Set();
+  
   for (let i = 0; i < nums.length; i++) {
     for (let j = i + 1; j < nums.length; j++) {
       const key = sortedNumericKeyFromPair(nums[i], nums[j]);
-      if (NumerologyPairRules[key]) insights.push(NumerologyPairRules[key]);
+      if (NumerologyPairRules[key] && !seen.has(key)) {
+        insights.push(NumerologyPairRules[key]);
+        seen.add(key);
+      }
     }
   }
   return insights;
 }
 
+// FIXED: Deduplicate triplets when same numbers appear multiple times
 function checkNumerologyTriplets(nums) {
   const insights = [];
+  const seen = new Set();
+  
   for (let i = 0; i < nums.length; i++) {
     for (let j = i + 1; j < nums.length; j++) {
       for (let k = j + 1; k < nums.length; k++) {
         const key = sortedNumericKeyFromTriplet(nums[i], nums[j], nums[k]);
-        if (NumerologyTriplets[key]) insights.push(NumerologyTriplets[key]);
+        if (NumerologyTriplets[key] && !seen.has(key)) {
+          insights.push(NumerologyTriplets[key]);
+          seen.add(key);
+        }
       }
     }
   }
@@ -456,7 +461,6 @@ function capitalizeName(name) {
   return name.split(" ").map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
 }
 
-// MAIN buildNarrative(user) - FIXED VERSION (Issue #2)
 function buildNarrative(user) {
   if (!user) return "No user data provided.";
   const firstName = capitalizeName(user.firstName || "Seeker");
@@ -468,7 +472,6 @@ function buildNarrative(user) {
   const pers = Number(numerology.personality) || null;
   const nums = [lp, dest, soul, pers].filter(n => n !== null && !Number.isNaN(n));
 
-  // 1) Numerology special override
   const numerologySpecial = numerologySpecialOverride(nums);
   if (numerologySpecial) {
     const astrology = user.astrology || {};
@@ -497,30 +500,31 @@ function buildNarrative(user) {
     return letter;
   }
 
-  // 2) Start regular narrative
   let narrative = `${firstName}, my Dear Seeker,\n\n`;
 
-  // 2a: Numerology triplets and pairs - FIX #2: Only add if they exist, avoid duplication
   const numerologyTripPairs = gatherNumerologyInsights(nums);
-  let addedNumerologyInsights = false;
+  
+  const hasPairOrTripletInsights = 
+    (numerologyTripPairs.triplets && numerologyTripPairs.triplets.length > 0) ||
+    (numerologyTripPairs.pairs && numerologyTripPairs.pairs.length > 0);
   
   if (numerologyTripPairs.triplets && numerologyTripPairs.triplets.length > 0) {
     narrative += numerologyTripPairs.triplets.join(" ") + "\n\n";
-    addedNumerologyInsights = true;
   }
+  
   if (numerologyTripPairs.pairs && numerologyTripPairs.pairs.length > 0) {
     narrative += numerologyTripPairs.pairs.join(" ") + "\n\n";
-    addedNumerologyInsights = true;
   }
 
-  // 2b: Numerology singles - skip intro if triplets/pairs already covered it
-  if (!addedNumerologyInsights) {
+  const singlesBlock = renderNumerologySinglesBlock({ lifePath: lp, destiny: dest, soulUrge: soul, personality: pers });
+  
+  if (!hasPairOrTripletInsights) {
     narrative += "Your numbers speak as the first voices of your soul. ";
   }
-  narrative += renderNumerologySinglesBlock({ lifePath: lp, destiny: dest, soulUrge: soul, personality: pers });
+  
+  narrative += singlesBlock;
   narrative += "\n\n";
 
-  // 3) Astrology section
   const astrology = user.astrology || {};
   const astroOverride = checkAstrologyOverride(astrology);
   
@@ -543,7 +547,6 @@ function buildNarrative(user) {
     narrative += getAstrologyClosing(astrology) + "\n\n";
   }
 
-  // 4) Tree of Life section
   const tree = sanitizeTree(user.tree);
   const treeOverride = checkTreeOverride(tree);
   
@@ -559,7 +562,6 @@ function buildNarrative(user) {
   if (treeBridge) narrative += treeBridge + " ";
   narrative += getTreeClosing(tree) + "\n\n";
 
-  // 5) Cross-system integration
   const numGroupCounts = { practical: 0, emotional: 0, spiritual: 0, creative: 0 };
   const groupDef = {
     practical: [4, 8, 22],
@@ -593,7 +595,7 @@ function buildNarrative(user) {
     if (numDominant === "spiritual" && elementDominance === "water") {
       narrative += "This inward search (numerology) meets your watery stars, deepening your emotional wisdom and making your spiritual quest especially felt by others.\n\n";
     } else if (numDominant === "creative" && elementDominance === "fire") {
-      narrative += "Your creative drive aligns with fiery stars – imagination and courage push you forward together.\n\n";
+      narrative += "Your creative drive aligns with fiery stars — imagination and courage push you forward together.\n\n";
     } else if (numDominant === "practical" && elementDominance === "earth") {
       narrative += "Your practical nature finds reflection in earthy stars, strengthening your talent for grounding vision into reality.\n\n";
     } else if (numDominant === "emotional" && elementDominance === "air") {
@@ -601,7 +603,6 @@ function buildNarrative(user) {
     }
   }
 
-  // 6) Final adaptive closing
   const numerologyClosing = (function(lp, dest, soul, pers) {
     const groups = {
       practical: [4, 8, 22],
@@ -620,7 +621,7 @@ function buildNarrative(user) {
         return "Together these numbers suggest a path of steady creation, where vision becomes form and your strength lies in building what endures.";
       case "emotional":
         if ([lp, dest, soul, pers].includes(33)) {
-          return "Together these numbers suggest the calling of a Master Teacher – a path of love, service, and guiding others with compassion.";
+          return "Together these numbers suggest the calling of a Master Teacher — a path of love, service, and guiding others with compassion.";
         }
         return "Together these numbers suggest a journey of the heart, where compassion and connection are the forces that guide your way.";
       case "spiritual":
@@ -628,7 +629,7 @@ function buildNarrative(user) {
       case "creative":
         return "Together these numbers suggest a life of bold expression, where imagination and freedom are the sparks that carry you forward.";
       default:
-        return "Together these numbers suggest a path that is uniquely yours – a dance of soul, destiny, heart and presence.";
+        return "Together these numbers suggest a path that is uniquely yours — a dance of soul, destiny, heart and presence.";
     }
   })(lp, dest, soul, pers);
 
@@ -642,7 +643,6 @@ function buildNarrative(user) {
   return narrative;
 }
 
-// Quick Summary Card Helpers
 function getNumerologySummary(numerology) {
   if (!numerology) return [];
   const { lifePath, destiny, soulUrge, personality } = numerology;
@@ -687,7 +687,6 @@ function getTreeSummary(tree) {
   return TreeTemplates[tree] || "";
 }
 
-// Export
 export { buildNarrative, getNumerologySummary, getAstrologySummary, getTreeSummary };
 
 if (typeof module !== "undefined" && module.exports) {

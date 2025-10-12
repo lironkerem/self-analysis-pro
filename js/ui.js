@@ -1,5 +1,5 @@
 // UI Management and Form Handling with Tarot Integration
-// FIXED: Watermark placement - only on main cards, not sub-cards
+// FIXED: Tarot spacing consistency across all sections
 
 import DataMeanings from './meanings.js';
 import TarotEngine from './TarotEngine.js';
@@ -23,11 +23,31 @@ class UIManager {
         const isExpanded = card.classList.contains('expanded'); 
         content.style.display = isExpanded ? 'block' : 'none'; 
         
+        // FIXED: Initialize story watermark state on page load
+        if (card.hasAttribute('data-section') && card.getAttribute('data-section') === 'personal-narrative') {
+          const parentCard = card.closest('.story-watermark');
+          if (parentCard && isExpanded) {
+            parentCard.classList.add('story-expanded');
+          }
+        }
+        
         const toggle = () => { 
           const expanded = card.classList.contains('expanded'); 
           card.classList.toggle('expanded'); 
           content.style.display = expanded ? 'none' : 'block'; 
-          card.setAttribute('aria-expanded', (!expanded).toString()); 
+          card.setAttribute('aria-expanded', (!expanded).toString());
+          
+          // Handle story watermark parent (JavaScript fallback)
+          if (card.hasAttribute('data-section') && card.getAttribute('data-section') === 'personal-narrative') {
+            const parentCard = card.closest('.story-watermark');
+            if (parentCard) {
+              if (!expanded) {
+                parentCard.classList.add('story-expanded');
+              } else {
+                parentCard.classList.remove('story-expanded');
+              }
+            }
+          }
         }; 
         
         newHeader.addEventListener('click', toggle); 
@@ -40,6 +60,20 @@ class UIManager {
       }); 
     }, 100);
   }
+  
+// FIXED: "Tarot Correspondences" heading changed to H3 size (35px)
+_renderTarotSection(cards, title = "Tarot Correspondences") {
+  if (!cards || cards.length === 0) return '';
+  
+  const cardsHTML = this.tarot.renderCards(cards);
+  
+  return `
+    <div class="tarot-section-wrapper" style="margin-top: 20px;">
+      <h3 style="margin: 0 0 12px 0; text-align: center; background: var(--primary-color); color: white; padding: 12px 20px; border-radius: 20px;">${title}</h3>
+      ${cardsHTML}
+    </div>
+  `;
+}
   
   populateResults(results, narrativeResults) { 
     this.updateQuickSummary(results, narrativeResults); 
@@ -102,27 +136,18 @@ class UIManager {
   }
   
   updateDeepAnalysis(results) {
-    // Hide astrology placeholder and show sub-cards
     const astroPlaceholder = document.getElementById('astrology-content-placeholder');
     if (astroPlaceholder) astroPlaceholder.style.display = 'none';
     
-    // Show astrology sub-cards WITHOUT watermarks
     ['zodiac-sign', 'ruling-planet', 'alchemical-element', 'natal-chart'].forEach(section => {
       const card = document.querySelector(`.expandable-card[data-section="${section}"]`);
-      if (card) {
-        card.style.display = 'block';
-        // DO NOT add watermark class to sub-cards
-      }
+      if (card) card.style.display = 'block';
     });
     
-    // Hide tree placeholder and show data WITHOUT watermark on sub-elements
     const treePlaceholder = document.getElementById('tree-content-placeholder');
     const treeData = document.getElementById('tree-content-data');
     if (treePlaceholder) treePlaceholder.style.display = 'none';
-    if (treeData) {
-      treeData.style.display = 'block';
-      // Watermark is on main tree-of-life card, not sub-elements
-    }
+    if (treeData) treeData.style.display = 'block';
     
     const deepElements = { 
       'deep-zodiac': results.zodiac?.name || '—', 
@@ -136,29 +161,28 @@ class UIManager {
       if (element) element.textContent = value; 
     }); 
     
-    // Update meanings with Tarot cards and handle dual planets
+    // FIXED: Insert Tarot as sibling (same structure as Numerology)
+    
+    // Zodiac Sign
     if (results.zodiac?.name) { 
       const headerEl = document.getElementById('zodiac-meaning-header'); 
       const meaningEl = document.getElementById('zodiac-meaning'); 
       if (headerEl) headerEl.textContent = `The meaning of ${results.zodiac.name}`; 
       if (meaningEl) {
-        let html = DataMeanings.getZodiacMeaning(results.zodiac.name);
+        meaningEl.innerHTML = DataMeanings.getZodiacMeaning(results.zodiac.name);
         
+        // Insert Tarot AFTER meaningEl as sibling
         const zodiacCards = this.tarot.getCardsForZodiac(results.zodiac.name);
-        if (zodiacCards.length > 0) {
-          html += '<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>';
-          html += this.tarot.renderCards(zodiacCards);
-        }
-        
-        meaningEl.innerHTML = html;
+        const tarotHTML = this._renderTarotSection(zodiacCards, 'Tarot Correspondences');
+        meaningEl.insertAdjacentHTML('afterend', tarotHTML);
       }
     } 
     
+    // Handle dual planets
     if (results.zodiac?.planet) { 
       const headerEl = document.getElementById('planet-meaning-header'); 
       const meaningEl = document.getElementById('planet-meaning'); 
       
-      // Handle dual planets (e.g., "Mars, Pluto")
       const planets = results.zodiac.planet.split(',').map(p => p.trim());
       
       if (headerEl) {
@@ -170,57 +194,56 @@ class UIManager {
       if (meaningEl) {
         let html = '';
         
-        // Display meaning for each planet
         planets.forEach((planet, index) => {
           if (index > 0) html += '<hr style="margin: 20px 0; border: 1px solid #ddd;">';
           html += `<h4 style="color: #3F7652; margin-top: ${index > 0 ? '20px' : '0'};">${planet}</h4>`;
           html += DataMeanings.getPlanetMeaning(planet);
-          
-          // Add Tarot card for each planet
-          const planetCards = this.tarot.getCardsForPlanet(planet);
-          if (planetCards.length > 0) {
-            html += '<div style="margin-top: 15px;"><strong>Tarot Correspondence:</strong></div>';
-            html += this.tarot.renderCards(planetCards);
-          }
         });
         
         meaningEl.innerHTML = html;
+        
+        // Insert Tarot AFTER meaningEl as sibling (for all planets combined)
+        let allPlanetCards = [];
+        planets.forEach(planet => {
+          const planetCards = this.tarot.getCardsForPlanet(planet);
+          allPlanetCards = allPlanetCards.concat(planetCards);
+        });
+        
+        if (allPlanetCards.length > 0) {
+          const tarotHTML = this._renderTarotSection(allPlanetCards, planets.length > 1 ? 'Tarot Correspondences' : 'Tarot Correspondence');
+          meaningEl.insertAdjacentHTML('afterend', tarotHTML);
+        }
       }
     } 
     
+    // Element
     if (results.zodiac?.element) { 
       const headerEl = document.getElementById('element-meaning-header'); 
       const meaningEl = document.getElementById('element-meaning'); 
       if (headerEl) headerEl.textContent = `The meaning of ${results.zodiac.element}`; 
       if (meaningEl) {
-        let html = DataMeanings.getElementMeaning(results.zodiac.element);
+        meaningEl.innerHTML = DataMeanings.getElementMeaning(results.zodiac.element);
         
+        // Insert Tarot AFTER meaningEl as sibling
         const elementCards = this.tarot.getCardsForElement(results.zodiac.element);
-        if (elementCards.length > 0) {
-          html += '<div style="margin-top: 20px;"><strong>Tarot Suit Correspondence:</strong></div>';
-          html += this.tarot.renderCards(elementCards);
-        }
-        
-        meaningEl.innerHTML = html;
+        const tarotHTML = this._renderTarotSection(elementCards, 'Tarot Suit Correspondence');
+        meaningEl.insertAdjacentHTML('afterend', tarotHTML);
       }
     } 
     
+    // Sefira (Tree of Life)
     if (results.sefira) { 
       const headerEl = document.getElementById('sefira-meaning-header'); 
       const meaningEl = document.getElementById('sefira-meaning'); 
       if (headerEl) headerEl.textContent = `The meaning of ${results.sefira}`; 
       if (meaningEl) {
-        let html = DataMeanings.getSefiraMeaning(results.sefira);
+        meaningEl.innerHTML = DataMeanings.getSefiraMeaning(results.sefira);
         
+        // Insert Tarot AFTER meaningEl as sibling
         const sefiraName = results.sefira.split('(')[0].trim();
-        const element = results.zodiac?.element;
         const sefiraCards = this.tarot.getCardsForSefira(sefiraName, null);
-        if (sefiraCards.length > 0) {
-          html += '<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>';
-          html += this.tarot.renderCards(sefiraCards);
-        }
-        
-        meaningEl.innerHTML = html;
+        const tarotHTML = this._renderTarotSection(sefiraCards, 'Tarot Correspondences');
+        meaningEl.insertAdjacentHTML('afterend', tarotHTML);
       }
     }
     
@@ -249,14 +272,12 @@ class UIManager {
       if (!data) return ''; 
       
       const tarotCards = this.tarot.getCardsForNumber(data.value);
-      const tarotHTML = tarotCards.length > 0 ? 
-        `<div style="margin-top: 20px;"><strong>Tarot Correspondences:</strong></div>${this.tarot.renderCards(tarotCards)}` : '';
+      const tarotHTML = tarotCards.length > 0 ? this._renderTarotSection(tarotCards, 'Tarot Correspondences') : '';
       
       const titleHTML = config.subtitle 
         ? `${config.title} <span style="font-size: 25px;">${config.subtitle}</span>`
         : config.title;
       
-      // FIX #1: NO watermark class on sub-cards
       return `<section class="expandable-card numerology-card" data-section="${config.key}">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">›</span><span>${titleHTML}</span>
@@ -287,7 +308,6 @@ class UIManager {
       "Karmic Debt Numbers indicate unresolved lessons or challenges carried from past lifetimes." : 
       "No karmic debt numbers detected."; 
       
-    // FIX #1: NO watermark class on sub-cards
     container.innerHTML += `<section class="expandable-card numerology-card" data-section="karmic">
       <div class="expandable-header" tabindex="0" role="button">
         <span class="chevron">›</span><span>Karmic Debt</span>
@@ -315,7 +335,6 @@ class UIManager {
         }
       });
       
-      // FIX #1: NO watermark class on sub-cards
       container.innerHTML += `<section class="expandable-card numerology-card" data-section="pinnacles">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">›</span><span>4 Cycles of Pinnacles</span>
@@ -345,7 +364,6 @@ class UIManager {
         }
       });
       
-      // FIX #1: NO watermark class on sub-cards
       container.innerHTML += `<section class="expandable-card numerology-card" data-section="challenges">
         <div class="expandable-header" tabindex="0" role="button">
           <span class="chevron">›</span><span>Challenge Numbers</span>
@@ -440,9 +458,20 @@ class UIManager {
       narrativeContent.textContent = 'Run analysis to see your personalized narrative.';
     }
     
-    ['deep-zodiac', 'deep-planet', 'deep-element', 'deep-sefira'].forEach(id => { 
+    const deepElements = { 
+      'deep-zodiac': 'Run analysis to see your Zodiac Sign',
+      'deep-planet': 'Run analysis to see your Ruling Planet',
+      'deep-element': 'Run analysis to see your Alchemical Element',
+      'deep-sefira': 'Run analysis to see your Prominent Sefira'
+    }; 
+    
+    Object.entries(deepElements).forEach(([id, text]) => { 
       const element = document.getElementById(id); 
-      if (element) element.textContent = '—'; 
+      if (element) {
+        element.textContent = text;
+        element.style.color = 'red';
+        element.style.fontStyle = 'italic';
+      }
     }); 
     
     ['zodiac', 'planet', 'element', 'sefira'].forEach(type => { 

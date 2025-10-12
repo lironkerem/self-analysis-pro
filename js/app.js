@@ -113,6 +113,18 @@ class SelfAnalysisApp {
 
   async handleAnalyze() {
     try {
+      // FIX #7: Validate required fields before starting
+      this.collectFormData();
+      
+      if (!this.appState.formData.firstName || !this.appState.formData.lastName || !this.appState.formData.dateOfBirth) {
+        this.showStandardError(
+          "Required Fields Missing",
+          "Please fill in your First Name, Last Name, and Date of Birth to proceed with the analysis. These fields are essential for generating your personalized report.",
+          "warning"
+        );
+        return;
+      }
+      
       const progressWrapper = document.getElementById("progress-wrapper");
       const progressInner = document.getElementById("progress-inner");
       const progressText = document.getElementById("progress-text");
@@ -121,7 +133,6 @@ class SelfAnalysisApp {
       this.updateProgress(0, "Starting...");
       
       console.log("Running analysis...");
-      this.collectFormData();
       this.updateProgress(10, "Collecting data...");
 
       // Fetch timezone with retry logic
@@ -347,90 +358,127 @@ class SelfAnalysisApp {
     this.ui.populateResults(uiData, null);
   }
 
-  clearAll() {
-    const form = document.getElementById("analysis-form");
-    if (form) form.reset();
+clearAll() {
+  const form = document.getElementById("analysis-form");
+  if (form) form.reset();
 
-    const locationInput = document.getElementById("location-birth");
-    if (locationInput) {
-      locationInput.value = "";
-      delete locationInput.dataset.lat;
-      delete locationInput.dataset.lon;
-    }
-
-    this.appState = {
-      formData: {},
-      analysis: {}
-    };
-
-    const numContent = document.getElementById("summary-numerology-content");
-    if (numContent) {
-      numContent.classList.add('placeholder-text');
-      numContent.textContent = "Run analysis to see your summary.";
-    }
-
-    const astroContent = document.getElementById("summary-astrology-content");
-    if (astroContent) {
-      astroContent.classList.add('placeholder-text');
-      astroContent.textContent = "Run analysis to see your summary.";
-    }
-
-    const treeContent = document.getElementById("summary-tree-content");
-    if (treeContent) {
-      treeContent.classList.add('placeholder-text');
-      treeContent.textContent = "Run analysis to see your summary.";
-    }
-
-    const storyEl = document.getElementById("personal-narrative-content");
-    if (storyEl) {
-      storyEl.classList.add('placeholder-text');
-      storyEl.textContent = "Run analysis to see your personalized narrative.";
-    }
-
-    const natalEl = document.getElementById("natal-chart-output");
-    if (natalEl) {
-      natalEl.classList.add('placeholder-text');
-      natalEl.textContent = "Enter time of birth and location to generate your natal chart.";
-    }
-
-    const numContainer = document.getElementById("numerology-cards-container");
-    if (numContainer) {
-      numContainer.classList.add('placeholder-text');
-      numContainer.innerHTML = "Run analysis to see your complete Numerology report.";
-    }
-
-    const resetTexts = {
-      "deep-zodiac": "—",
-      "zodiac-meaning-header": "",
-      "zodiac-meaning": "",
-      "deep-planet": "—",
-      "planet-meaning-header": "",
-      "planet-meaning": "",
-      "deep-element": "—",
-      "element-meaning-header": "",
-      "element-meaning": "",
-      "deep-sefira": "—",
-      "sefira-meaning-header": "",
-      "sefira-meaning": ""
-    };
-
-    for (const [id, text] of Object.entries(resetTexts)) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = text;
-    }
-
-    this.ui.clearResults();
-
-    const pdfBtn = document.getElementById("btn-pdf");
-    if (pdfBtn) pdfBtn.disabled = true;
-
-    // FIX #7: Reset step indicator
-    if (typeof window.resetStepIndicator === 'function') {
-      window.resetStepIndicator();
-    }
-
-    console.log("All data cleared, app is fresh and ready.");
+  const locationInput = document.getElementById("location-birth");
+  if (locationInput) {
+    locationInput.value = "";
+    delete locationInput.dataset.lat;
+    delete locationInput.dataset.lon;
   }
+
+  // Clear all state
+  this.appState = {
+    formData: {},
+    analysis: {}
+  };
+
+  // Reset summaries to placeholders
+  const numContent = document.getElementById("summary-numerology-content");
+  if (numContent) {
+    numContent.classList.add('placeholder-text');
+    numContent.textContent = "Run analysis to see your Numerology quick summary.";
+  }
+
+  const astroContent = document.getElementById("summary-astrology-content");
+  if (astroContent) {
+    astroContent.classList.add('placeholder-text');
+    astroContent.textContent = "Run analysis to see your Astrology quick summary.";
+  }
+
+  const treeContent = document.getElementById("summary-tree-content");
+  if (treeContent) {
+    treeContent.classList.add('placeholder-text');
+    treeContent.textContent = "Run analysis to see your Tree of Life quick summary.";
+  }
+
+  // Reset personal narrative
+  const storyEl = document.getElementById("personal-narrative-content");
+  if (storyEl) {
+    storyEl.classList.add('placeholder-text');
+    storyEl.textContent = "Run analysis to see your own unique, private analysis narrative, from all the information above.";
+  }
+
+  // Reset natal chart
+  const natalEl = document.getElementById("natal-chart-output");
+  if (natalEl) {
+    natalEl.classList.add('placeholder-text');
+    natalEl.textContent = "Enter time of birth and location of birth to generate your complete natal chart.";
+  }
+
+  // Reset numerology container
+  const numContainer = document.getElementById("numerology-cards-container");
+  if (numContainer) {
+    numContainer.classList.add('placeholder-text');
+    numContainer.innerHTML = "Run analysis to see your complete Numerology report.";
+  }
+
+  // Reset astrology placeholders
+  const astroPlaceholder = document.getElementById("astrology-content-placeholder");
+  if (astroPlaceholder) {
+    astroPlaceholder.style.display = "block";
+    astroPlaceholder.classList.add('placeholder-text');
+    astroPlaceholder.textContent = "Run analysis to see your complete Astrology report.";
+  }
+
+  // Hide and reset all astrology sub-cards
+  ['zodiac-sign', 'ruling-planet', 'alchemical-element', 'natal-chart'].forEach(section => {
+    const card = document.querySelector(`.expandable-card[data-section="${section}"]`);
+    if (card) card.style.display = 'none';
+  });
+
+  // Reset deep analysis values
+  const resetTexts = {
+    "deep-zodiac": "—",
+    "zodiac-meaning-header": "",
+    "zodiac-meaning": "",
+    "deep-planet": "—",
+    "planet-meaning-header": "",
+    "planet-meaning": "",
+    "deep-element": "—",
+    "element-meaning-header": "",
+    "element-meaning": "",
+    "deep-sefira": "—",
+    "sefira-meaning-header": "",
+    "sefira-meaning": ""
+  };
+
+  for (const [id, text] of Object.entries(resetTexts)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  // Reset tree of life placeholders
+  const treePlaceholder = document.getElementById("tree-content-placeholder");
+  const treeData = document.getElementById("tree-content-data");
+  if (treePlaceholder) {
+    treePlaceholder.style.display = "block";
+    treePlaceholder.classList.add('placeholder-text');
+    treePlaceholder.textContent = "Run analysis to see your complete Tree of Life report.";
+  }
+  if (treeData) treeData.style.display = "none";
+
+  // CRITICAL: Remove all Tarot sections that were inserted as siblings
+  document.querySelectorAll('.tarot-section-wrapper').forEach(wrapper => {
+    wrapper.remove();
+  });
+
+  // Clear UI
+  this.ui.clearResults();
+
+  // Disable PDF button
+  const pdfBtn = document.getElementById("btn-pdf");
+  if (pdfBtn) pdfBtn.disabled = true;
+
+  // Reset step indicator
+  if (typeof window.resetStepIndicator === 'function') {
+    window.resetStepIndicator();
+  }
+
+  console.log("All data cleared - app reset to initial state");
+}
 
   // FIX #9: Standardized error modal
   showStandardError(title, message, type = "error") {
@@ -477,46 +525,109 @@ class SelfAnalysisApp {
     });
   }
 
-  downloadPDF() {
-    try {
-      console.log("PDF generation started...");
-      
-      const firstName = this.appState.formData?.firstName || "User";
-      const filename = `${firstName}_Self-Analysis_Project-Curiosity.pdf`;
-      
-      // FIX #8: Correct PDF URL with proper filename (spaces encoded)
-      const pdf = new PDFAssembler({
-        sourcePdfUrl: 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/Self%20Analysis%20Pro%20Guidebook.pdf',
-        options: {
-          autoDownload: true,
-          downloadFilename: filename
+downloadPDF() {
+  try {
+    console.log("PDF generation started...");
+    
+    // Show loading popup
+    const loadingPopup = document.createElement('div');
+    loadingPopup.id = 'pdf-loading-popup';
+    loadingPopup.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border: 3px solid var(--primary-color);
+      border-radius: 15px;
+      padding: 20px 25px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 9999;
+      min-width: 320px;
+      max-width: 400px;
+    `;
+    
+    loadingPopup.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div class="pdf-spinner" style="
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(63, 118, 82, 0.2);
+          border-top: 4px solid var(--primary-color);
+          border-radius: 50%;
+          animation: pdfSpin 1s linear infinite;
+        "></div>
+        <div style="flex: 1;">
+          <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 5px;">
+            Generating PDF...
+          </div>
+          <div style="font-size: 16px; color: #666; line-height: 1.3;">
+            Your Personal Analysis PDF is being generated now
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Add spinner animation
+    if (!document.getElementById('pdf-spinner-animation')) {
+      const style = document.createElement('style');
+      style.id = 'pdf-spinner-animation';
+      style.textContent = `
+        @keyframes pdfSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
-      });
+      `;
+      document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(loadingPopup);
+    
+    const firstName = this.appState.formData?.firstName || "User";
+    const filename = `${firstName}_Self-Analysis_Project-Curiosity.pdf`;
+    
+    const pdf = new PDFAssembler({
+      sourcePdfUrl: 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Source_PDF/Self%20Analysis%20Pro%20Guidebook.pdf',
+      options: {
+        autoDownload: true,
+        downloadFilename: filename
+      }
+    });
+    
+    pdf.assemble(this.appState).then(() => {
+      console.log("PDF generation completed successfully");
       
-      pdf.assemble(this.appState).then(() => {
-        console.log("PDF generation completed successfully");
-      }).catch(err => {
-        console.error("PDF assembly failed:", err);
-        
-        // FIX #10: Error handling for PDF download
-        this.showStandardError(
-          "PDF Download Failed",
-          "We're unable to generate your personalized guidebook at this time. This could be due to a temporary connection issue. Please try again, or contact us through our website at https://lironkerem.wixsite.com/project-curiosity for assistance.",
-          "error"
-        );
-      });
-
-    } catch (err) {
-      console.error("PDF generation failed:", err);
+      // Remove loading popup
+      setTimeout(() => {
+        loadingPopup.remove();
+      }, 500);
       
-      // FIX #10: Standardized error for PDF with website contact
+    }).catch(err => {
+      console.error("PDF assembly failed:", err);
+      
+      // Remove loading popup
+      loadingPopup.remove();
+      
       this.showStandardError(
-        "PDF Generation Failed",
-        "We're unable to generate your personalized guidebook at this time. Please try again later, or contact us through our website at https://lironkerem.wixsite.com/project-curiosity for assistance.",
+        "PDF Download Failed",
+        "We're unable to generate your personalized guidebook at this time due to a temporary connection issue. Please try again, or contact us so we can send you your Guidebook",
         "error"
       );
-    }
+    });
+
+  } catch (err) {
+    console.error("PDF generation failed:", err);
+    
+    // Remove loading popup if it exists
+    const popup = document.getElementById('pdf-loading-popup');
+    if (popup) popup.remove();
+    
+    this.showStandardError(
+      "PDF Generation Failed",
+      "We're unable to generate your personalized guidebook at this time. Please try again later, or contact us through our website at https://lironkerem.wixsite.com/project-curiosity for assistance.",
+      "error"
+    );
   }
+}
 }
 
 // Initialize app

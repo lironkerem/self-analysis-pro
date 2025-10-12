@@ -1,7 +1,6 @@
 /**
- * TarotEngine.js - Complete Tarot Integration with Enhanced Styling
- * Maps numerology, astrology, and Tree of Life to Tarot cards with images
- * FIXED #4: Unique IDs for spinner to prevent conflicts
+ * TarotEngine.js - Complete Tarot Integration
+ * FIXED: Removed extra wrapper divs causing spacing issues
  */
 
 const TAROT_BASE_URL = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Tarot%20Cards%20images/';
@@ -11,20 +10,17 @@ class TarotEngine {
     this.baseUrl = TAROT_BASE_URL;
   }
 
-  // Get image URL for Major Arcana
   getMajorArcanaImage(number) {
     const num = String(number).padStart(2, '0');
     return `${this.baseUrl}${num}-${this.getMajorArcanaName(number).replace(/\s+/g, '')}.png`;
   }
 
-  // Get image URL for Minor Arcana
   getMinorArcanaImage(suit, number) {
     const num = String(number).padStart(2, '0');
     const suitCap = suit.charAt(0).toUpperCase() + suit.slice(1);
     return `${this.baseUrl}${suitCap}${num}.png`;
   }
 
-  // Major Arcana names
   getMajorArcanaName(number) {
     const names = {
       0: "The Fool", 1: "The Magician", 2: "The High Priestess",
@@ -39,20 +35,16 @@ class TarotEngine {
     return names[number] || "";
   }
 
-  // Get cards for a numerology number (1-22)
   getCardsForNumber(number) {
     const cards = [];
     
-    // Reduce to 1-22 range
     let reduced = number;
     if (number > 22) {
       reduced = this.reduceToMasterOrSingle(number);
     }
     
-    // Handle 0 and 22 both as The Fool
     if (reduced === 0 || reduced === 22) reduced = 0;
     
-    // Major Arcana
     if (reduced >= 0 && reduced <= 21) {
       cards.push({
         type: 'major',
@@ -62,7 +54,6 @@ class TarotEngine {
       });
     }
     
-    // Minor Arcana - numbered cards matching the reduced value (1-10)
     const minorNum = reduced === 0 ? 1 : (reduced > 10 ? reduced % 10 || 10 : reduced);
     if (minorNum >= 1 && minorNum <= 10) {
       ['pentacles', 'swords', 'cups', 'wands'].forEach(suit => {
@@ -79,7 +70,6 @@ class TarotEngine {
     return cards;
   }
 
-  // Get Major Arcana for zodiac sign
   getCardsForZodiac(zodiacSign) {
     const zodiacMap = {
       aries: { major: 4, minors: [{ suit: 'wands', numbers: [2, 3, 4] }] },
@@ -102,7 +92,6 @@ class TarotEngine {
     
     const cards = [];
     
-    // Major Arcana
     cards.push({
       type: 'major',
       number: mapping.major,
@@ -110,7 +99,6 @@ class TarotEngine {
       image: this.getMajorArcanaImage(mapping.major)
     });
     
-    // Minor Arcana (3 cards for the zodiac's decans)
     mapping.minors.forEach(minor => {
       minor.numbers.forEach(num => {
         cards.push({
@@ -126,7 +114,6 @@ class TarotEngine {
     return cards;
   }
 
-  // Get Major Arcana for ruling planet
   getCardsForPlanet(planet) {
     const planetMap = {
       sun: 19,
@@ -154,7 +141,6 @@ class TarotEngine {
     }];
   }
 
-  // Get cards for element (10 numbered + 4 court cards)
   getCardsForElement(element) {
     const elementMap = {
       fire: 'wands',
@@ -168,7 +154,6 @@ class TarotEngine {
     
     const cards = [];
     
-    // 10 numbered cards (1-10)
     for (let i = 1; i <= 10; i++) {
       cards.push({
         type: 'minor',
@@ -179,7 +164,6 @@ class TarotEngine {
       });
     }
     
-    // 4 court cards (11-14: Page, Knight, Queen, King)
     const courtNames = ['Page', 'Knight', 'Queen', 'King'];
     for (let i = 11; i <= 14; i++) {
       cards.push({
@@ -194,7 +178,6 @@ class TarotEngine {
     return cards;
   }
 
-  // Get cards for Tree of Life sefira
   getCardsForSefira(sefira, element) {
     const sefiraMap = {
       keter: 1, kether: 1,
@@ -238,7 +221,6 @@ class TarotEngine {
     return cards;
   }
 
-  // Helper: Reduce number to master or single digit
   reduceToMasterOrSingle(num) {
     while (num > 22) {
       const digits = String(num).split('').map(Number);
@@ -248,7 +230,7 @@ class TarotEngine {
     return num;
   }
 
-  // Generate HTML for card images with FIXED loading spinner (Issue #4)
+  // FIXED: Removed wrapper divs - return content directly
   renderCards(cards, layout = 'row') {
     if (!cards || cards.length === 0) return '';
     
@@ -256,9 +238,9 @@ class TarotEngine {
     const minorCards = cards.filter(c => c.type === 'minor');
     const courtCards = cards.filter(c => c.type === 'court');
     
-    let html = '<div style="margin: 10px 0; text-align: center;">';
+    // FIXED: No wrapper div - start with empty string
+    let html = '';
     
-    // Helper function to create card HTML with loading spinner - FIX #4: Unique IDs
     const createCardHTML = (card, width = '110px') => {
       const uniqueId = `tarot-${card.type}-${card.suit || 'major'}-${card.number}-${Math.random().toString(36).substr(2, 9)}`;
       return `
@@ -282,9 +264,8 @@ class TarotEngine {
         </div>`;
     };
     
-    // Major Arcana
     if (majorCards.length > 0) {
-      html += '<div style="margin-bottom: 15px;">';
+      html += '<div style="text-align: center;">';
       html += '<h5 style="margin: 0 0 8px 0; color: #3F7652; font-size: 30px; font-weight: 600;">Major Arcana</h5>';
       html += '<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; max-width: 800px; margin: 0 auto;">';
       majorCards.forEach(card => {
@@ -293,9 +274,8 @@ class TarotEngine {
       html += '</div></div>';
     }
     
-    // Minor Arcana
     if (minorCards.length > 0) {
-      html += '<div style="margin-bottom: 15px;">';
+      html += '<div style="margin-top: 15px; text-align: center;">';
       html += '<h5 style="margin: 0 0 8px 0; color: #3F7652; font-size: 30px; font-weight: 600;">Minor Arcana</h5>';
       html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, 95px); gap: 12px; justify-content: center; margin: 0 auto; max-width: 600px;">';
       minorCards.forEach(card => {
@@ -304,9 +284,8 @@ class TarotEngine {
       html += '</div></div>';
     }
     
-    // Court Cards
     if (courtCards.length > 0) {
-      html += '<div style="margin-bottom: 15px;">';
+      html += '<div style="margin-top: 15px; text-align: center;">';
       html += '<h5 style="margin: 0 0 8px 0; color: #3F7652; font-size: 30px; font-weight: 600;">Court Cards</h5>';
       html += '<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;">';
       courtCards.forEach(card => {
@@ -315,12 +294,11 @@ class TarotEngine {
       html += '</div></div>';
     }
     
-    html += '</div>';
+    // FIXED: No closing wrapper div
     return html;
   }
 }
 
-// Export for browser and Node.js
 if (typeof window !== 'undefined') {
   window.TarotEngine = TarotEngine;
 }
