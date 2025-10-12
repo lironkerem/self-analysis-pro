@@ -651,30 +651,56 @@
       }, 4000);
     }
 
-    function setupStep4Watchers() {
+function setupStep4Watchers() {
+  console.log('🔍 setupStep4Watchers() CALLED');
+  
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.expandable-card');
+    if (!card) return;
+    
+    const isStep4Card = card.dataset.section === 'cta-sessions' || 
+                        card.dataset.section === 'cta-workshops';
+    
+    console.log('Clicked card section:', card.dataset.section, 'Is Step 4 card?', isStep4Card);
+    
+    if (isStep4Card) {
       setTimeout(() => {
-        const sessionsCard = document.querySelector('[data-section="cta-sessions"]');
-        const workshopsCard = document.querySelector('[data-section="cta-workshops"]');
-        
-        [sessionsCard, workshopsCard].forEach(card => {
-          if (!card) return;
-          
-          const header = card.querySelector('.expandable-header');
-          if (header) {
-            header.addEventListener('click', () => {
-              setTimeout(() => {
-                if (card.classList.contains('expanded')) {
-                  triggerStep4Animation();
-                }
-              }, 100);
-            });
-          }
-        });
-      }, 1000);
+        console.log('Step 4 card expanded?', card.classList.contains('expanded'));
+        if (card.classList.contains('expanded')) {
+          triggerStep4Animation();
+        }
+      }, 150);
     }
+  });
+}
 
     updateStepIndicator();
-    setupStep3Watchers();
+  setupStep3Watchers();
+function setupStep3Watchers() {
+  // Direct attachment, run immediately
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.expandable-card');
+    if (!card) return;
+    
+    const isMainCard = card.dataset.section === 'numerology' || 
+                       card.dataset.section === 'astrology' || 
+                       card.dataset.section === 'tree-of-life';
+    
+    if (isMainCard) {
+      console.log('Main card clicked:', card.dataset.section);
+      setTimeout(() => {
+        console.log('Checking expanded:', card.classList.contains('expanded'));
+        if (card.classList.contains('expanded') && !completedSteps.has(3)) {
+          completedSteps.add(3);
+          currentStep = 3;
+          updateStepIndicator();
+          console.log('✅ Step 3 achieved!');
+        }
+      }, 150);
+    }
+  });
+}
+
     setupStep4Watchers();
 
     window.resetStepIndicator = () => {
