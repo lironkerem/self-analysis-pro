@@ -1,33 +1,61 @@
 /* =========================================
    STANDARDIZED FONT SYSTEM - Fluid Responsive
    ========================================= */
-/* Force proper mobile container behavior */
-html {
-  width: 100%;
-  overflow-x: hidden;
-}
-
-body {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 8px !important; /* Override the 18px on mobile */
-}
-
 @media (max-width: 768px) {
+  html {
+    font-size: 14px !important;
+  }
+  
   body {
-    padding: 8px !important;
+    padding: 4px !important;
   }
   
   .page {
     max-width: 100% !important;
-    margin: 0 !important;
     padding: 8px !important;
+    border-width: 1px !important;
+    border-radius: 15px !important;
   }
   
   .card {
-    padding: 16px !important;
+    padding: 12px !important;
+    border-radius: 15px !important;
+  }
+  
+  h1 {
+    font-size: 24px !important;
+    padding: 8px 10px !important;
+  }
+  
+  h1::before {
+    width: 40px !important;
+    height: 40px !important;
+    left: 5px !important;
+  }
+  
+  h2 {
+    font-size: 20px !important;
+    padding: 6px 10px !important;
+  }
+  
+  h3 {
+    font-size: 16px !important;
+  }
+  
+  .form-input,
+  .btn,
+  p,
+  .data-label,
+  .data-value {
+    font-size: 14px !important;
+  }
+  
+  .expandable-header {
+    font-size: 16px !important;
+  }
+  
+  .step-indicator {
+    padding: 8px !important;
   }
 }
 :root {
@@ -38,16 +66,16 @@ body {
   --border-color: #000;
   --font-family: "Amatic SC", cursive;
   
-  /* Fluid Font Size System - 320px to 980px viewport */
-  --font-h1: clamp(32px, 5vw + 16px, 70px);
-  --font-h2: clamp(23px, 3.5vw + 11.5px, 50px);
+  /* Fluid Font Size System - MORE AGGRESSIVE for narrow mobile */
+  --font-h1: clamp(24px, 5vw + 16px, 70px);
+  --font-h2: clamp(20px, 3.5vw + 11.5px, 50px);
   --font-h3: clamp(16px, 2.5vw + 8px, 35px);
-  --font-h4: clamp(11.5px, 1.75vw + 5.75px, 25px);
-  --font-body: clamp(11.5px, 1.75vw + 5.75px, 25px);
-  --font-input: clamp(16px, 1.75vw + 8px, 25px);
-  --font-button: clamp(11.5px, 1.75vw + 5.75px, 25px);
-  --font-small: clamp(8.5px, 1.25vw + 4.5px, 18px);
-  --font-tiny: clamp(7.5px, 1.1vw + 4px, 16px);
+  --font-h4: clamp(14px, 1.75vw + 5.75px, 25px);
+  --font-body: clamp(14px, 1.75vw + 5.75px, 25px);
+  --font-input: clamp(14px, 1.75vw + 8px, 25px);
+  --font-button: clamp(14px, 1.75vw + 5.75px, 25px);
+  --font-small: clamp(12px, 1.25vw + 4.5px, 18px);
+  --font-tiny: clamp(11px, 1.1vw + 4px, 16px);
   
   --shadow: 0 4px 18px rgba(63, 118, 82, 0.10), 0 1.5px 4px rgba(60, 60, 60, 0.09);
 }
