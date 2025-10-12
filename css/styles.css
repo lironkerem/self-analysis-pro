@@ -1,7 +1,35 @@
 /* =========================================
    STANDARDIZED FONT SYSTEM - Fluid Responsive
    ========================================= */
+/* Force proper mobile container behavior */
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
 
+body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 8px !important; /* Override the 18px on mobile */
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 8px !important;
+  }
+  
+  .page {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 8px !important;
+  }
+  
+  .card {
+    padding: 16px !important;
+  }
+}
 :root {
   --primary-color: #3F7652;
   --text-muted: rgba(0, 0, 0, 0.45);
