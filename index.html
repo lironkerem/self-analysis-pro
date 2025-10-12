@@ -787,5 +787,29 @@
       }
     })();
   </script>
+/* =========================================
+   WIX IFRAME HEIGHT AUTO-COMMUNICATION
+   ========================================= */
+<script>
+  // Send height updates to Wix parent frame
+  function sendHeightToParent() {
+    const height = document.documentElement.scrollHeight;
+    window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+  }
+
+  // Send initial height
+  sendHeightToParent();
+
+  // Update on window resize
+  window.addEventListener('resize', sendHeightToParent);
+
+  // Use MutationObserver to detect content changes
+  const observer = new MutationObserver(sendHeightToParent);
+  observer.observe(document.body, { 
+    childList: true, 
+    subtree: true, 
+    attributes: true 
+  });
+</script>
 </body>
 </html>
