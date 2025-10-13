@@ -46,8 +46,32 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Astrology API not configured' });
     }
 
+    // Format params for Free Astrology API
+    // Ensure all required fields are present and properly typed
+    const apiParams = {
+      year: parseInt(params.year),
+      month: parseInt(params.month),
+      day: parseInt(params.day),
+      hour: parseInt(params.hour),
+      min: parseInt(params.min),
+      lat: parseFloat(params.lat),
+      lon: parseFloat(params.lon),
+      tzone: parseFloat(params.tzone || 0)
+    };
+
+    // Validate required fields
+    if (isNaN(apiParams.year) || isNaN(apiParams.month) || isNaN(apiParams.day) ||
+        isNaN(apiParams.hour) || isNaN(apiParams.min) || 
+        isNaN(apiParams.lat) || isNaN(apiParams.lon) || isNaN(apiParams.tzone)) {
+      console.error('Invalid parameter types:', apiParams);
+      return res.status(400).json({ 
+        error: 'Invalid parameter types',
+        params: apiParams
+      });
+    }
+
     console.log('Calling Free Astrology API:', `https://json.freeastrologyapi.com/${endpoint}`);
-    console.log('With params:', params);
+    console.log('With formatted params:', apiParams);
 
     // Call Free Astrology API
     const response = await fetch(`https://json.freeastrologyapi.com/${endpoint}`, {
@@ -56,23 +80,24 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'x-api-key': process.env.FREE_ASTRO_API_KEY
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(apiParams)
     });
 
     console.log('Free Astrology API response status:', response.status);
-    console.log('Free Astrology API response headers:', response.headers);
+
+    const responseText = await response.text();
+    console.log('Free Astrology API raw response:', responseText);
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Free Astrology API error:', response.status, errorText);
+      console.error('Free Astrology API error:', response.status, responseText);
       return res.status(response.status).json({ 
         error: 'Free Astrology API error', 
         status: response.status,
-        details: errorText 
+        details: responseText 
       });
     }
 
-    const data = await response.json();
+    const data = JSON.parse(responseText);
     console.log('Free Astrology API success - data received');
     
     return res.status(200).json(data);
