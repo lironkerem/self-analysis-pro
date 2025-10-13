@@ -39,13 +39,13 @@ export default async function handler(req, res) {
     const apiParams = {
       year: params.year,
       month: params.month,
-      date: params.day || params.date, // API uses "date" not "day"
-      hours: params.hour || params.hours, // API uses "hours" not "hour"
-      minutes: params.min || params.minutes, // API uses "minutes" not "min"
-      seconds: params.seconds || 0,
-      latitude: params.lat || params.latitude, // API uses "latitude" not "lat"
-      longitude: params.lon || params.longitude, // API uses "longitude" not "lon"
-      timezone: params.tzone || params.timezone || 0 // API uses "timezone" not "tzone"
+      date: params.day !== undefined ? params.day : params.date,
+      hours: params.hour !== undefined ? params.hour : params.hours,
+      minutes: params.min !== undefined ? params.min : params.minutes,
+      seconds: params.seconds !== undefined ? params.seconds : 0,
+      latitude: params.lat !== undefined ? params.lat : params.latitude,
+      longitude: params.lon !== undefined ? params.lon : params.longitude,
+      timezone: params.tzone !== undefined ? params.tzone : (params.timezone !== undefined ? params.timezone : 0)
     };
 
     const required = ['year', 'month', 'date', 'hours', 'minutes', 'latitude', 'longitude'];
@@ -86,14 +86,14 @@ export default async function handler(req, res) {
     console.log("🚀 Calling Free Astrology API: ${endpoint}");
     console.log("📦 Transformed API Params:", JSON.stringify(apiParams, null, 2));
 
-    // Call Free Astrology API
+    // Call Free Astrology API with transformed params
     const response = await fetch(`https://json.freeastrologyapi.com/${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.FREE_ASTRO_API_KEY
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(apiParams)
     });
 
     const data = await response.json();
