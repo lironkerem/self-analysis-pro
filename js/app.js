@@ -1,7 +1,7 @@
 // app.js - FIXED: Remove timezone fetch, let proxy handle it
 import { AstrologyEngine } from './astrology.js';
 import { renderNatalChartBlock } from './ui.natal.js';
-import numerologyEngine from './numerology.js';
+import NumerologyEngine from './numerology.js';
 import TarotEngine from './TarotEngine.js';
 import { narrativeEngine } from './narrativeEngine.js';
 import PDFAssembler from './PDFAssembler.js';
@@ -12,6 +12,7 @@ class SelfAnalysisApp {
       formData: {},
       analysis: {},
     };
+    this.numerologyEngine = new NumerologyEngine();
     this.astrologyEngine = new AstrologyEngine();
     this.tarotEngine = new TarotEngine();
     this.init();
@@ -65,7 +66,7 @@ class SelfAnalysisApp {
       this.showProgress("Analyzing numerology...", 20);
 
       // Run numerology (always works)
-      const numerologyResults = numerologyEngine.analyze(this.appState.formData);
+      const numerologyResults = this.numerologyEngine.analyze(this.appState.formData);
       console.log("✅ Numerology results:", numerologyResults);
       
       this.showProgress("Analyzing astrology...", 50);
