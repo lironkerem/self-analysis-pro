@@ -56,6 +56,22 @@ export class AstrologyEngine {
     return this.sefiraMapping[primaryPlanet] || "Malkuth (Kingdom)";
   }
 
+  // Helper for fallback when API fails
+  getBasicAstrology(dateOfBirth) {
+    const [year, month, day] = dateOfBirth.split('-').map(Number);
+    const zodiac = this.getZodiacSign(month, day);
+    const sefira = this.getSefiraFromPlanet(zodiac.planet);
+    
+    return {
+      zodiac: zodiac,
+      sefira: sefira,
+      planets: null,
+      houses: null,
+      aspects: null,
+      natalChart: null
+    };
+  }
+
   async analyze(formData) {
     try {
       const { dateOfBirth, timeOfBirth, locationLat, locationLon, tzone } = formData;
