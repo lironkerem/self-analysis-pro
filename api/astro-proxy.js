@@ -1,116 +1,93 @@
-// ============================================
-// /api/astro-proxy.js
-// This runs on the SERVER (Vercel serverless function)
-// ============================================
-import tzlookup from "tz-lookup";
+// /api/astro-proxy.js - SIMPLIFIED VERSION
+// No external dependencies, basic timezone handling
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  console.log('=== Astro Proxy Function Started ===');
+  console.log('Method:', req.method);
+  console.log('Headers:', req.headers);
+  
+  // Enable CORS for all origins
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    console.log('OPTIONS request - returning 200');
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    console.log('Invalid method:', req.method);
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
+    console.log('Request body:', req.body);
     const { endpoint, params } = req.body;
 
     if (!endpoint || !params) {
-      return res.status(400).json({ error: "Missing endpoint or params" });
+      console.error('Missing endpoint or params');
+      return res.status(400).json({ error: 'Missing endpoint or params' });
     }
 
-    // Resolve timezone offset if not already provided
-    if (!params.tzone && params.lat && params.lon && params.dateOfBirth) {
-      try {
-        params.tzone = await resolveTzOffset(params.lat, params.lon, params.dateOfBirth);
-        console.log(`Resolved timezone offset: ${params.tzone}`);
-      } catch (tzError) {
-        console.error("Timezone resolution failed:", tzError);
-        params.tzone = 0;
-      }
+    // Use provided timezone or default to 0
+    if (!params.tzone) {
+      params.tzone = 0;
+      console.log('No timezone provided, defaulting to 0');
     }
 
+    // Check API key
+    console.log('Checking FREE_ASTRO_API_KEY...');
+    console.log('FREE_ASTRO_API_KEY exists:', !!process.env.FREE_ASTRO_API_KEY);
+    console.log('FREE_ASTRO_API_KEY length:', process.env.FREE_ASTRO_API_KEY?.length);
+    
     if (!process.env.FREE_ASTRO_API_KEY) {
-      console.error("FREE_ASTRO_API_KEY not set");
-      return res.status(500).json({ error: "Astrology API not configured" });
+      console.error('FREE_ASTRO_API_KEY not set in environment');
+      return res.status(500).json({ error: 'Astrology API not configured' });
     }
+
+    console.log('Calling Free Astrology API:', `https://json.freeastrologyapi.com/${endpoint}`);
+    console.log('With params:', params);
 
     // Call Free Astrology API
     const response = await fetch(`https://json.freeastrologyapi.com/${endpoint}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.FREE_ASTRO_API_KEY
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.FREE_ASTRO_API_KEY
       },
       body: JSON.stringify(params)
     });
 
-    const data = await response.json();
+    console.log('Free Astrology API response status:', response.status);
+    console.log('Free Astrology API response headers:', response.headers);
 
     if (!response.ok) {
-      console.error("Free Astrology API error:", response.status, data);
+      const errorText = await response.text();
+      console.error('Free Astrology API error:', response.status, errorText);
       return res.status(response.status).json({ 
-        error: "Free Astrology API error", 
-        details: data 
+        error: 'Free Astrology API error', 
+        status: response.status,
+        details: errorText 
       });
     }
 
+    const data = await response.json();
+    console.log('Free Astrology API success - data received');
+    
     return res.status(200).json(data);
 
   } catch (error) {
-    console.error("Astro Proxy Error:", error);
+    console.error('!!! Astro Proxy Critical Error !!!');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return res.status(500).json({ 
-      error: "Internal server error",
-      message: error.message
+      error: 'Internal server error',
+      name: error.name,
+      message: error.message,
+      stack: error.stack
     });
-  }
-}
-
-async function resolveTzOffset(lat, lon, dateStr) {
-  try {
-    const latitude = parseFloat(lat);
-    const longitude = parseFloat(lon);
-    
-    if (isNaN(latitude) || isNaN(longitude)) {
-      return 0;
-    }
-
-    const apiKey = process.env.TIMEZONEDB_API_KEY;
-    if (!apiKey) {
-      console.warn("TIMEZONEDB_API_KEY not set");
-      return 0;
-    }
-
-    let tzName;
-    try {
-      tzName = tzlookup(latitude, longitude);
-      console.log(`Timezone: ${tzName}`);
-    } catch (e) {
-      console.warn("tz-lookup failed:", e.message);
-    }
-
-    const dateObj = new Date(dateStr);
-    if (isNaN(dateObj.getTime())) {
-      return 0;
-    }
-    
-    const timestamp = Math.floor(dateObj.getTime() / 1000);
-    const url = `http://api.timezonedb.com/v2.1/get-time-zone?key=${apiKey}&format=json&by=position&lat=${latitude}&lng=${longitude}&time=${timestamp}`;
-    
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(5000)
-    });
-
-    if (!response.ok) {
-      return 0;
-    }
-
-    const data = await response.json();
-
-    if (data.status === "OK" && typeof data.gmtOffset === "number") {
-      return data.gmtOffset / 3600;
-    }
-    
-    return 0;
-  } catch (err) {
-    console.error("resolveTzOffset error:", err);
-    return 0;
   }
 }
