@@ -698,4 +698,9 @@ if (typeof window !== "undefined") {
   window.getAstrologySummary = getAstrologySummary;
   window.getTreeSummary = getTreeSummary;
 }
-export default narrativeEngine;
+export const narrativeEngine = {
+  buildNarrative,
+  getNumerologySummary,
+  getAstrologySummary,
+  getTreeSummary
+};
