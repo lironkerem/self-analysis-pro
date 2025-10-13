@@ -4,7 +4,7 @@ import { renderNatalChartBlock } from './ui.natal.js';
 import { numerologyEngine } from './numerology.js';
 import { TarotEngine } from './TarotEngine.js';
 import { narrativeEngine } from './narrativeEngine.js';
-import { PDFAssembler } from './PDFAssembler.js';
+import PDFAssembler from './PDFAssembler.js';
 
 class SelfAnalysisApp {
   constructor() {
