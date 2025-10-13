@@ -30,49 +30,39 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing endpoint or params' });
     }
 
+    // Use provided timezone or default to 0
+    if (!params.tzone) {
+      params.tzone = 0;
+      console.log('No timezone provided, defaulting to 0');
+    }
+
     // Check API key
     console.log('Checking FREE_ASTRO_API_KEY...');
     console.log('FREE_ASTRO_API_KEY exists:', !!process.env.FREE_ASTRO_API_KEY);
+    console.log('FREE_ASTRO_API_KEY length:', process.env.FREE_ASTRO_API_KEY?.length);
     
     if (!process.env.FREE_ASTRO_API_KEY) {
       console.error('FREE_ASTRO_API_KEY not set in environment');
       return res.status(500).json({ error: 'Astrology API not configured' });
     }
 
-    let apiParams;
-
-    // Handle timezone endpoint differently (it uses dateOfBirth string)
-    if (endpoint === 'timezone') {
-      console.log('Timezone endpoint - parsing dateOfBirth:', params.dateOfBirth);
-      
-      const date = new Date(params.dateOfBirth);
-      apiParams = {
-        year: date.getFullYear(),
-        month: date.getMonth() + 1,
-        day: date.getDate(),
-        hour: 12, // Use noon for timezone lookup
-        min: 0,
-        lat: parseFloat(params.lat),
-        lon: parseFloat(params.lon)
-      };
-    } else {
-      // Handle astrology endpoints (planets, houses, aspects, natal-wheel-chart)
-      apiParams = {
-        year: parseInt(params.year),
-        month: parseInt(params.month),
-        day: parseInt(params.day),
-        hour: parseInt(params.hour),
-        min: parseInt(params.min),
-        lat: parseFloat(params.lat),
-        lon: parseFloat(params.lon),
-        tzone: parseFloat(params.tzone || 0)
-      };
-    }
+    // Format params for Free Astrology API
+    // Ensure all required fields are present and properly typed
+    const apiParams = {
+      year: parseInt(params.year),
+      month: parseInt(params.month),
+      day: parseInt(params.day),
+      hour: parseInt(params.hour),
+      min: parseInt(params.min),
+      lat: parseFloat(params.lat),
+      lon: parseFloat(params.lon),
+      tzone: parseFloat(params.tzone || 0)
+    };
 
     // Validate required fields
     if (isNaN(apiParams.year) || isNaN(apiParams.month) || isNaN(apiParams.day) ||
         isNaN(apiParams.hour) || isNaN(apiParams.min) || 
-        isNaN(apiParams.lat) || isNaN(apiParams.lon)) {
+        isNaN(apiParams.lat) || isNaN(apiParams.lon) || isNaN(apiParams.tzone)) {
       console.error('Invalid parameter types:', apiParams);
       return res.status(400).json({ 
         error: 'Invalid parameter types',

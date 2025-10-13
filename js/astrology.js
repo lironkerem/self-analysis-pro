@@ -1,18 +1,15 @@
 // js/astrology.js
-// AstrologyEngine for Free Astrology API
-// FIXED: Dual ruling planets for Scorpio, Aquarius, Pisces
-
+// FIXED: Ensure all required params are sent to API
 import { getPlanets, getHouses, getAspects, getNatalWheelChart } from './astroApi.js';
 
 export class AstrologyEngine {
   constructor() {
     console.log('AstrologyEngine initialized (Free Astrology API)');
     
-    // Updated zodiac data with dual planets
     this.zodiacData = [
       ["Capricorn", 1, 1, "Saturn", "Earth"],
-      ["Aquarius", 1, 20, "Saturn, Uranus", "Air"], // DUAL PLANETS
-      ["Pisces", 2, 19, "Jupiter, Neptune", "Water"], // DUAL PLANETS
+      ["Aquarius", 1, 20, "Saturn, Uranus", "Air"],
+      ["Pisces", 2, 19, "Jupiter, Neptune", "Water"],
       ["Aries", 3, 21, "Mars", "Fire"],
       ["Taurus", 4, 20, "Venus", "Earth"],
       ["Gemini", 5, 21, "Mercury", "Air"],
@@ -20,12 +17,11 @@ export class AstrologyEngine {
       ["Leo", 7, 23, "Sun", "Fire"],
       ["Virgo", 8, 23, "Mercury", "Earth"],
       ["Libra", 9, 23, "Venus", "Air"],
-      ["Scorpio", 10, 23, "Mars, Pluto", "Water"], // DUAL PLANETS
+      ["Scorpio", 10, 23, "Mars, Pluto", "Water"],
       ["Sagittarius", 11, 22, "Jupiter", "Fire"],
       ["Capricorn", 12, 22, "Saturn", "Earth"]
     ];
     
-    // Extended sefira mapping for all planets including Earth
     this.sefiraMapping = {
       "Sun": "Tiferet (Beauty)",
       "Moon": "Yesod (Foundation)",
@@ -36,7 +32,7 @@ export class AstrologyEngine {
       "Saturn": "Binah (Understanding)",
       "Neptune": "Chokhmah (Wisdom)",
       "Pluto": "Keter (Crown)",
-      "Earth": "Malkuth (Kingdom)", // Earth only for Malkuth
+      "Earth": "Malkuth (Kingdom)",
       "Uranus": "Chokhmah (Wisdom)"
     };
   }
@@ -56,7 +52,6 @@ export class AstrologyEngine {
   }
   
   getSefiraFromPlanet(planet) {
-    // Handle dual planets - use the first (traditional) planet
     const primaryPlanet = planet.split(',')[0].trim();
     return this.sefiraMapping[primaryPlanet] || "Malkuth (Kingdom)";
   }
@@ -69,15 +64,20 @@ export class AstrologyEngine {
         throw new Error("Date of birth is required.");
       }
       
-      // Parse DOB and get basic astrology (always works)
+      // Parse DOB
       const [year, month, day] = dateOfBirth.split('-').map(Number);
       const zodiac = this.getZodiacSign(month, day);
       const sefira = this.getSefiraFromPlanet(zodiac.planet);
       
-      // If no time/location, return basic astrology only
-      if (!timeOfBirth || !locationLat || !locationLon || 
-          locationLat === "" || locationLon === "" || timeOfBirth === "") {
-        console.warn("Returning basic astrology - no time/location for natal chart");
+      // Check if we have complete birth data for natal chart
+      const hasTime = timeOfBirth && timeOfBirth !== "";
+      const hasLocation = locationLat && locationLon && 
+                         locationLat !== "" && locationLon !== "" &&
+                         !isNaN(parseFloat(locationLat)) && !isNaN(parseFloat(locationLon));
+      
+      if (!hasTime || !hasLocation) {
+        console.warn("⚠️ Incomplete birth data - returning basic astrology only");
+        console.warn(`  Time: ${hasTime ? '✅' : '❌'}, Location: ${hasLocation ? '✅' : '❌'}`);
         return {
           zodiac: zodiac,
           sefira: sefira,
@@ -88,20 +88,37 @@ export class AstrologyEngine {
         };
       }
       
-      // Full natal chart with API
+      // Parse time
       const [hour, minute] = timeOfBirth.split(':').map(Number);
+      
+      if (isNaN(hour) || isNaN(minute)) {
+        console.error("Invalid time format:", timeOfBirth);
+        throw new Error("Invalid time of birth format");
+      }
+      
+      // Build API params - ALL required fields
       const params = {
-        year, month, day, hour,
+        year: year,
+        month: month,
+        day: day,
+        hour: hour,
         min: minute,
         lat: parseFloat(locationLat),
         lon: parseFloat(locationLon),
-        tzone: tzone || 0
+        tzone: parseFloat(tzone || 0)
       };
       
-      const planets = await getPlanets(params);
-      const houses = await getHouses(params);
-      const aspects = await getAspects(params);
-      const natalChart = await getNatalWheelChart(params);
+      console.log("🚀 Calling Free Astrology API with params:", params);
+      
+      // Call all endpoints
+      const [planets, houses, aspects, natalChart] = await Promise.all([
+        getPlanets(params),
+        getHouses(params),
+        getAspects(params),
+        getNatalWheelChart(params)
+      ]);
+      
+      console.log("✅ All astrology API calls successful");
       
       return {
         zodiac: zodiac,
@@ -112,7 +129,7 @@ export class AstrologyEngine {
         natalChart
       };
     } catch (err) {
-      console.error("AstrologyEngine analyze() failed:", err);
+      console.error("❌ AstrologyEngine analyze() failed:", err);
       throw err;
     }
   }
