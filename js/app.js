@@ -85,7 +85,7 @@ class SelfAnalysisApp {
       this.showProgress("Drawing tarot cards...", 80);
 
       // Run tarot
-      const tarotResults = this.tarotEngine.drawCards(this.appState.formData);
+      const tarotResults = this.tarotEngine.draw(this.appState.formData);
       console.log("✅ Tarot results:", tarotResults);
 
       this.showProgress("Generating narrative...", 90);
