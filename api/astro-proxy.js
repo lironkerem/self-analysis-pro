@@ -35,13 +35,26 @@ export default async function handler(req, res) {
       });
     }
 
-    // VALIDATE REQUIRED PARAMS
-    const required = ['year', 'month', 'day', 'hour', 'min', 'lat', 'lon'];
-    const missing = required.filter(key => params[key] === undefined || params[key] === null);
+    // VALIDATE REQUIRED PARAMS (using correct Free Astrology API names)
+    const apiParams = {
+      year: params.year,
+      month: params.month,
+      date: params.day || params.date, // API uses "date" not "day"
+      hours: params.hour || params.hours, // API uses "hours" not "hour"
+      minutes: params.min || params.minutes, // API uses "minutes" not "min"
+      seconds: params.seconds || 0,
+      latitude: params.lat || params.latitude, // API uses "latitude" not "lat"
+      longitude: params.lon || params.longitude, // API uses "longitude" not "lon"
+      timezone: params.tzone || params.timezone || 0 // API uses "timezone" not "tzone"
+    };
+
+    const required = ['year', 'month', 'date', 'hours', 'minutes', 'latitude', 'longitude'];
+    const missing = required.filter(key => apiParams[key] === undefined || apiParams[key] === null);
     
     if (missing.length > 0) {
       console.error("❌ Missing required params:", missing);
       console.error("📦 Received params:", params);
+      console.error("📦 Transformed params:", apiParams);
       return res.status(400).json({ 
         error: "Missing required parameters",
         missing: missing,
@@ -50,39 +63,28 @@ export default async function handler(req, res) {
     }
 
     // VALIDATE PARAM TYPES
-    const numericParams = ['year', 'month', 'day', 'hour', 'min', 'lat', 'lon', 'tzone'];
+    const numericParams = ['year', 'month', 'date', 'hours', 'minutes', 'seconds', 'latitude', 'longitude', 'timezone'];
     for (const key of numericParams) {
-      if (params[key] !== undefined && isNaN(Number(params[key]))) {
-        console.error(`❌ Invalid ${key}: ${params[key]} is not a number`);
+      if (apiParams[key] !== undefined && isNaN(Number(apiParams[key]))) {
+        console.error(`❌ Invalid ${key}: ${apiParams[key]} is not a number`);
         return res.status(400).json({
           error: `Invalid parameter: ${key} must be a number`,
-          value: params[key]
+          value: apiParams[key]
         });
       }
     }
 
     // Convert all params to numbers
-    ['year', 'month', 'day', 'hour', 'min'].forEach(key => {
-      if (params[key] !== undefined) params[key] = Number(params[key]);
+    ['year', 'month', 'date', 'hours', 'minutes', 'seconds'].forEach(key => {
+      if (apiParams[key] !== undefined) apiParams[key] = Number(apiParams[key]);
     });
-    ['lat', 'lon', 'tzone'].forEach(key => {
-      if (params[key] !== undefined) params[key] = parseFloat(params[key]);
+    ['latitude', 'longitude', 'timezone'].forEach(key => {
+      if (apiParams[key] !== undefined) apiParams[key] = parseFloat(apiParams[key]);
     });
 
-    // Resolve timezone if needed
-    if (!params.tzone && params.lat && params.lon) {
-      try {
-        params.tzone = await resolveTzOffset(params.lat, params.lon, `${params.year}-${params.month}-${params.day}`);
-        console.log(`✅ Resolved timezone offset: ${params.tzone}`);
-      } catch (tzError) {
-        console.warn("⚠️ Timezone resolution failed, using 0:", tzError.message);
-        params.tzone = 0;
-      }
-    }
-
-    // LOG REQUEST
-    console.log(`🚀 Calling Free Astrology API: ${endpoint}`);
-    console.log("📦 Params:", JSON.stringify(params, null, 2));
+    // Remove tzone resolution code since we're using the transformed params
+    console.log("🚀 Calling Free Astrology API: ${endpoint}");
+    console.log("📦 Transformed API Params:", JSON.stringify(apiParams, null, 2));
 
     // Call Free Astrology API
     const response = await fetch(`https://json.freeastrologyapi.com/${endpoint}`, {
