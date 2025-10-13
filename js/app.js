@@ -68,8 +68,7 @@ class SelfAnalysisApp {
       locationOfBirth: locationInput?.value || "",
       locationLat: locationInput?.dataset.lat || "",
       locationLon: locationInput?.dataset.lon || "",
-      includeY: form.includeY?.checked || false,
-      tzone: null,
+      tzone: parseFloat(locationInput?.dataset?.tzone || "0"),
     };
 
     console.log("Collected form data:", this.appState.formData);
