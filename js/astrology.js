@@ -150,3 +150,4 @@ export class AstrologyEngine {
     }
   }
 }
+export default AstrologyEngine;
