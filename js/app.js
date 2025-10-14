@@ -2,7 +2,6 @@
 import { AstrologyEngine } from './astrology.js';
 import { renderNatalChartBlock } from './ui.natal.js';
 import NumerologyEngine from './numerology.js';
-import TarotEngine from './TarotEngine.js';
 import { narrativeEngine } from './narrativeEngine.js';
 import PDFAssembler from './PDFAssembler.js';
 
@@ -14,7 +13,7 @@ class SelfAnalysisApp {
     };
     this.numerologyEngine = new NumerologyEngine();
     this.astrologyEngine = new AstrologyEngine();
-    this.tarotEngine = new TarotEngine();
+    // TarotEngine is handled by UIManager, not here
     this.init();
   }
 
@@ -82,19 +81,12 @@ class SelfAnalysisApp {
         astrologyResults = this.astrologyEngine.getBasicAstrology(this.appState.formData.dateOfBirth);
       }
 
-      this.showProgress("Drawing tarot cards...", 80);
-
-      // Run tarot
-      const tarotResults = this.tarotEngine.drawMajorArcana(this.appState.formData);
-      console.log("✅ Tarot results:", tarotResults);
-
-      this.showProgress("Generating narrative...", 90);
+      this.showProgress("Generating narrative...", 80);
 
       // Store results
       this.appState.analysis = {
         numerology: numerologyResults,
         astrology: astrologyResults,
-        tarot: tarotResults,
       };
 
       // Render UI sections
@@ -177,7 +169,7 @@ class SelfAnalysisApp {
   }
 
   renderSummaries() {
-    const { numerology, astrology, tarot } = this.appState.analysis;
+    const { numerology, astrology } = this.appState.analysis;
 
     // Quick summaries
     if (numerology) {
@@ -196,7 +188,6 @@ class SelfAnalysisApp {
     const personalStory = narrativeEngine.generatePersonalStory({
       numerology,
       astrology,
-      tarot,
     });
     const storyEl = document.getElementById("personal-narrative-content");
     if (storyEl) storyEl.textContent = personalStory;
