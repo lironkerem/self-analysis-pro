@@ -185,9 +185,20 @@ class SelfAnalysisApp {
     }
 
     // Personal narrative
-    const personalStory = narrativeEngine.generatePersonalStory({
-      numerology,
-      astrology,
+    const personalStory = narrativeEngine.buildNarrative({
+      firstName: this.appState.formData.firstName,
+      numerology: {
+        lifePath: numerology.lifePath?.value,
+        destiny: numerology.expression?.value,
+        soulUrge: numerology.soulUrge?.value,
+        personality: numerology.personality?.value
+      },
+      astrology: {
+        sun: astrology.zodiac?.name,
+        moon: null, // Not available in basic astrology
+        rising: null // Not available in basic astrology
+      },
+      tree: astrology.sefira
     });
     const storyEl = document.getElementById("personal-narrative-content");
     if (storyEl) storyEl.textContent = personalStory;
