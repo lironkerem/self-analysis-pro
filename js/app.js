@@ -200,14 +200,15 @@ class SelfAnalysisApp {
   }
 
   generateNumerologySummary(numerology) {
-    return `Life Path: ${numerology.lifePath.number} - ${numerology.lifePath.meaning.slice(0, 100)}...\n` +
-           `Expression: ${numerology.expression.number} - ${numerology.expression.meaning.slice(0, 100)}...`;
+    const lifePath = numerology.lifePath?.value || '—';
+    const expression = numerology.expression?.value || '—';
+    
+    return `Life Path: ${lifePath}\nExpression: ${expression}`;
   }
 
   generateAstrologySummary(astrology) {
-    const zodiac = astrology.zodiac;
-    return `Zodiac: ${zodiac.name}\nElement: ${zodiac.element}\nRuling Planet: ${zodiac.planet}\n` +
-           `Tree of Life: ${astrology.sefira}`;
+    const zodiac = astrology.zodiac || {};
+    return `Zodiac: ${zodiac.name || '—'}\nElement: ${zodiac.element || '—'}\nRuling Planet: ${zodiac.planet || '—'}\nTree of Life: ${astrology.sefira || '—'}`;
   }
 
   showProgress(text, percent) {
