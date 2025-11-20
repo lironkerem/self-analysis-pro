@@ -331,8 +331,8 @@
     </a>`;
   }
   const sGrid=document.getElementById('sessions-grid'),wGrid=document.getElementById('workshops-grid');
-  sessions.forEach((s,i)=>sGrid&&(sGrid.innerHTML+=card(`${sessionsBase}sessions${i+1}.png`,s.url,`Session ${i+1}`,i)));
-  workshops.forEach((w,i)=>wGrid&&(wGrid.innerHTML+=card(`${workshopsBase}workshops${i+1}.png`,w.url,`Workshop ${i+1}`,i)));
+  sessions.forEach((s,i)=>sGrid&&(sGrid.innerHTML+=card(`${sessionsBase}sessions${i+1}.jpg`,s.url,`Session ${i+1}`,i)));
+  workshops.forEach((w,i)=>wGrid&&(wGrid.innerHTML+=card(`${workshopsBase}workshops${i+1}.jpg`,w.url,`Workshop ${i+1}`,i)));
 })();
 </script>
 

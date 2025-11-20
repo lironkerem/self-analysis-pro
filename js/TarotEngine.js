@@ -11,13 +11,13 @@ class TarotEngine {
 
   getMajorArcanaImage(number) {
     const num = String(number).padStart(2, '0');
-    return `${this.baseUrl}${num}-${this.getMajorArcanaName(number).replace(/\s+/g, '')}.png`;
+    return `${this.baseUrl}${num}-${this.getMajorArcanaName(number).replace(/\s+/g, '')}.jpg`;
   }
 
   getMinorArcanaImage(suit, number) {
     const num = String(number).padStart(2, '0');
     const suitCap = suit.charAt(0).toUpperCase() + suit.slice(1);
-    return `${this.baseUrl}${suitCap}${num}.png`;
+    return `${this.baseUrl}${suitCap}${num}.jpg`;
   }
 
   getMajorArcanaName(number) {
