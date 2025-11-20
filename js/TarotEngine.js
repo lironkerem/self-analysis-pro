@@ -1,6 +1,5 @@
 /**
  * TarotEngine.js - Complete Tarot Integration
- * FIXED: Removed extra wrapper divs causing spacing issues
  */
 
 const TAROT_BASE_URL = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/Tarot%20Cards%20images/';

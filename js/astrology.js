@@ -1,6 +1,5 @@
-// js/astrology.js
-// FIXED: Ensure all required params are sent to API
-import { getPlanets, getHouses, getAspects, getNatalWheelChart } from './astroApi.js';
+// js/astrology.js - Optimized with parallel API calls
+import { getAllNatalData } from './astroApi.js';
 
 export class AstrologyEngine {
   constructor() {
@@ -56,22 +55,6 @@ export class AstrologyEngine {
     return this.sefiraMapping[primaryPlanet] || "Malkuth (Kingdom)";
   }
 
-  // Helper for fallback when API fails
-  getBasicAstrology(dateOfBirth) {
-    const [year, month, day] = dateOfBirth.split('-').map(Number);
-    const zodiac = this.getZodiacSign(month, day);
-    const sefira = this.getSefiraFromPlanet(zodiac.planet);
-    
-    return {
-      zodiac: zodiac,
-      sefira: sefira,
-      planets: null,
-      houses: null,
-      aspects: null,
-      natalChart: null
-    };
-  }
-
   async analyze(formData) {
     try {
       const { dateOfBirth, timeOfBirth, locationLat, locationLon, tzone } = formData;
@@ -80,20 +63,14 @@ export class AstrologyEngine {
         throw new Error("Date of birth is required.");
       }
       
-      // Parse DOB
       const [year, month, day] = dateOfBirth.split('-').map(Number);
       const zodiac = this.getZodiacSign(month, day);
       const sefira = this.getSefiraFromPlanet(zodiac.planet);
       
-      // Check if we have complete birth data for natal chart
-      const hasTime = timeOfBirth && timeOfBirth !== "";
-      const hasLocation = locationLat && locationLon && 
-                         locationLat !== "" && locationLon !== "" &&
-                         !isNaN(parseFloat(locationLat)) && !isNaN(parseFloat(locationLon));
-      
-      if (!hasTime || !hasLocation) {
-        console.warn("⚠️ Incomplete birth data - returning basic astrology only");
-        console.warn(`  Time: ${hasTime ? '✅' : '❌'}, Location: ${hasLocation ? '✅' : '❌'}`);
+      // If no time/location, return basic astrology only
+      if (!timeOfBirth || !locationLat || !locationLon || 
+          locationLat === "" || locationLon === "" || timeOfBirth === "") {
+        console.warn("Returning basic astrology - no time/location for natal chart");
         return {
           zodiac: zodiac,
           sefira: sefira,
@@ -104,37 +81,18 @@ export class AstrologyEngine {
         };
       }
       
-      // Parse time
+      // Full natal chart with parallel API calls
       const [hour, minute] = timeOfBirth.split(':').map(Number);
-      
-      if (isNaN(hour) || isNaN(minute)) {
-        console.error("Invalid time format:", timeOfBirth);
-        throw new Error("Invalid time of birth format");
-      }
-      
-      // Build API params - ALL required fields
       const params = {
-        year: year,
-        month: month,
-        day: day,
-        hour: hour,
+        year, month, day, hour,
         min: minute,
         lat: parseFloat(locationLat),
         lon: parseFloat(locationLon),
-        tzone: parseFloat(tzone || 0)
+        tzone: tzone || 0
       };
       
-      console.log("🚀 Calling Free Astrology API with params:", params);
-      
-      // Call all endpoints
-      const [planets, houses, aspects, natalChart] = await Promise.all([
-        getPlanets(params),
-        getHouses(params),
-        getAspects(params),
-        getNatalWheelChart(params)
-      ]);
-      
-      console.log("✅ All astrology API calls successful");
+      // Fetch all natal data in parallel
+      const { planets, houses, aspects, natalChart } = await getAllNatalData(params);
       
       return {
         zodiac: zodiac,
@@ -145,9 +103,8 @@ export class AstrologyEngine {
         natalChart
       };
     } catch (err) {
-      console.error("❌ AstrologyEngine analyze() failed:", err);
+      console.error("AstrologyEngine analyze() failed:", err.message);
       throw err;
     }
   }
 }
-export default AstrologyEngine;

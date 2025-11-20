@@ -1,838 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Self-Analysis Generator Pro</title>
+
+  <!-- 3rd-party libs – URLs cleaned (no trailing spaces) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet" />
-  <!-- Core CSS -->
-  <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/styles.css"/>
 </head>
 <body>
-  <div class="sr-only" id="status-announcer" role="status" aria-live="polite"></div>
-  <div class="page" id="app-page">
-    <h1>Self-Analysis Pro</h1>
+<div class="sr-only" id="status-announcer" role="status" aria-live="polite"></div>
+<div class="page" id="app-page">
+  <h1>Self-Analysis Pro</h1>
 
-    <!-- Step Progress Indicator -->
-    <div class="step-indicator" id="step-indicator">
-      <div class="step-item" data-step="1">
-        <div class="step-dot"></div>
-        <div class="step-label">Step 1: Enter Details</div>
-        <div class="step-connector"></div>
-      </div>
-      <div class="step-item" data-step="2">
-        <div class="step-dot"></div>
-        <div class="step-label">Step 2: Analyze</div>
-        <div class="step-connector"></div>
-      </div>
-      <div class="step-item" data-step="3">
-        <div class="step-dot"></div>
-        <div class="step-label">Step 3: Explore</div>
-        <div class="step-connector"></div>
-      </div>
-      <div class="step-item" data-step="4">
-        <div class="step-dot"></div>
-        <div class="step-label">Step 4: Empower</div>
-      </div>
-    </div>
+  <!-- Step Progress Indicator -->
+  <div class="step-indicator" id="step-indicator">
+    <div class="step-item" data-step="1"><div class="step-dot"></div><div class="step-label">Step 1: Enter Details</div><div class="step-connector"></div></div>
+    <div class="step-item" data-step="2"><div class="step-dot"></div><div class="step-label">Step 2: Analyze</div><div class="step-connector"></div></div>
+    <div class="step-item" data-step="3"><div class="step-dot"></div><div class="step-label">Step 3: Explore</div><div class="step-connector"></div></div>
+    <div class="step-item" data-step="4"><div class="step-dot"></div><div class="step-label">Step 4: Empower</div></div>
+  </div>
 
-<div class="top-row">
-      <div class="card form-card" id="step-1-section">
-        <h2><strong>Step 1:</strong> Enter your 'Self'</h2>
-        <form id="analysis-form">
-          <div class="form-group">
-            <label for="first-name">First Name * <span class="tooltip" tabindex="0"><span class="tooltip-text">Your given name.</span></span></label>
-            <div class="input-wrapper" style="position: relative;">
-              <input id="first-name" name="firstName" type="text" class="form-input" placeholder="First name" autocomplete="given-name" maxlength="40" />
-              <span class="validation-icon" id="first-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
-            </div>
-            <div class="error-message" id="first-error"></div>
-          </div>
+  <div class="top-row">
+    <!-- ========== FORM CARD ========== -->
+    <div class="card form-card" id="step-1-section">
+      <h2><strong>Step 1:</strong> Enter your 'Self'</h2>
+      <form id="analysis-form" autocomplete="on">
+        <div class="form-group">
+          <label for="first-name">First Name * <span class="tooltip" tabindex="0"><span class="tooltip-text">Your given name.</span></span></label>
+          <div class="input-wrapper"><input id="first-name" name="firstName" type="text" class="form-input" placeholder="First name" autocomplete="given-name" maxlength="40"/><span class="validation-icon" id="first-icon"></span></div>
+          <div class="error-message" id="first-error"></div>
+        </div>
 
-          <div class="form-group" style="margin-top: 10px;">
-            <label for="middle-name">Middle Name (optional) <span class="tooltip" tabindex="0"><span class="tooltip-text">Include only if you use it regularly.</span></span></label>
-            <div class="input-wrapper" style="position: relative;">
-              <input id="middle-name" name="middleName" type="text" class="form-input" placeholder="Middle name (if used)" autocomplete="additional-name" maxlength="120" />
-              <span class="validation-icon" id="middle-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
-            </div>
-            <div class="error-message" id="middle-error"></div>
-          </div>
+        <div class="form-group">
+          <label for="middle-name">Middle Name (optional) <span class="tooltip" tabindex="0"><span class="tooltip-text">Include only if you use it regularly.</span></span></label>
+          <div class="input-wrapper"><input id="middle-name" name="middleName" type="text" class="form-input" placeholder="Middle name (if used)" autocomplete="additional-name" maxlength="120"/><span class="validation-icon" id="middle-icon"></span></div>
+          <div class="error-message" id="middle-error"></div>
+        </div>
 
-          <div class="form-group" style="margin-top: 10px;">
-            <label for="last-name">Last Name * <span class="tooltip" tabindex="0"><span class="tooltip-text">Your family or surname.</span></span></label>
-            <div class="input-wrapper" style="position: relative;">
-              <input id="last-name" name="lastName" type="text" class="form-input" placeholder="Last name" autocomplete="family-name" maxlength="40" />
-              <span class="validation-icon" id="last-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
-            </div>
-            <div class="error-message" id="last-error"></div>
-          </div>
+        <div class="form-group">
+          <label for="last-name">Last Name * <span class="tooltip" tabindex="0"><span class="tooltip-text">Your family or surname.</span></span></label>
+          <div class="input-wrapper"><input id="last-name" name="lastName" type="text" class="form-input" placeholder="Last name" autocomplete="family-name" maxlength="40"/><span class="validation-icon" id="last-icon"></span></div>
+          <div class="error-message" id="last-error"></div>
+        </div>
 
-          <div class="form-group" style="margin-top: 10px;">
-            <label for="date-of-birth">Date of Birth * <span class="tooltip" tabindex="0"><span class="tooltip-text">Used for Numerology and Astrology analysis.</span></span></label>
-            <div class="input-wrapper" style="position: relative;">
-              <input id="date-of-birth" name="dateOfBirth" type="date" class="form-input" min="1940-01-01" />
-              <span class="validation-icon" id="dob-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
-            </div>
-            <div class="error-message" id="dob-error"></div>
-          </div>
+        <div class="form-group">
+          <label for="date-of-birth">Date of Birth * <span class="tooltip" tabindex="0"><span class="tooltip-text">Used for Numerology and Astrology analysis.</span></span></label>
+          <div class="input-wrapper"><input id="date-of-birth" name="dateOfBirth" type="date" class="form-input" min="1940-01-01"/><span class="validation-icon" id="dob-icon"></span></div>
+          <div class="error-message" id="dob-error"></div>
+        </div>
 
-          <div class="form-group" style="margin-top: 10px;">
-            <label for="time-of-birth">Time of Birth (optional) <span class="tooltip" tabindex="0"><span class="tooltip-text">As exact as possible. Required for Full Natal-Chart calculation.</span></span></label>
-            <div class="input-wrapper" style="position: relative;">
-              <input id="time-of-birth" name="timeOfBirth" type="time" class="form-input" />
-              <span class="validation-icon" id="tob-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
-            </div>
-            <div class="error-message" id="tob-error"></div>
-          </div>
+        <div class="form-group">
+          <label for="time-of-birth">Time of Birth (optional) <span class="tooltip" tabindex="0"><span class="tooltip-text">As exact as possible. Required for Full Natal-Chart calculation.</span></span></label>
+          <div class="input-wrapper"><input id="time-of-birth" name="timeOfBirth" type="time" class="form-input"/><span class="validation-icon" id="tob-icon"></span></div>
+          <div class="error-message" id="tob-error"></div>
+        </div>
 
-          <div class="form-group" style="margin-top: 10px;">
-            <label for="location-birth">Location of Birth (optional) <span class="tooltip" tabindex="0"><span class="tooltip-text">City and Country. Required for Full Natal-Chart calculation.</span></span></label>
-            <div class="input-wrapper" style="position: relative;">
-              <input id="location-birth" name="locationOfBirth" type="text" class="form-input" placeholder="City name (Autocomplete)" maxlength="200" />
-              <span class="validation-icon" id="location-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;"></span>
-              <div class="location-dropdown" id="location-dropdown"></div>
-            </div>
-            <div class="error-message" id="location-error"></div>
+        <div class="form-group">
+          <label for="location-birth">Location of Birth (optional) <span class="tooltip" tabindex="0"><span class="tooltip-text">City and Country. Required for Full Natal-Chart calculation.</span></span></label>
+          <div class="input-wrapper">
+            <input id="location-birth" name="locationOfBirth" type="text" class="form-input" placeholder="City name (Autocomplete)" maxlength="200"/>
+            <span class="validation-icon" id="location-icon"></span>
+            <div class="location-dropdown" id="location-dropdown"></div>
           </div>
+          <div class="error-message" id="location-error"></div>
+        </div>
 
-          <div class="form-group" style="margin-top: 10px;">
-            <label><input id="include-y" name="includeY" type="checkbox" /> Include <strong>Y</strong> as vowel <span class="tooltip" tabindex="0"><span class="tooltip-text">When checked, the letter Y will be treated as a vowel in name-based numerology calculations.</span></span></label>
-          </div>
+        <div class="form-group">
+          <label><input id="include-y" name="includeY" type="checkbox"/> Include <strong>Y</strong> as vowel <span class="tooltip" tabindex="0"><span class="tooltip-text">When checked, the letter Y will be treated as a vowel in name-based numerology calculations.</span></span></label>
+        </div>
 
-          <div class="controls" style="margin-top: 10px;">
-            <button id="btn-analyze" type="submit" class="btn"><strong>Step 2:</strong> Analyze your 'Self'</button>
-            <button id="btn-pdf" type="button" class="btn" disabled>Download the Personalized Self-Guidebook</button>
-            <button id="btn-clear" type="button" class="btn">Clear my form</button>
-          </div>
-          
-          <!-- Progress Bar -->
-          <div class="progress-wrapper" id="progress-wrapper" style="display: none;">
-            <div class="progress-bar">
-              <div class="progress-inner" id="progress-inner">0%</div>
-            </div>
-            <div class="progress-text" id="progress-text">Starting...</div>
-          </div>
-        </form>
-      </div>
+        <div class="controls">
+          <button id="btn-analyze" type="submit" class="btn"><strong>Step 2:</strong> Analyze your 'Self'</button>
+          <button id="btn-pdf" type="button" class="btn" disabled>Download the Personalized Self-Guidebook</button>
+          <button id="btn-clear" type="button" class="btn">Clear my form</button>
+        </div>
 
-      <aside class="card summary-card">
-        <h2>Quick Summary <span class="tooltip" tabindex="0"><span class="tooltip-text">A snapshot of your core numerology, astrology, and Tree of Life data.</span></span></h2>
-        <!-- Numerology Summary Card -->
-        <section class="expandable-card expanded" data-section="summary-numerology">
-          <div class="expandable-header" tabindex="0" role="button">
-            <span class="chevron">›</span><h3>Numerology</h3>
-          </div>
-          <div class="expandable-content">
-            <div id="summary-numerology-content" class="explanation-text placeholder-text" style="white-space: pre-line;">
-              Run analysis to see your Numerology quick summary.
-            </div>
-          </div>
-        </section>
-        <!-- Astrology Summary Card -->
-        <section class="expandable-card expanded" data-section="summary-astrology">
-          <div class="expandable-header" tabindex="0" role="button">
-            <span class="chevron">›</span><h3>Astrology</h3>
-          </div>
-          <div class="expandable-content">
-            <div id="summary-astrology-content" class="explanation-text placeholder-text" style="white-space: pre-line;">
-              Run analysis to see your Astrology quick summary.
-            </div>
-          </div>
-        </section>
-        <!-- Tree of Life Summary Card -->
-        <section class="expandable-card expanded" data-section="summary-tree">
-          <div class="expandable-header" tabindex="0" role="button">
-            <span class="chevron">›</span><h3>Tree of Life</h3>
-          </div>
-          <div class="expandable-content">
-            <div id="summary-tree-content" class="explanation-text placeholder-text" style="white-space: pre-line;">
-              Run analysis to see your Tree of Life quick summary.
-            </div>
-          </div>
-        </section>
-      </aside>
-    </div>
-    
-    <section class="card details-card" id="step-3-section">
-      <h2><strong>Step 3:</strong> Explore your 'Self' Deeply<span class="tooltip" tabindex="0"><span class="tooltip-text">Expand each card for calculation breakdowns and deeper explanations.</span></span></h2>
-      <div id="analysis-container">
-        
-        <!-- NUMEROLOGY - First, Collapsed -->
-        <article class="expandable-card numerology-watermark" data-section="numerology">
-          <div class="expandable-header" tabindex="0" role="button">
-            <span class="chevron">›</span><h3>Your Numerology Report</h3>
-          </div>
-          <div class="expandable-content">
-            <div id="numerology-cards-container" class="placeholder-text">Run analysis to see your complete Numerology report.</div>
-          </div>
-        </article>
-        
-        <!-- ASTROLOGY - Second, Collapsed -->
-        <article class="expandable-card astrology-watermark" data-section="astrology">
-          <div class="expandable-header" tabindex="0" role="button">
-            <span class="chevron">›</span><h3>Your Astrology Report</h3>
-          </div>
-          <div class="expandable-content">
-            <div id="astrology-content-placeholder" class="placeholder-text">Run analysis to see your complete Astrology report.</div>
-            
-            <!-- Zodiac Sign Card -->
-            <section class="expandable-card" data-section="zodiac-sign" style="display: none;">
-              <div class="expandable-header" tabindex="0" role="button">
-                <span class="chevron">›</span><span>Your Zodiac Sign</span>
-              </div>
-              <div class="expandable-content">
-                <p><span class="data-label">Zodiac Sign:</span> <span class="data-value" id="deep-zodiac">—</span></p>
-                <div class="explanation-heading" id="zodiac-meaning-header"></div>
-                <div id="zodiac-meaning" class="explanation-text"></div>
-              </div>
-            </section>
-            
-            <!-- Ruling Planet Card -->
-            <section class="expandable-card" data-section="ruling-planet" style="display: none;">
-              <div class="expandable-header" tabindex="0" role="button">
-                <span class="chevron">›</span><span>Your Ruling Planet(s)</span>
-              </div>
-              <div class="expandable-content">
-                <p><span class="data-label">Ruling Planet(s):</span> <span class="data-value" id="deep-planet">—</span></p>
-                <div class="explanation-heading" id="planet-meaning-header"></div>
-                <div id="planet-meaning" class="explanation-text"></div>
-              </div>
-            </section>
-            
-            <!-- Alchemical Element Card -->
-            <section class="expandable-card" data-section="alchemical-element" style="display: none;">
-              <div class="expandable-header" tabindex="0" role="button">
-                <span class="chevron">›</span><span>Your Alchemical Element</span>
-              </div>
-              <div class="expandable-content">
-                <p><span class="data-label">Alchemical Element:</span> <span class="data-value" id="deep-element">—</span></p>
-                <div class="explanation-heading" id="element-meaning-header"></div>
-                <div id="element-meaning" class="explanation-text"></div>
-              </div>
-            </section>
-            
-            <!-- Full Natal Chart Card -->
-            <section class="expandable-card" data-section="natal-chart" style="display: none;">
-              <div class="expandable-header" tabindex="0" role="button">
-                <span class="chevron">›</span><span>Your Full Natal Birth-Chart</span>
-              </div>
-              <div class="expandable-content">
-                <div id="natal-chart-output" class="explanation-text placeholder-text">Enter time of birth and location of birth to generate your complete natal chart.</div>
-              </div>
-            </section>
-            
-          </div>
-        </article>
-        
-        <!-- TREE OF LIFE - Third, Collapsed -->
-        <article class="expandable-card tree-watermark" data-section="tree-of-life">
-          <div class="expandable-header" tabindex="0" role="button">
-            <span class="chevron">›</span><h3>Your Tree of Life Report</h3>
-          </div>
-          <div class="expandable-content">
-            <div id="tree-content-placeholder" class="placeholder-text">Run analysis to see your complete Tree of Life report.</div>
-            <div id="tree-content-data" style="display: none;">
-              <p><span class="data-label">Prominent Sefira:</span> <span class="data-value" id="deep-sefira">—</span></p>
-              <div class="explanation-heading" id="sefira-meaning-header"></div>
-              <div id="sefira-meaning" class="explanation-text"></div>
-            </div>
-          </div>
-        </article>
-        
-      </div>
-    </section>
-    
-    <!-- Personal Analysis Story - Expanded -->
-<section class="card details-card">
-  <article class="expandable-card story-watermark expanded" data-section="personal-narrative">
-    <div class="expandable-header" tabindex="0" role="button">
-      <span class="chevron">›</span><h3>Your Personal Analysis Story</h3>
-    </div>
-    <div class="expandable-content">
-      <div id="personal-narrative-content" class="explanation-text placeholder-text" style="white-space: pre-line;">
-        Run analysis to see your own unique, private analysis narrative, from all the information above.
-      </div>
-    </div>
-  </article>
-</section>
-    
-    <!-- Call To Action -->
-    <section class="card details-card" id="step-4-section">
-      <h2><strong>Step 4:</strong> Empower your 'Self' with us <span class="tooltip" tabindex="0"><span class="tooltip-text">Look at our offerings and contact us</span></span></h2>
-      <article class="expandable-card expanded" data-section="call-to-action">
+        <!-- Progress Bar -->
+        <div class="progress-wrapper" id="progress-wrapper" style="display:none;">
+          <div class="progress-bar"><div class="progress-inner" id="progress-inner">0%</div></div>
+          <div class="progress-text" id="progress-text">Starting...</div>
+        </div>
+      </form>
+    </div><!-- /form-card -->
+
+    <!-- ========== QUICK SUMMARY CARD ========== -->
+    <aside class="card summary-card">
+      <h2>Quick Summary <span class="tooltip" tabindex="0"><span class="tooltip-text">A snapshot of your core numerology, astrology, and Tree of Life data.</span></span></h2>
+      <section class="expandable-card expanded" data-section="summary-numerology">
+        <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Numerology</h3></div>
         <div class="expandable-content">
-        <div class="explanation-text" style="text-align: center; max-width: 800px; margin: 0 auto 20px; line-height: 1.5;">
-  <strong style="font-size: 32px; color: #3F7652;">Welcome to Aanandoham's Project Curiosity</strong><br>
-  Founded in 2010, Project Curiosity was created as a safe and supportive space for individuals seeking empowerment, education, and deep healing.<br>
-  Every journey is unique, which is why the tools, techniques, and methods used are carefully chosen to meet your personal needs and intentions.<br>
-  With over a decade of experience and hundreds of clients around the world, you can trust that you'll receive exactly what you need to grow, heal, and elevate your life.<br>
-  Below you'll find all current offerings. Take your time to explore, click on any flyer for more details, or visit the official website for the full experience.<br>
-  Wishing you clarity, inspiration, and peace on your journey,<br>
-  Message me and we will connect,
-  Aanandoham.<br>
- <a href="https://lironkerem.wixsite.com/project-curiosity" target="_blank" rel="noopener noreferrer" style="color: #1976d2; font-weight: bold; text-decoration: underline; font-size: 28px;">Project Curiosity's official website</a>
-</div>
-          
-          <!-- Sessions and Classes Sub-card -->
-          <section class="expandable-card cta-logo-watermark" data-section="cta-sessions">
-            <div class="expandable-header" tabindex="0" role="button">
-              <span class="chevron">›</span><h3>Sessions and Classes</h3>
-            </div>
-            <div class="expandable-content">
-              <div class="cta-image-grid sessions" id="sessions-grid">
-                <!-- 9 Session images will be loaded here -->
-              </div>
-            </div>
-          </section>
-          
-          <!-- Workshops Sub-card -->
-          <section class="expandable-card cta-logo-watermark" data-section="cta-workshops">
-            <div class="expandable-header" tabindex="0" role="button">
-              <span class="chevron">›</span><h3>Workshops, Courses, Retreats</h3>
-            </div>
-            <div class="expandable-content">
-              <div class="cta-image-grid workshops" id="workshops-grid">
-                <!-- 6 Workshop images will be loaded here -->
-              </div>
-            </div>
-          </section>
-          
+          <div id="summary-numerology-content" class="explanation-text placeholder-text">Run analysis to see your Numerology quick summary.</div>
+        </div>
+      </section>
+      <section class="expandable-card expanded" data-section="summary-astrology">
+        <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Astrology</h3></div>
+        <div class="expandable-content">
+          <div id="summary-astrology-content" class="explanation-text placeholder-text">Run analysis to see your Astrology quick summary.</div>
+        </div>
+      </section>
+      <section class="expandable-card expanded" data-section="summary-tree">
+        <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Tree of Life</h3></div>
+        <div class="expandable-content">
+          <div id="summary-tree-content" class="explanation-text placeholder-text">Run analysis to see your Tree of Life quick summary.</div>
+        </div>
+      </section>
+    </aside>
+  </div><!-- /top-row -->
+
+  <!-- ========== DETAILS CARDS ========== -->
+  <section class="card details-card" id="step-3-section">
+    <h2><strong>Step 3:</strong> Explore your 'Self' Deeply<span class="tooltip" tabindex="0"><span class="tooltip-text">Expand each card for calculation breakdowns and deeper explanations.</span></span></h2>
+    <div id="analysis-container">
+      <article class="expandable-card numerology-watermark" data-section="numerology">
+        <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Your Numerology Report</h3></div>
+        <div class="expandable-content">
+          <div id="numerology-cards-container" class="placeholder-text">Run analysis to see your complete Numerology report.</div>
         </div>
       </article>
-    </section>
-    
-  </div>
-  <div id="toast-container" aria-live="polite" style="position: fixed; top: 20px; right: 20px; z-index: 10001;"></div>
-  <div id="dev-panel" aria-hidden="true" role="region" aria-label="Developer panel">
-    <h4>Dev Tools</h4>
-    <div id="dev-log"></div>
-    <div id="dev-controls">
-      <button id="dev-run" class="btn">Run Self-Test</button>
-      <button id="dev-close" class="btn">Close</button>
-    </div>
-  </div>
 
-  <!-- Load JavaScript modules in correct order -->
-  <script type="module" src="js/app.js"></script>
-  <script type="module" src="js/utils.js"></script>
-  <script type="module" src="js/meanings.js"></script>
-  <script type="module" src="js/ui.js"></script>
-  <script type="module" src="js/astroApi.js"></script>
+      <article class="expandable-card astrology-watermark" data-section="astrology">
+        <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Your Astrology Report</h3></div>
+        <div class="expandable-content">
+          <div id="astrology-content-placeholder" class="placeholder-text">Run analysis to see your complete Astrology report.</div>
 
-  <script>
-    (function () {
-      const locationInput = document.getElementById('location-birth');
-      const dropdown = document.getElementById('location-dropdown');
-
-      if (!locationInput || !dropdown) return;
-
-   const VERCEL_API = window.location.hostname === 'localhost' 
-  ? '/api/geocode'  
-  : 'https://self-analysis-pro.vercel.app/api/geocode';
-
-      let debounceTimer;
-
-      dropdown.style.cssText = `
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: white;
-        border: 1px solid #ddd;
-        border-top: none;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 1000;
-        display: none;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      `;
-
-      locationInput.addEventListener('input', function () {
-        const query = this.value.trim();
-
-        clearTimeout(debounceTimer);
-
-        if (query.length < 3) {
-          dropdown.style.display = 'none';
-          dropdown.innerHTML = '';
-          return;
-        }
-
-        debounceTimer = setTimeout(() => {
-          fetchLocations(query);
-        }, 300);
-      });
-
-      async function fetchLocations(query) {
-        try {
-          const response = await fetch(`${VERCEL_API}?q=${encodeURIComponent(query)}`);
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          displayResults(data);
-        } catch (error) {
-          console.error('Location fetch error:', error);
-          dropdown.innerHTML = '<div style="padding: 10px; color: #888;">Unable to load suggestions. Please type your city name.</div>';
-          dropdown.style.display = 'block';
-          setTimeout(() => {
-            dropdown.style.display = 'none';
-          }, 2000);
-        }
-      }
-
-      function displayResults(results) {
-        if (!results || results.length === 0) {
-          dropdown.style.display = 'none';
-          return;
-        }
-
-        dropdown.innerHTML = results.map(result => {
-          const displayName = result.display_name;
-          return `<div class="location-option" 
-                       data-lat="${result.lat}" 
-                       data-lon="${result.lon}"
-                       data-name="${displayName}"
-                       style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;"
-                       onmouseover="this.style.backgroundColor='#f0f0f0'"
-                       onmouseout="this.style.backgroundColor='white'">
-                    ${displayName}
-                  </div>`;
-        }).join('');
-
-        dropdown.style.display = 'block';
-
-        dropdown.querySelectorAll('.location-option').forEach(option => {
-          option.addEventListener('click', function () {
-            const name = this.getAttribute('data-name');
-            const lat = this.getAttribute('data-lat');
-            const lon = this.getAttribute('data-lon');
-
-            locationInput.value = name;
-            locationInput.dataset.lat = lat;
-            locationInput.dataset.lon = lon;
-
-            dropdown.style.display = 'none';
-            dropdown.innerHTML = '';
-
-            console.log('Location selected:', { name, lat, lon });
-          });
-        });
-      }
-
-      document.addEventListener('click', function (e) {
-        if (e.target !== locationInput && !dropdown.contains(e.target)) {
-          dropdown.style.display = 'none';
-        }
-      });
-    })();
-  </script>
-
-<script>
-  (function() {
-    const stepIndicator = document.getElementById('step-indicator');
-    if (!stepIndicator) return;
-
-    let completedSteps = new Set();
-    let currentStep = 0;
-    let step4Triggered = false;
-
-    function updateStepIndicator() {
-      const stepItems = stepIndicator.querySelectorAll('.step-item');
-      
-      stepItems.forEach((item, index) => {
-        const stepNum = index + 1;
-        const connector = item.querySelector('.step-connector');
-        
-        item.classList.remove('active', 'completed');
-        
-        if (completedSteps.has(stepNum)) {
-          item.classList.add('completed');
-        }
-        
-        if (stepNum === currentStep) {
-          item.classList.add('active');
-        }
-        
-        // FIXED: Only show green connector if NEXT step is completed
-        if (connector) {
-          if (completedSteps.has(stepNum + 1)) {
-            connector.style.background = 'var(--primary-color)';
-          } else {
-            connector.style.background = '#ddd';
-          }
-        }
-      });
-    }
-
-    // Step 1: Watch for ALL required fields
-    function checkStep1() {
-      const firstName = document.getElementById('first-name')?.value?.trim();
-      const lastName = document.getElementById('last-name')?.value?.trim();
-      const dateOfBirth = document.getElementById('date-of-birth')?.value?.trim();
-      
-      if (firstName && lastName && dateOfBirth) {
-        if (!completedSteps.has(1)) {
-          completedSteps.add(1);
-          currentStep = 1;
-          updateStepIndicator();
-          console.log('Step 1 achieved');
-        }
-      } else {
-        if (completedSteps.has(1)) {
-          completedSteps.delete(1);
-          currentStep = 0;
-          updateStepIndicator();
-        }
-      }
-    }
-
-    ['first-name', 'last-name', 'date-of-birth'].forEach(id => {
-      const field = document.getElementById(id);
-      if (field) {
-        field.addEventListener('input', checkStep1);
-        field.addEventListener('change', checkStep1);
-      }
-    });
-
-    // Step 2: Analyze clicked
-    const analyzeBtn = document.getElementById('btn-analyze');
-    if (analyzeBtn) {
-      analyzeBtn.addEventListener('click', () => {
-        if (completedSteps.has(1)) {
-          completedSteps.add(2);
-          currentStep = 2;
-          updateStepIndicator();
-          console.log('Step 2 achieved');
-        }
-      });
-    }
-
-    // Step 3: Main cards expanded - FIXED selectors
-    function setupStep3Watchers() {
-      // Wait for cards to be generated
-      setTimeout(() => {
-        const numerologyCard = document.querySelector('.expandable-card.numerology-watermark[data-section="numerology"]');
-        const astrologyCard = document.querySelector('.expandable-card.astrology-watermark[data-section="astrology"]');
-        const treeCard = document.querySelector('.expandable-card.tree-watermark[data-section="tree-of-life"]');
-        
-        const mainCards = [numerologyCard, astrologyCard, treeCard].filter(c => c !== null);
-        
-        console.log('Found main cards for Step 3:', mainCards.length);
-
-        mainCards.forEach(card => {
-          const header = card.querySelector('.expandable-header');
-          if (header) {
-            header.addEventListener('click', () => {
-              setTimeout(() => {
-                if (card.classList.contains('expanded') && !completedSteps.has(3)) {
-                  completedSteps.add(3);
-                  currentStep = 3;
-                  updateStepIndicator();
-                  console.log('Step 3 achieved: Main card expanded');
-                }
-              }, 100);
-            });
-          }
-        });
-      }, 1000);
-    }
-
-    // Step 4: Sessions/Workshops
-    function triggerStep4Animation() {
-      if (step4Triggered) return;
-      if (!completedSteps.has(3)) return;
-      
-      step4Triggered = true;
-      completedSteps.add(4);
-      currentStep = 4;
-      updateStepIndicator();
-      
-      console.log('Step 4 achieved');
-      
-      const step4Item = stepIndicator.querySelector('[data-step="4"]');
-      if (!step4Item) return;
-      
-      const celebrationContainer = document.createElement('div');
-      celebrationContainer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        pointer-events: none;
-        z-index: 10000;
-        overflow: hidden;
-      `;
-      document.body.appendChild(celebrationContainer);
-      
-      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
-      
-      for (let i = 0; i < 80; i++) {
-        const confetti = document.createElement('div');
-        const size = Math.random() * 10 + 5;
-        const startX = Math.random() * 100;
-        const duration = Math.random() * 2 + 2;
-        const delay = Math.random() * 0.5;
-        
-        confetti.style.cssText = `
-          position: absolute;
-          width: ${size}px;
-          height: ${size}px;
-          background: ${colors[Math.floor(Math.random() * colors.length)]};
-          top: -20px;
-          left: ${startX}vw;
-          opacity: 1;
-          transform: rotate(${Math.random() * 360}deg);
-          border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
-          animation: confettiFall ${duration}s linear ${delay}s forwards;
-        `;
-        celebrationContainer.appendChild(confetti);
-      }
-      
-      if (!document.getElementById('confetti-animation')) {
-        const style = document.createElement('style');
-        style.id = 'confetti-animation';
-        style.textContent = `
-          @keyframes confettiFall {
-            to {
-              transform: translateY(100vh) translateX(${Math.random() * 100 - 50}px) rotate(${Math.random() * 720}deg);
-              opacity: 0;
-            }
-          }
-          @keyframes fireworkBurst {
-            0% { width: 0; height: 0; opacity: 1; }
-            100% { width: 300px; height: 300px; opacity: 0; }
-          }
-          @keyframes celebrationPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.5); box-shadow: 0 0 30px rgba(63, 118, 82, 0.8); }
-          }
-        `;
-        document.head.appendChild(style);
-      }
-      
-      const step4Rect = step4Item.getBoundingClientRect();
-      const step4CenterX = step4Rect.left + step4Rect.width / 2;
-      const step4CenterY = step4Rect.top + step4Rect.height / 2;
-      
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          const firework = document.createElement('div');
-          firework.style.cssText = `
-            position: fixed;
-            left: ${step4CenterX}px;
-            top: ${step4CenterY}px;
-            width: 0;
-            height: 0;
-            border: 3px solid ${colors[Math.floor(Math.random() * colors.length)]};
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: fireworkBurst 0.8s ease-out forwards;
-            pointer-events: none;
-            z-index: 10001;
-          `;
-          celebrationContainer.appendChild(firework);
-          setTimeout(() => firework.remove(), 800);
-        }, i * 300);
-      }
-      
-      const step4Dot = step4Item.querySelector('.step-dot');
-      if (step4Dot) {
-        step4Dot.style.animation = 'celebrationPulse 0.5s ease-in-out 3';
-      }
-      
-      setTimeout(() => {
-        celebrationContainer.remove();
-        if (step4Dot) step4Dot.style.animation = '';
-      }, 4000);
-    }
-
-function setupStep4Watchers() {
-  console.log('🔍 setupStep4Watchers() CALLED');
-  
-  document.addEventListener('click', (e) => {
-    const card = e.target.closest('.expandable-card');
-    if (!card) return;
-    
-    const isStep4Card = card.dataset.section === 'cta-sessions' || 
-                        card.dataset.section === 'cta-workshops';
-    
-    console.log('Clicked card section:', card.dataset.section, 'Is Step 4 card?', isStep4Card);
-    
-    if (isStep4Card) {
-      setTimeout(() => {
-        console.log('Step 4 card expanded?', card.classList.contains('expanded'));
-        if (card.classList.contains('expanded')) {
-          triggerStep4Animation();
-        }
-      }, 150);
-    }
-  });
-}
-
-    updateStepIndicator();
-  setupStep3Watchers();
-function setupStep3Watchers() {
-  // Direct attachment, run immediately
-  document.addEventListener('click', (e) => {
-    const card = e.target.closest('.expandable-card');
-    if (!card) return;
-    
-    const isMainCard = card.dataset.section === 'numerology' || 
-                       card.dataset.section === 'astrology' || 
-                       card.dataset.section === 'tree-of-life';
-    
-    if (isMainCard) {
-      console.log('Main card clicked:', card.dataset.section);
-      setTimeout(() => {
-        console.log('Checking expanded:', card.classList.contains('expanded'));
-        if (card.classList.contains('expanded') && !completedSteps.has(3)) {
-          completedSteps.add(3);
-          currentStep = 3;
-          updateStepIndicator();
-          console.log('✅ Step 3 achieved!');
-        }
-      }, 150);
-    }
-  });
-}
-
-    setupStep4Watchers();
-
-    window.resetStepIndicator = () => {
-      completedSteps.clear();
-      currentStep = 0;
-      step4Triggered = false;
-      updateStepIndicator();
-    };
-
-    stepIndicator.addEventListener('click', (e) => {
-      const stepItem = e.target.closest('.step-item');
-      if (!stepItem) return;
-      const stepNum = parseInt(stepItem.dataset.step);
-      if (!completedSteps.has(stepNum)) return;
-
-      currentStep = stepNum;
-      updateStepIndicator();
-
-      let targetSection;
-      if (stepNum === 1) targetSection = document.getElementById('step-1-section');
-      else if (stepNum === 3) targetSection = document.getElementById('step-3-section');
-      else if (stepNum === 4) targetSection = document.getElementById('step-4-section');
-
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-
-    const clearBtn = document.getElementById('btn-clear');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        setTimeout(window.resetStepIndicator, 100);
-      });
-    }
-  })();
-</script>
-<script>
-  // Set max date of birth to today
-  (function() {
-    const dobInput = document.getElementById('date-of-birth');
-    if (dobInput) {
-      dobInput.max = new Date().toISOString().split('T')[0];
-    }
-  })();
-</script>
-  <!-- CTA Images Loading Script - FIX #8 -->
-  <script>
-    (function() {
-      const sessionsBaseUrl = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Sessions/';
-      const workshopsBaseUrl = 'https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Workshops/';
-      
-      // Session images with URLs
-      const sessions = [
-        { name: 'Session 1', url: 'https://lironkerem.wixsite.com/project-curiosity/tarot' },
-        { name: 'Session 2', url: 'https://lironkerem.wixsite.com/project-curiosity/reiki' },
-        { name: 'Session 3', url: 'https://lironkerem.wixsite.com/project-curiosity/meditation' },
-        { name: 'Session 4', url: 'https://lironkerem.wixsite.com/project-curiosity/tarot' },
-        { name: 'Session 5', url: 'https://lironkerem.wixsite.com/project-curiosity/osho' },
-        { name: 'Session 6', url: 'https://lironkerem.wixsite.com/project-curiosity/guided-visualizations' },
-        { name: 'Session 7', url: 'https://lironkerem.wixsite.com/project-curiosity/eft' },
-        { name: 'Session 8', url: 'https://lironkerem.wixsite.com/project-curiosity/yoga' },
-        { name: 'Session 9', url: 'https://lironkerem.wixsite.com/project-curiosity/tantra' }
-      ];
-      
-      // Workshop images with URLs
-      const workshops = [
-        { name: 'Workshop 1', url: 'https://lironkerem.wixsite.com/project-curiosity/tarot' },
-        { name: 'Workshop 2', url: 'https://lironkerem.wixsite.com/project-curiosity/reiki' },
-        { name: 'Workshop 3', url: 'https://lironkerem.wixsite.com/project-curiosity/meditation' },
-        { name: 'Workshop 4', url: 'https://lironkerem.wixsite.com/project-curiosity/rainbow-body' },
-        { name: 'Workshop 5', url: 'https://lironkerem.wixsite.com/project-curiosity/osho' },
-        { name: 'Workshop 6', url: 'https://lironkerem.wixsite.com/project-curiosity/osho' }
-      ];
-      
-      function createImageCard(imageUrl, linkUrl, altText, index) {
-        const cardId = `cta-img-${Date.now()}-${index}`;
-        return `
-          <a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="cta-image-card">
-            <div class="cta-image-inner">
-              <div class="cta-image-loading" id="loading-${cardId}">
-                <div class="tarot-spinner"></div>
-              </div>
-              <img id="${cardId}"
-                   src="${imageUrl}"
-                   alt="${altText}"
-                   title="${altText}"
-                   onload="this.classList.add('loaded'); var loader = document.getElementById('loading-${cardId}'); if (loader) loader.style.display='none';"
-                   onerror="var loader = document.getElementById('loading-${cardId}'); if (loader) loader.innerHTML='<span style=\\'color:#999;font-size:12px;\\'>Image unavailable</span>';">
+          <!-- dynamic sub-cards – identical to your original -->
+          <section class="expandable-card" data-section="zodiac-sign" style="display:none;">
+            <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><span>Your Zodiac Sign</span></div>
+            <div class="expandable-content">
+              <p><span class="data-label">Zodiac Sign:</span> <span class="data-value" id="deep-zodiac">—</span></p>
+              <div class="explanation-heading" id="zodiac-meaning-header"></div><div id="zodiac-meaning" class="explanation-text"></div>
             </div>
-          </a>
-        `;
-      }
-      
-      // Load sessions - lowercase 'sessions1.png' format
-      const sessionsGrid = document.getElementById('sessions-grid');
-      if (sessionsGrid) {
-        sessions.forEach((session, index) => {
-          const imageUrl = `${sessionsBaseUrl}sessions${index + 1}.png`;
-          sessionsGrid.innerHTML += createImageCard(imageUrl, session.url, session.name, index);
-        });
-      }
-      
-      // Load workshops - lowercase 'workshops1.png' format
-      const workshopsGrid = document.getElementById('workshops-grid');
-      if (workshopsGrid) {
-        workshops.forEach((workshop, index) => {
-          const imageUrl = `${workshopsBaseUrl}workshops${index + 1}.png`;
-          workshopsGrid.innerHTML += createImageCard(imageUrl, workshop.url, workshop.name, index);
-        });
-      }
-    })();
-  </script>
+          </section>
+          <section class="expandable-card" data-section="ruling-planet" style="display:none;">
+            <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><span>Your Ruling Planet(s)</span></div>
+            <div class="expandable-content">
+              <p><span class="data-label">Ruling Planet(s):</span> <span class="data-value" id="deep-planet">—</span></p>
+              <div class="explanation-heading" id="planet-meaning-header"></div><div id="planet-meaning" class="explanation-text"></div>
+            </div>
+          </section>
+          <section class="expandable-card" data-section="alchemical-element" style="display:none;">
+            <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><span>Your Alchemical Element</span></div>
+            <div class="expandable-content">
+              <p><span class="data-label">Alchemical Element:</span> <span class="data-value" id="deep-element">—</span></p>
+              <div class="explanation-heading" id="element-meaning-header"></div><div id="element-meaning" class="explanation-text"></div>
+            </div>
+          </section>
+          <section class="expandable-card" data-section="natal-chart" style="display:none;">
+            <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><span>Your Full Natal Birth-Chart</span></div>
+            <div class="expandable-content">
+              <div id="natal-chart-output" class="explanation-text placeholder-text">Enter time of birth and location of birth to generate your complete natal chart.</div>
+            </div>
+          </section>
+        </div>
+      </article>
+
+      <article class="expandable-card tree-watermark" data-section="tree-of-life">
+        <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Your Tree of Life Report</h3></div>
+        <div class="expandable-content">
+          <div id="tree-content-placeholder" class="placeholder-text">Run analysis to see your complete Tree of Life report.</div>
+          <div id="tree-content-data" style="display:none;">
+            <p><span class="data-label">Prominent Sefira:</span> <span class="data-value" id="deep-sefira">—</span></p>
+            <div class="explanation-heading" id="sefira-meaning-header"></div>
+            <div id="sefira-meaning" class="explanation-text"></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========== PERSONAL NARRATIVE ========== -->
+  <section class="card details-card">
+    <article class="expandable-card story-watermark expanded" data-section="personal-narrative">
+      <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Your Personal Analysis Story</h3></div>
+      <div class="expandable-content">
+        <div id="personal-narrative-content" class="explanation-text placeholder-text" style="white-space: pre-line;">Run analysis to see your own unique, private analysis narrative, from all the information above.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ========== CALL-TO-ACTION ========== -->
+  <section class="card details-card" id="step-4-section">
+    <h2><strong>Step 4:</strong> Empower your 'Self' with us <span class="tooltip" tabindex="0"><span class="tooltip-text">Look at our offerings and contact us</span></span></h2>
+    <article class="expandable-card expanded" data-section="call-to-action">
+      <div class="expandable-content">
+        <div class="explanation-text" style="text-align:center;max-width:800px;margin:0 auto 20px;line-height:1.5;">
+          <strong style="font-size:32px;color:#3F7652;">Welcome to Aanandoham's Project Curiosity</strong><br>
+          Founded in 2010, Project Curiosity is a sanctuary for those ready to awaken their potential, deepen self-awareness, and experience genuine transformation.<br>
+          <a href="https://lironkerem.wixsite.com/project-curiosity" target="_blank" rel="noopener noreferrer" style="color:#1976d2;font-weight:bold;text-decoration:underline;font-size:28px;">Project Curiosity's official website</a>
+        </div>
+
+        <section class="expandable-card cta-logo-watermark" data-section="cta-sessions">
+          <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Sessions and Classes</h3></div>
+          <div class="expandable-content"><div class="cta-image-grid sessions" id="sessions-grid"></div></div>
+        </section>
+
+        <section class="expandable-card cta-logo-watermark" data-section="cta-workshops">
+          <div class="expandable-header" tabindex="0" role="button"><span class="chevron">›</span><h3>Workshops, Courses, Retreats</h3></div>
+          <div class="expandable-content"><div class="cta-image-grid workshops" id="workshops-grid"></div></div>
+        </section>
+      </div>
+    </article>
+  </section>
+</div><!-- /page -->
+
+<div id="toast-container" aria-live="polite" style="position:fixed;top:20px;right:20px;z-index:10001;"></div>
+
+<!-- ======  SCRIPTS  ====== -->
+<script type="module" src="js/utils.js"></script>
+<script type="module" src="js/meanings.js"></script>
+<script type="module" src="js/customDatePicker.js"></script>
+<script type="module" src="js/customTimePicker.js"></script>
+<script type="module" src="js/stepIndicator.js"></script>
+<script type="module" src="js/ui.js"></script>
+<script type="module" src="js/astroApi.js"></script>
+<script type="module" src="js/app.js"></script>
+
+<!-- ======  LOCATION AUTOCOMPLETE  (OFF-LINE-FIRST)  ====== -->
 <script>
-  // Send height updates to Wix parent frame
-  function sendHeightToParent() {
-    const height = document.documentElement.scrollHeight;
-    window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+(function(){
+  const locationInput = document.getElementById('location-birth');
+  const dropdown      = document.getElementById('location-dropdown');
+  if (!locationInput || !dropdown) return;
+
+  /* 1.  probe whether /api/astro-proxy exists */
+  let serverLive = false;
+  fetch('/api/astro-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({endpoint:'health'})})
+      .then(r=>r.ok&&(serverLive=true))
+      .catch(()=>serverLive=false);
+
+  /* 2.  only if server exists, attach live search */
+  if (serverLive) enableLiveSearch();
+
+  function enableLiveSearch(){
+    const API = '/api/astro-proxy';
+    let debounceTimer, cache = new Map();
+    dropdown.style.cssText=`position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-top:none;max-height:200px;overflow-y:auto;z-index:1000;display:none;box-shadow:0 4px 6px rgba(0,0,0,.1);`;
+
+    locationInput.addEventListener('input',()=>{
+      const q=locationInput.value.trim();
+      clearTimeout(debounceTimer);
+      if(q.length<3){dropdown.style.display='none';dropdown.innerHTML='';return;}
+      const key=q.toLowerCase();
+      if(cache.has(key)){displayResults(cache.get(key));return;}
+      debounceTimer=setTimeout(()=>fetchLocations(q),400);
+    });
+
+    async function fetchLocations(q){
+      try{
+        const res=await fetch(API,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({endpoint:'geocode',params:{q}})
+        });
+        if(!res.ok) throw new Error('geo err');
+        const data=await res.json();
+        cache.set(key,data);
+        if(cache.size>50)cache.delete(cache.keys().next().value);
+        displayResults(data);
+      }catch(e){
+        console.warn('Location fetch error:',e.message);
+        dropdown.innerHTML='<div style="padding:10px;color:#888;">Unable to load suggestions</div>';
+        dropdown.style.display='block';
+        setTimeout(()=>dropdown.style.display='none',2000);
+      }
+    }
+    function displayResults(list){
+      if(!list||!list.length){dropdown.style.display='none';return;}
+      dropdown.innerHTML=list.map(it=>`
+        <div class="location-option" data-lat="${it.lat}" data-lon="${it.lon}" data-name="${it.display_name}"
+             style="padding:10px;cursor:pointer;border-bottom:1px solid #eee;"
+             onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#fff'">
+          ${it.display_name}
+        </div>`).join('');
+      dropdown.style.display='block';
+      dropdown.querySelectorAll('.location-option').forEach(opt=>{
+        opt.addEventListener('click',()=>{
+          locationInput.value=opt.dataset.name;
+          locationInput.dataset.lat=opt.dataset.lat;
+          locationInput.dataset.lon=opt.dataset.lon;
+          dropdown.style.display='none';dropdown.innerHTML='';
+        });
+      });
+    }
+    document.addEventListener('click',e=>{
+      if(e.target!==locationInput&&!dropdown.contains(e.target))dropdown.style.display='none';
+    });
   }
+})();
+</script>
 
-  // Send initial height
-  sendHeightToParent();
+<!-- ======  MAX DATE = TODAY  ====== -->
+<script>document.getElementById('date-of-birth')&&(document.getElementById('date-of-birth').max=new Date().toISOString().split('T')[0]);</script>
 
-  // Update on window resize
-  window.addEventListener('resize', sendHeightToParent);
+<!-- ======  CTA IMAGES  ====== -->
+<script>
+(function(){
+  const sessionsBase='https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Sessions/';
+  const workshopsBase='https://raw.githubusercontent.com/lironkerem/self-analysis-pro/main/assets/CTA/Workshops/';
+  const sessions=[
+    {url:'https://lironkerem.wixsite.com/project-curiosity/tarot'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/reiki'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/meditation'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/tarot'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/osho'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/guided-visualizations'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/eft'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/yoga'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/tantra'}
+  ];
+  const workshops=[
+    {url:'https://lironkerem.wixsite.com/project-curiosity/tarot'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/reiki'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/meditation'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/rainbow-body'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/osho'},
+    {url:'https://lironkerem.wixsite.com/project-curiosity/osho'}
+  ];
+  function card(image,link,alt,i){
+    const id=`cta-img-${Date.now()}-${i}`;
+    return`<a href="${link}" target="_blank" rel="noopener noreferrer" class="cta-image-card">
+      <div class="cta-image-inner">
+        <div class="cta-image-loading" id="loading-${id}"><div class="tarot-spinner"></div></div>
+        <img id="${id}" src="${image}" alt="${alt}" title="${alt}"
+             onload="this.classList.add('loaded');document.getElementById('loading-${id}').style.display='none';"
+             onerror="document.getElementById('loading-${id}').innerHTML='<span style=color:#999;font-size:12px>Image unavailable</span>';">
+      </div>
+    </a>`;
+  }
+  const sGrid=document.getElementById('sessions-grid'),wGrid=document.getElementById('workshops-grid');
+  sessions.forEach((s,i)=>sGrid&&(sGrid.innerHTML+=card(`${sessionsBase}sessions${i+1}.png`,s.url,`Session ${i+1}`,i)));
+  workshops.forEach((w,i)=>wGrid&&(wGrid.innerHTML+=card(`${workshopsBase}workshops${i+1}.png`,w.url,`Workshop ${i+1}`,i)));
+})();
+</script>
 
-  // Use MutationObserver to detect content changes
-  const observer = new MutationObserver(sendHeightToParent);
-  observer.observe(document.body, { 
-    childList: true, 
-    subtree: true, 
-    attributes: true 
+<!-- ======  WIX IFRAME HEIGHT  (guarded – never auto-clears form)  ====== -->
+<script>
+(function(){
+  function sendHeight(){
+    const h=document.documentElement.scrollHeight;
+    window.parent.postMessage({type:'setHeight',height:h},'*');
+  }
+  sendHeight();
+  window.addEventListener('resize',sendHeight);
+  const ob=new MutationObserver(()=>{
+    if(window.app&&window.app.__analysisJustFinished)return;
+    sendHeight();
   });
+  ob.observe(document.body,{childList:true,subtree:true,attributes:true});
+})();
 </script>
 </body>
 </html>

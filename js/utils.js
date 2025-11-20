@@ -1,16 +1,45 @@
-// Utilities and Common Functions
+// utils.js - Enhanced with input sanitization and better validation
 const Utils = {
   escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
   },
+  
+  sanitizeInput(str) {
+    if (!str) return '';
+    // Remove any potentially dangerous characters for PDF generation
+    return String(str)
+      .trim()
+      .replace(/[<>]/g, '') // Remove angle brackets
+      .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
+      .substring(0, 200); // Limit length
+  },
+  
   debounce(func, wait) {
     let timeout;
     return function(...args) {
       clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
     };
+  },
+  
+  // Cache for location searches to reduce API calls
+  locationCache: new Map(),
+  
+  getCachedLocation(query) {
+    const key = query.toLowerCase().trim();
+    return this.locationCache.get(key);
+  },
+  
+  setCachedLocation(query, results) {
+    const key = query.toLowerCase().trim();
+    // Limit cache size to 50 entries
+    if (this.locationCache.size >= 50) {
+      const firstKey = this.locationCache.keys().next().value;
+      this.locationCache.delete(firstKey);
+    }
+    this.locationCache.set(key, results);
   }
 };
 
@@ -23,6 +52,7 @@ const Validation = {
       return { valid: false, message: 'Only letters, spaces, hyphen, apostrophe allowed' };
     return { valid: true };
   },
+  
   validateDateOfBirth(value) {
     if (!value) return { valid: false, message: 'Required' };
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) 
@@ -34,11 +64,13 @@ const Validation = {
     if (date > new Date()) return { valid: false, message: 'Date cannot be in the future' };
     return { valid: true };
   },
+  
   validateTimeOfBirth(value) {
     return !value || /^\d{2}:\d{2}$/.test(value) ? 
       { valid: true } : 
       { valid: false, message: 'Please use HH:MM format' };
   },
+  
   validateLocation(value) {
     return !value?.trim() || value.length <= 200 ? 
       { valid: true } : 
@@ -61,12 +93,15 @@ class AppState {
       includeY: false
     };
   }
+  
   updateFormData(field, value) {
     this.formData[field] = value;
   }
+  
   setAnalysisResults(results) {
     this.analysisResults = results;
   }
+  
   getAnalysisResults() {
     return this.analysisResults;
   }
@@ -77,6 +112,7 @@ class ToastManager {
   constructor() {
     this.container = document.getElementById('toast-container');
   }
+  
   show(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -96,18 +132,22 @@ class ProgressManager {
     this.inner = document.getElementById('progress-inner');
     this.text = document.getElementById('progress-text');
   }
+  
   show() {
     this.wrapper.style.display = 'block';
     this.setProgress(0, 'Starting...');
   }
+  
   hide() {
     this.wrapper.style.display = 'none';
   }
+  
   setProgress(percentage, message = '') {
     this.inner.style.width = `${percentage}%`;
     this.inner.textContent = `${Math.round(percentage)}%`;
     if (message) this.text.textContent = message;
   }
+  
   async animate(duration = 1000) {
     return new Promise(resolve => {
       let progress = 0;
@@ -137,3 +177,4 @@ window.AppState = AppState;
 window.ToastManager = ToastManager;
 window.ProgressManager = ProgressManager;
 export default Utils;
+  

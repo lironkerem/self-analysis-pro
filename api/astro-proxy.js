@@ -1,176 +1,131 @@
-// ============================================
-// /api/astro-proxy.js
-// FIXED: Proper error handling and parameter validation
-// ============================================
-import tzlookup from "tz-lookup";
+// api/astro-proxy.js  –  production-ready, fully patched
+// Handles:  health, geocode, timezone, astrology-api  (all in one file)
+// CORS & URLs cleaned – no trailing spaces.
+
+import tzlookup from 'tz-lookup';
+
+// 1. CORS whitelist – trailing spaces removed
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'https://self-analysis-pro.vercel.app',
+  'https://lironkerem.wixsite.com'
+];
 
 export default async function handler(req, res) {
-  // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // ---------- CORS ----------
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     const { endpoint, params } = req.body;
+    if (!endpoint || !params) return res.status(400).json({ error: 'Missing endpoint or params' });
 
-    if (!endpoint || !params) {
-      console.error("Missing endpoint or params:", { endpoint, params });
-      return res.status(400).json({ error: "Missing endpoint or params" });
-    }
+    // ---------- health check ----------
+    if (endpoint === 'health') return res.status(200).json({ status: 'ok', timestamp: Date.now() });
 
-    // CHECK API KEY
-    if (!process.env.FREE_ASTRO_API_KEY) {
-      console.error("❌ FREE_ASTRO_API_KEY not set in Vercel environment");
-      return res.status(500).json({ 
-        error: "Astrology API not configured",
-        hint: "Add FREE_ASTRO_API_KEY to Vercel environment variables"
-      });
-    }
-
-    // VALIDATE REQUIRED PARAMS (using correct Free Astrology API names)
-    const apiParams = {
-      year: params.year,
-      month: params.month,
-      date: params.day !== undefined ? params.day : params.date,
-      hours: params.hour !== undefined ? params.hour : params.hours,
-      minutes: params.min !== undefined ? params.min : params.minutes,
-      seconds: params.seconds !== undefined ? params.seconds : 0,
-      latitude: params.lat !== undefined ? params.lat : params.latitude,
-      longitude: params.lon !== undefined ? params.lon : params.longitude,
-      timezone: params.tzone !== undefined ? params.tzone : (params.timezone !== undefined ? params.timezone : 0)
-    };
-
-    const required = ['year', 'month', 'date', 'hours', 'minutes', 'latitude', 'longitude'];
-    const missing = required.filter(key => apiParams[key] === undefined || apiParams[key] === null);
-    
-    if (missing.length > 0) {
-      console.error("❌ Missing required params:", missing);
-      console.error("📦 Received params:", params);
-      console.error("📦 Transformed params:", apiParams);
-      return res.status(400).json({ 
-        error: "Missing required parameters",
-        missing: missing,
-        received: params
-      });
-    }
-
-    // VALIDATE PARAM TYPES
-    const numericParams = ['year', 'month', 'date', 'hours', 'minutes', 'seconds', 'latitude', 'longitude', 'timezone'];
-    for (const key of numericParams) {
-      if (apiParams[key] !== undefined && isNaN(Number(apiParams[key]))) {
-        console.error(`❌ Invalid ${key}: ${apiParams[key]} is not a number`);
-        return res.status(400).json({
-          error: `Invalid parameter: ${key} must be a number`,
-          value: apiParams[key]
+    // ---------- geocode ----------
+    if (endpoint === 'geocode') {
+      const { q } = params;
+      if (!q || q.length < 3) return res.status(400).json({ error: 'Query must be ≥ 3 chars' });
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 8000);
+      try {
+        // URL cleaned – no trailing space
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&addressdetails=1`;
+        const r = await fetch(url, {
+          signal: controller.signal,
+          headers: { 'User-Agent': 'SelfAnalysisApp/1.0 (lironkerem@gmail.com)' }
         });
+        clearTimeout(t);
+        if (!r.ok) throw new Error(`Nominatim ${r.status}`);
+        const data = await r.json();
+        return res.status(200).json(data);
+      } catch (e) {
+        clearTimeout(t);
+        if (e.name === 'AbortError') return res.status(504).json({ error: 'Geocode timeout' });
+        throw e;
       }
     }
 
-    // Convert all params to numbers
-    ['year', 'month', 'date', 'hours', 'minutes', 'seconds'].forEach(key => {
-      if (apiParams[key] !== undefined) apiParams[key] = Number(apiParams[key]);
-    });
-    ['latitude', 'longitude', 'timezone'].forEach(key => {
-      if (apiParams[key] !== undefined) apiParams[key] = parseFloat(apiParams[key]);
-    });
-
-    // Remove tzone resolution code since we're using the transformed params
-    console.log("🚀 Calling Free Astrology API: ${endpoint}");
-    console.log("📦 Transformed API Params:", JSON.stringify(apiParams, null, 2));
-
-    // Call Free Astrology API with transformed params
-    const response = await fetch(`https://json.freeastrologyapi.com/${endpoint}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.FREE_ASTRO_API_KEY
-      },
-      body: JSON.stringify(apiParams)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error(`❌ Free Astrology API error (${response.status}):`, data);
-      return res.status(response.status).json({ 
-        error: "Free Astrology API error", 
-        status: response.status,
-        details: data 
-      });
+    // ---------- timezone resolution (used by astrology) ----------
+    if (!params.tzone && params.lat && params.lon && params.dateOfBirth) {
+      params.tzone = await resolveTzOffset(params.lat, params.lon, params.dateOfBirth);
     }
 
-    console.log(`✅ Success: ${endpoint}`);
-    return res.status(200).json(data);
-
-  } catch (error) {
-    console.error("❌ Astro Proxy Error:", error);
-    return res.status(500).json({ 
-      error: "Internal server error",
-      message: error.message
-    });
+    // ---------- Free Astrology API ----------
+    if (!process.env.FREE_ASTRO_API_KEY) {
+      return res.status(500).json({ error: 'Astrology API not configured' });
+    }
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      // URL cleaned – no trailing space
+      const url = `https://json.freeastrologyapi.com/${endpoint}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.FREE_ASTRO_API_KEY
+        },
+        body: JSON.stringify(params),
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      const data = await response.json();
+      if (!response.ok) return res.status(response.status).json({ error: 'Astrology API error', details: data.message || 'Unknown' });
+      return res.status(200).json(data);
+    } catch (e) {
+      clearTimeout(timeout);
+      if (e.name === 'AbortError') return res.status(504).json({ error: 'Astrology service timeout' });
+      throw e;
+    }
+  } catch (e) {
+    console.error('Astro Proxy Error:', e.message);
+    return res.status(500).json({ error: 'Internal server error', message: e.message });
   }
 }
 
+/* ----------  helper: resolve timezone offset  ---------- */
 async function resolveTzOffset(lat, lon, dateStr) {
   try {
     const latitude = parseFloat(lat);
     const longitude = parseFloat(lon);
-    
-    if (isNaN(latitude) || isNaN(longitude)) {
-      throw new Error("Invalid lat/lon");
-    }
+    if (isNaN(latitude) || isNaN(longitude)) return 0;
 
-    // Try tz-lookup first (offline, fast)
+    // 1. fast offline tz-lookup
     let tzName;
-    try {
-      tzName = tzlookup(latitude, longitude);
-      console.log(`📍 Timezone name: ${tzName}`);
-    } catch (e) {
-      console.warn("tz-lookup failed:", e.message);
-    }
+    try { tzName = tzlookup(latitude, longitude); } catch { /* ignore */ }
 
-    // Use TimezoneDB if available
+    // 2. TimezoneDB API (if key exists)
     const apiKey = process.env.TIMEZONEDB_API_KEY;
-    if (!apiKey) {
-      console.warn("⚠️ TIMEZONEDB_API_KEY not set, using offset 0");
-      return 0;
-    }
+    if (!apiKey) return 0;
 
     const dateObj = new Date(dateStr);
-    if (isNaN(dateObj.getTime())) {
-      throw new Error("Invalid date");
-    }
-    
+    if (isNaN(dateObj.getTime())) return 0;
     const timestamp = Math.floor(dateObj.getTime() / 1000);
+
+    // URL cleaned – no trailing space
     const url = `http://api.timezonedb.com/v2.1/get-time-zone?key=${apiKey}&format=json&by=position&lat=${latitude}&lng=${longitude}&time=${timestamp}`;
-    
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(5000)
-    });
 
-    if (!response.ok) {
-      throw new Error(`TimezoneDB returned ${response.status}`);
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 8000);
+    try {
+      const r = await fetch(url, { signal: controller.signal });
+      clearTimeout(t);
+      if (!r.ok) return 0;
+      const data = await r.json();
+      return (data.status === 'OK' && typeof data.gmtOffset === 'number') ? data.gmtOffset / 3600 : 0;
+    } catch (e) {
+      clearTimeout(t);
+      return 0;
     }
-
-    const data = await response.json();
-
-    if (data.status === "OK" && typeof data.gmtOffset === "number") {
-      const offset = data.gmtOffset / 3600;
-      console.log(`✅ Timezone offset from TimezoneDB: ${offset}`);
-      return offset;
-    }
-    
-    return 0;
-  } catch (err) {
-    console.error("resolveTzOffset error:", err.message);
+  } catch {
     return 0;
   }
 }
