@@ -97,17 +97,18 @@ export class AstrologyEngine {
         };
       }
       
-      // Full natal chart with API
+      // Full natal chart with API - FREE ASTROLOGY API FORMAT
       const [hour, minute] = timeOfBirth.split(':').map(Number);
       const params = {
         year, 
         month, 
-        day, 
-        hour,
-        min: minute,
-        lat: parseFloat(locationLat),
-        lon: parseFloat(locationLon),
-        tzone: tzone || 0
+        date: day,  // FREE API uses "date" not "day"
+        hours: hour,  // FREE API uses "hours" not "hour"
+        minutes: minute,  // FREE API uses "minutes" not "min"
+        seconds: 0,  // Always include seconds
+        latitude: parseFloat(locationLat),  // FREE API uses "latitude" not "lat"
+        longitude: parseFloat(locationLon),  // FREE API uses "longitude" not "lon"
+        timezone: tzone || 0  // FREE API uses "timezone" not "tzone"
       };
       
       console.log('🌍 Full natal chart params:', params);
