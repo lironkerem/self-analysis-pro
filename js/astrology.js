@@ -1,10 +1,14 @@
-// js/astrology.js - Optimized with parallel API calls
-import { getAllNatalData } from './astroApi.js';
+// js/astrology.js
+// AstrologyEngine for Free Astrology API
+// DEBUG VERSION - Add logging
+
+import { getPlanets, getHouses, getAspects, getNatalWheelChart } from './astroApi.js';
 
 export class AstrologyEngine {
   constructor() {
     console.log('AstrologyEngine initialized (Free Astrology API)');
     
+    // Updated zodiac data with dual planets
     this.zodiacData = [
       ["Capricorn", 1, 1, "Saturn", "Earth"],
       ["Aquarius", 1, 20, "Saturn, Uranus", "Air"],
@@ -57,20 +61,32 @@ export class AstrologyEngine {
 
   async analyze(formData) {
     try {
+      console.log('🔍 AstrologyEngine.analyze() called with formData:', formData);
+      
       const { dateOfBirth, timeOfBirth, locationLat, locationLon, tzone } = formData;
       
       if (!dateOfBirth) {
         throw new Error("Date of birth is required.");
       }
       
+      // Parse DOB and get basic astrology (always works)
       const [year, month, day] = dateOfBirth.split('-').map(Number);
+      console.log('📅 Parsed date:', { year, month, day });
+      
       const zodiac = this.getZodiacSign(month, day);
       const sefira = this.getSefiraFromPlanet(zodiac.planet);
+      
+      console.log('♈ Basic astrology:', { zodiac, sefira });
       
       // If no time/location, return basic astrology only
       if (!timeOfBirth || !locationLat || !locationLon || 
           locationLat === "" || locationLon === "" || timeOfBirth === "") {
-        console.warn("Returning basic astrology - no time/location for natal chart");
+        console.warn("⚠️ Missing time/location - returning basic astrology only");
+        console.log('Missing data:', { 
+          timeOfBirth: timeOfBirth || 'MISSING', 
+          locationLat: locationLat || 'MISSING', 
+          locationLon: locationLon || 'MISSING' 
+        });
         return {
           zodiac: zodiac,
           sefira: sefira,
@@ -81,18 +97,33 @@ export class AstrologyEngine {
         };
       }
       
-      // Full natal chart with parallel API calls
+      // Full natal chart with API
       const [hour, minute] = timeOfBirth.split(':').map(Number);
       const params = {
-        year, month, day, hour,
+        year, 
+        month, 
+        day, 
+        hour,
         min: minute,
         lat: parseFloat(locationLat),
         lon: parseFloat(locationLon),
         tzone: tzone || 0
       };
       
-      // Fetch all natal data in parallel
-      const { planets, houses, aspects, natalChart } = await getAllNatalData(params);
+      console.log('🌍 Full natal chart params:', params);
+      console.log('📡 Calling Free Astrology API...');
+      
+      const planets = await getPlanets(params);
+      console.log('✅ Planets received:', planets);
+      
+      const houses = await getHouses(params);
+      console.log('✅ Houses received:', houses);
+      
+      const aspects = await getAspects(params);
+      console.log('✅ Aspects received:', aspects);
+      
+      const natalChart = await getNatalWheelChart(params);
+      console.log('✅ Natal chart received:', natalChart);
       
       return {
         zodiac: zodiac,
@@ -103,7 +134,11 @@ export class AstrologyEngine {
         natalChart
       };
     } catch (err) {
-      console.error("AstrologyEngine analyze() failed:", err.message);
+      console.error("❌ AstrologyEngine analyze() failed:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack
+      });
       throw err;
     }
   }
