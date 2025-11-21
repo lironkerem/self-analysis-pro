@@ -213,7 +213,20 @@
 <script type="module" src="js/meanings.js"></script>
 <script type="module" src="js/customDatePicker.js"></script>
 <script type="module" src="js/customTimePicker.js"></script>
-
+<script type="module" src="js/stepIndicator.js"></script>
+<script type="module">
+  import { StepIndicator } from './js/stepIndicator.js';
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log('🎯 Manually initializing StepIndicator...');
+    window.stepIndicator = new StepIndicator();
+    window.resetStepIndicator = () => {
+      if (window.stepIndicator) {
+        window.stepIndicator.reset();
+      }
+    };
+    console.log('✅ StepIndicator initialized:', window.stepIndicator);
+  });
+</script>
 <script type="module" src="js/ui.js"></script>
 <script type="module" src="js/astroApi.js"></script>
 <script type="module" src="js/app.js"></script>
