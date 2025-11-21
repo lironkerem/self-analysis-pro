@@ -2,8 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Self-Analysis Generator Pro</title>
+
+<!-- PWA Configuration -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#3F7652">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Self-Analysis Pro">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 
   <!-- 3rd-party libs – URLs cleaned (no trailing spaces) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -385,6 +394,17 @@
   sessions.forEach((s,i)=>sGrid&&(sGrid.innerHTML+=card(`${sessionsBase}sessions${i+1}.jpg`,s.url,`Session ${i+1}`,i)));
   workshops.forEach((w,i)=>wGrid&&(wGrid.innerHTML+=card(`${workshopsBase}workshops${i+1}.jpg`,w.url,`Workshop ${i+1}`,i)));
 })();
+</script>
+
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker registered:', reg.scope))
+      .catch(err => console.error('Service Worker registration failed:', err));
+  });
+}
 </script>
 
 <!-- ======  WIX IFRAME HEIGHT  (guarded – never auto-clears form)  ====== -->
